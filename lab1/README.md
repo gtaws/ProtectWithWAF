@@ -35,7 +35,9 @@ above.
 4.  Right click on the page and choose "Inspect". Chrome Developer Tools
     will open.
 
-5.  Go to Networking tab.
+5.  Go to Network tab. Click on the green bar field.
+![](.//media/chromenetwork.png)
+
 
 6.  Type ```<script>alert(document.cookie)</script>``` in the "Search"
     text field in the WebCarter site and click "Search!"
