@@ -102,7 +102,7 @@ Parameters:
 
   ActivateHttpFloodProtectionParam:
     Type: String
-    Default: 'yes - Amazon Athena log parser'
+    Default: 'yes - AWS WAF rate based rule'
     AllowedValues:
       - 'yes - AWS WAF rate based rule'
       - 'yes - AWS Lambda log parser'

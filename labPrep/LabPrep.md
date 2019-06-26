@@ -33,7 +33,12 @@ Web Carter & Attacker workstation setup
 
 ![](.//media/image13.png)
 
-5.  Enter the environmental configurations for the stack
+5.  Get your IP from Google with "what is my ip".
+
+![](.//media/image7.png)
+
+
+6.  Enter the environmental configurations for the stack
 
     a.  Your IP address from above
 
@@ -43,7 +48,7 @@ Web Carter & Attacker workstation setup
 
 ![](.//media/image14.png)
 
-6.  Enter passwords for the following credentials. Passwords should be at least 8 characters long:
+7.  Enter passwords for the following credentials. Passwords should be at least 8 characters long:
 
     d.  RDS instance master password
 
@@ -57,17 +62,17 @@ Scroll to the bottom of the page and hit **Next**
 
 ![](.//media/image15.png)
 
-7.  Scroll to the bottom of the page and hit **Next** on *Configure
+8.  Scroll to the bottom of the page and hit **Next** on *Configure
     stack options* page
 
-8.  Scroll to the bottom of the page and check **I acknowledge that AWS
+9.  Scroll to the bottom of the page and check **I acknowledge that AWS
     CloudFormation might create IAM resources.**, the click **Create**
 
 ![](.//media/image16.png)
 
-9.  The stack will eventually turn to CREATE\_COMPLETE.
+10.  The stack will eventually turn to CREATE\_COMPLETE.
 
-10. Go to the stack’s "Output" and copy value of the webCarterALBAccessLogBucket. It will be used as a parameter in the next CloudFormation stack:
+11. Go to the stack’s "Output" and copy value of the webCarterALBAccessLogBucket. It will be used as a parameter in the next CloudFormation stack:
 
 ![](.//media/image17.png)
 
@@ -104,21 +109,17 @@ and the dashboards.
 
 ![](.//media/image6.png)
 
-7.  Get your IP from Google with "what is my ip".
-
-![](.//media/image7.png)
-
-8.  Enter your IP + "/32" for the attacker's allowed ingress IP address in the Cloudformation form. Please replace 72.21.196.65 in these instructions with your IP address:
+7.  Enter your IP + "/32" for the attacker's allowed ingress IP address in the Cloudformation form. Please replace 0.0.0.0/0 in these instructions with your IP address:
 
 ![](.//media/image8.png)    
 
-9.  Scroll to the bottom of the page and hit **Next**.
+8.  Scroll to the bottom of the page and hit **Next**.
 
-10. Hit **Next** on "Configure stack options"
+9. Hit **Next** on "Configure stack options"
 
-11. Scroll to the bottom of the page. Check **I acknowledge that AWS CloudFormation might create IAM resources with custom names.** and **I acknowledge that AWS Cloudformation might require the following capability: CAPABILITY\_AUTO\_EXPAND**, then click "Create"
+10. Scroll to the bottom of the page. Check **I acknowledge that AWS CloudFormation might create IAM resources with custom names.** and **I acknowledge that AWS Cloudformation might require the following capability: CAPABILITY\_AUTO\_EXPAND**, then click "Create"
 
 ![](.//media/image9.png)
 
-12. The stack will eventually turn to CREATE\_COMPLETE.
+11. The stack will eventually turn to CREATE\_COMPLETE.
 
