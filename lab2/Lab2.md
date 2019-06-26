@@ -31,17 +31,8 @@ Kinesis Data Firehose also places a backup copy of the WAF to an S3 bucket for A
 
 3.	Don't add "Redacted Fields" and click "Create".
 
-4.	RDP to the Attacker Windows instance and run BOT1 Jmeter scenario to generate data flowing to Kinesis Data Firehose then to ElasticSearch domain.
-
 
 **Step 3: Configure ElasticSearch with Kibana**
-
-WAF Automation stack created Kinesis Firehose stream pointing to
-ElasticSearch domain. You will configure the Web ACL logging stream JSON
-WAF logs to the Kinesis Data Firehose.
-
-Kinesis Data Firehose also places a backup copy of the WAF to an S3
-bucket for Amazon Athena analysis.
 
 Below you will create indexes and visualizations in your domain.
 
@@ -117,49 +108,50 @@ bottom to execute it:
 
 ![](.//media/image2.png)
 
+3.	RDP to the Attacker Windows instance and run BOT1 Jmeter scenario to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.
 
-3.  Click on the "Discover" menu, define an index pattern as *awswaf-\**
+4.  Wait for a couple of minutes till WAF logs will get to the ElasticSearch domain, then click on the "Discover" menu and define an index pattern as *awswaf-\**
     and click "Next step":
 
 > ![](.//media/image3.png)
 > 
 
-4.  Choose timestamp as a Filter and click "Create index pattern"
+5.  Choose timestamp as a Filter and click "Create index pattern"
 
 ![](.//media/image4.png)
 
 
-5.  Now you're able to run searches through your logs by going into
+6.  Now you're able to run searches through your logs by going into
     the Discover tab in Kibana. For example, you can look for specific
     HTTP headers, query strings, or source IP addresses:
 
 > Now upload visualizations and a dashboard. You can always customize
 > them or create your visualizations as required.
 
-6.  Go to "Management" menu and click "Advanced". Search for the the
+7.  Go to "Management" menu and click "Advanced". Search for the the
     defaultindex and copy and save the default index id value:
 
 > ![](.//media/image5.png)
 > 
 
-7.  Open kibana-configruation.json file from the config directory on
+8.  Open kibana-configruation.json file from the config directory on
     Github, and replace the
     _YOUR_ES_INDEX_ value
     with the one saved above. Please do it everywhere in the file.
 
-8.  Save the file.
+9.  Save the file.
 
-9.  Go to "Saved Objects" tab, click "Import" and upload the modified
+10.  Go to "Saved Objects" tab, click "Import" and upload the modified
     kibana-configruation.json file. Click "Yes" for the overwrite
     question.
 
-10. You'll see your dashboard and visualizations have been uploaded
+11. You'll see your dashboard and visualizations have been uploaded
     successfully:
 
 > ![](.//media/image6.png)
 > 
 
-11. Navigate to the "Dashboard" menu and choose "WAF" dashboard you just
+12. Navigate to the "Dashboard" menu and choose "WAF" dashboard you just
     uploaded.
 
 
