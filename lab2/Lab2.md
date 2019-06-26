@@ -19,20 +19,11 @@ Lab 2 -- Automating Protections and Tracking Attacks
 Now your WebCarter Web application protected with Web ACL created by
 WAF-automation template.
 
-**Step 2: Configure Web ACL full logging functionality.**
+**Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality**
 
 WAF Automation stack created Kinesis Firehose stream that points to ElasticSearch domain. You will configure the Web ACL logging stream JSON WAF logs to the Kinesis Data Firehose.
 
 Kinesis Data Firehose also places a backup copy of the WAF to an S3 bucket for Amazon Athena analysis. 
-
-1.	Open "Logging" tab of the WAF-automation Web ACL and click "Edit".
-
-2.	Choose Kinesis Data Firehose stream created by waf-automation CloudFormation template. 
-
-3.	Don't add "Redacted Fields" and click "Create".
-
-
-**Step 3: Configure ElasticSearch with Kibana**
 
 Below you will create indexes and visualizations in your domain.
 
@@ -108,54 +99,62 @@ bottom to execute it:
 
 ![](.//media/image2.png)
 
-3.	RDP to the Attacker Windows instance and run BOT1 Jmeter scenario to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.
+Now you'll configure Web ACL logging functionality.
 
-4.  Wait for a couple of minutes till WAF logs will get to the ElasticSearch domain, then click on the "Discover" menu and define an index pattern as *awswaf-\**
+3.	Open "Logging" tab of the WAF-automation Web ACL and click "Edit".
+
+4.	Choose Kinesis Data Firehose stream created by waf-automation CloudFormation template. 
+
+5.	Don't add "Redacted Fields" and click "Create".
+
+6.	RDP to the Attacker Windows instance and run BOT1 Jmeter scenario to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.
+
+7.  Wait for a couple of minutes till WAF logs will get to the ElasticSearch domain, then click on the "Discover" menu and define an index pattern as *awswaf-\**
     and click "Next step":
 
 > ![](.//media/image3.png)
 > 
 
-5.  Choose timestamp as a Filter and click "Create index pattern"
+8.  Choose timestamp as a Filter and click "Create index pattern"
 
 ![](.//media/image4.png)
 
 
-6.  Now you're able to run searches through your logs by going into
+9.  Now you're able to run searches through your logs by going into
     the Discover tab in Kibana. For example, you can look for specific
     HTTP headers, query strings, or source IP addresses:
 
 > Now upload visualizations and a dashboard. You can always customize
 > them or create your visualizations as required.
 
-7.  Go to "Management" menu and click "Advanced". Search for the the
+10.  Go to "Management" menu and click "Advanced". Search for the the
     defaultindex and copy and save the default index id value:
 
 > ![](.//media/image5.png)
 > 
 
-8.  Open kibana-configruation.json file from the config directory on
+11.  Open kibana-configruation.json file from the config directory on
     Github, and replace the
     _YOUR_ES_INDEX_ value
     with the one saved above. Please do it everywhere in the file.
 
-9.  Save the file.
+12.  Save the file.
 
-10.  Go to "Saved Objects" tab, click "Import" and upload the modified
+13.  Go to "Saved Objects" tab, click "Import" and upload the modified
     kibana-configruation.json file. Click "Yes" for the overwrite
     question.
 
-11. You'll see your dashboard and visualizations have been uploaded
+14. You'll see your dashboard and visualizations have been uploaded
     successfully:
 
 > ![](.//media/image6.png)
 > 
 
-12. Navigate to the "Dashboard" menu and choose "WAF" dashboard you just
+15. Navigate to the "Dashboard" menu and choose "WAF" dashboard you just
     uploaded.
 
 
-**Step 4: Use ElasticSearch Service with Kibana for WAF monitoring and
+**Step 3: Use ElasticSearch Service with Kibana for WAF monitoring and
 forensics**
 
 1. On the Attacker Windows instance, check if BOT1 Jmeter scenario is still running. Re-start it if needed to generate more data for this exercise.
@@ -403,7 +402,7 @@ target_status_code
 You can see that requests from that IP address to /api url been blocked
 by the WAF rule.
 
-**Step 5: Honeypot for bad bots and scrapers.**
+**Step 4: Honeypot for bad bots and scrapers.**
 
 1. Copy AddHoneypotSsmCommand output value from WAF automation template
 ![](.//media/RunCommand.png)   
@@ -473,7 +472,7 @@ source IP address been added to the block list by the Lambda function,
 although traffic from HTTTrack is not been blocked. In the real-life
 scenario scraper will be blocked based on its public IP address.
 
-**Step 3: WAF Automation using AWS Lambda and Amazon Athena.**
+**Step 5: WAF Automation using AWS Lambda and Amazon Athena.**
 
 In the above steps we demonstrated manual creation of the WAF rules
 using information we've got from Kibana dashboard and Athena SQL
