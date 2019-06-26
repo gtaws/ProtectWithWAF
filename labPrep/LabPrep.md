@@ -67,6 +67,11 @@ Scroll to the bottom of the page and hit **Next**
 
 9.  The stack will eventually turn to CREATE\_COMPLETE.
 
+10. Go to the stack’s "Output" and copy value of the webCarterALBAccessLogBucket. It will be used as a parameter in the next CloudFormation stack:
+
+![](.//media/Screen Shot 2019-06-26 at 10.45.53 AM.png)
+
+
 WAF Automation And Dashboard Setup
 ----------------------------------
 
