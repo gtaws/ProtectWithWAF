@@ -1,0 +1,1087 @@
+Description: 
+  (SDD311-webCarter) This template setups a single webCarter deployment behind an Application Load Balancer for attack testing, and an
+  EC2 Windows instance for simulating attacks.
+
+  **WARNING** This template creates an AWS Application Load Balancer, EIPs, NAT Gateways, and EC2 instances. You will be billed for the AWS resources used if you
+  create a stack from this template.
+
+  **NOTICE** Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. Licensed under
+  the Amazon Software License (the License). You may not use this file except in compliance with the
+  License. A copy of the License is located at http://aws.amazon.com/asl/ or in the license file
+  accompanying this file. This file is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing
+  permissions and limitations under the License.
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - 
+        Label: 
+          default: Environment Configuration
+        Parameters:
+          - EnvironmentName
+          - KeyName
+          - MyIP
+          - InstanceType
+          - DesiredCapacity
+          - MaxSize
+          - AttackerInstanceType
+          - DBInstanceType
+      -
+        Label: 
+          default: Credentials
+        Parameters:
+          - DBAdmin
+          - DBPassword
+          - RdsAdminUsername
+          - RdsAdminPassword
+          - webCarterTestUsername
+          - webCarterTestPassword
+          - webCarterInstallerPassword
+Parameters:
+  EnvironmentName:
+    Description: An environment name that will be prefixed to resource names
+    Type: String
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the ECS instances.
+  MyIP:
+    Type: String
+    Description: Your IPv4 Address to lock down the Windows instance
+    Default: '0.0.0.0/0'
+    AllowedPattern: "^(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])/([0-9]|1[0-9]|2[0-9]|3[0-2])$"
+  DBAdmin:
+    Type: String
+    Default: 'webCarter'
+    Description: The admin userid for the webCarter MySQL database
+  DBPassword:
+    Type: String
+    NoEcho: true
+    Description: The admin password for the webCarter MySQL database
+  RdsAdminUsername:
+    Type: String
+    Default: 'master'
+    Description: The admin username for the RDS MySQL instance
+  RdsAdminPassword:
+    Type: String
+    NoEcho: true
+    Description: The admin password for the RDS MySQL instance
+  webCarterTestUsername:
+    Type: String
+    Default: 'webCarterTest'
+    Description: Username for webCarter test user
+  webCarterTestPassword:
+    Type: String
+    NoEcho: true
+    Description: The webCarter test user password
+  webCarterInstallerPassword:
+    Type: String
+    NoEcho: true
+    Description: The webCarter installer password
+  DesiredCapacity:
+    Type: Number
+    Default: '1'
+    Description: Number of instances to launch in your ECS cluster.
+  MaxSize:
+    Type: Number
+    Default: '1'
+    Description: Maximum number of instances that can be launched in your ECS cluster.
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: c5.large
+    AllowedValues: [t3.micro, t3.small, t3.medium, t3.large, t3.xlarge, m5.large,
+      m5.xlarge, m5.2xlarge, m5.4xlarge, m5.12xlarge,
+      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge, c5.18xlarge, 
+      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r5.12xlarge, 
+      i3.xlarge, i3.2xlarge, i3.4xlarge, i3.8xlarge]
+    ConstraintDescription: Please choose a valid instance type.
+  DBInstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: db.m5.4xlarge
+    AllowedValues: [db.t2.micro, db.t2.small, db.t2.medium, db.t2.large, db.t2.xlarge, db.t2.2xlarge,
+      db.m5.large, db.m5.xlarge, db.m5.2xlarge, db.m5.4xlarge, db.m5.12xlarge, db.m5.24xlarge]
+    ConstraintDescription: Please choose a valid instance type.
+  AttackerInstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t3.xlarge
+    AllowedValues: [t3.micro, t3.small, t3.medium, t3.large, t3.xlarge, m5.large,
+      m5.xlarge, m5.2xlarge, m5.4xlarge, m5.12xlarge,
+      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge, c5.18xlarge, 
+      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r5.12xlarge, 
+      i3.xlarge, i3.2xlarge, i3.4xlarge, i3.8xlarge]
+    ConstraintDescription: Please choose a valid instance type.
+Mappings:
+  LBPrincipal:
+    us-east-1:
+      principal: '127311923021'
+    us-east-2:
+      principal: '033677994240'
+    us-west-1:
+      principal: '027434742980'
+    us-west-2:
+      principal: '797873946194'
+    ca-central-1:
+      principal: '985666609251'
+    eu-central-1:
+      principal: '054676820928'
+    eu-west-1:
+      principal: '156460612806'
+    eu-west-2:
+      principal: '652711504416'
+    eu-west-3:
+      principal: '009996457667'
+    eu-north-1:
+      principal: '897822967062'
+    ap-east-1:
+      principal: '754344448648'
+    ap-northeast-1:
+      principal: '582318560864'
+    ap-northeast-2:
+      principal: '600734575887'
+    ap-northeast-3:
+      principal: '383597477331'
+    ap-southeast-1:
+      principal: '114774131450'
+    ap-southeast-2:
+      principal: '783225319266'
+    ap-south-1:
+      principal: '718504428378'
+    sa-east-1:
+      principal: '507241528517'
+  AWSRegionToAMI:
+    us-east-1:
+      AMIID: ami-0a313d6098716f372
+    eu-north-1:
+      AMIID: ami-5e9c1520
+    ap-south-1: 
+      AMIID: ami-007d5db58754fa284
+    eu-west-3: 
+      AMIID: ami-03bca18cb3dc173c9
+    eu-west-2: 
+      AMIID: ami-07dc734dc14746eab
+    eu-west-1: 
+      AMIID: ami-08d658f84a6d84a80
+    ap-northeast-3: 
+      AMIID: ami-0babd61cf592f1c03
+    ap-northeast-2: 
+      AMIID: ami-078e96948945fc2c9
+    ap-northeast-1: 
+      AMIID: ami-0eb48a19a8d81e20b
+    sa-east-1: 
+      AMIID: ami-09f4cd7c0b533b081
+    ca-central-1: 
+      AMIID: ami-01b60a3259250381b
+    ap-southeast-1: 
+      AMIID: ami-0dad20bd1b9c8c004
+    ap-southeast-2: 
+      AMIID: ami-0b76c3b150c6b1423
+    eu-central-1: 
+      AMIID: ami-090f10efc254eaf55
+    us-east-2: 
+      AMIID: ami-0c55b159cbfafe1f0
+    us-west-1: 
+      AMIID: ami-06397100adf427136
+    us-west-2: 
+      AMIID: ami-005bdb005fb00e791
+  AWSRegionToALAMI:
+    us-east-1:
+      AMIID: ami-0c6b1d09930fac512
+    eu-north-1: 
+      AMIID: ami-1fb13961
+    ap-south-1: 
+      AMIID: ami-00e782930f1c3dbc7
+    eu-west-3: 
+      AMIID: ami-0ebb3a801d5fb8b9b
+    eu-west-2: 
+      AMIID: ami-0009a33f033d8b7b6
+    eu-west-1: 
+      AMIID: ami-030dbca661d402413
+    ap-northeast-3: 
+      AMIID: ami-018aec30b63a5a9aa
+    ap-northeast-2: 
+      AMIID: ami-08ab3f7e72215fe91
+    ap-northeast-1: 
+      AMIID: ami-00d101850e971728d
+    sa-east-1: 
+      AMIID: ami-058141e091292ecf0
+    ca-central-1: 
+      AMIID: ami-08a9b721ecc5b0a53
+    ap-southeast-1: 
+      AMIID: ami-0b5a47f8865280111
+    ap-southeast-2: 
+      AMIID: ami-0fb7513bcdc525c3b
+    eu-central-1: 
+      AMIID: ami-0ebe657bc328d4e82
+    us-east-2: 
+      AMIID: ami-0ebbf2179e615c338
+    us-west-1: 
+      AMIID: ami-015954d5e5548d13b
+    us-west-2: 
+      AMIID: ami-0cb72367e98845d43     
+  AWSRegionToWindowsAMI:
+    us-east-1:
+      AMIID: ami-0a9ca0496f746e6e0
+    eu-north-1: 
+      AMIID: ami-0c8f5da45a93c8ea1
+    ap-south-1: 
+      AMIID: ami-0e719217acb64308e
+    eu-west-3: 
+      AMIID: ami-022cfeccb4b72d6b8
+    eu-west-2: 
+      AMIID: ami-0ebf422d2a92724ec
+    eu-west-1: 
+      AMIID: ami-03838ccd5cfb84782
+    ap-northeast-3: 
+      AMIID: ami-0fe4dd6dce0a6f36c
+    ap-northeast-2: 
+      AMIID: ami-0708a3b845edea89c
+    ap-northeast-1: 
+      AMIID: ami-02192102f14f0a10a
+    sa-east-1: 
+      AMIID: ami-07df12f3c5005cd1f
+    ca-central-1: 
+      AMIID: ami-020e569ea1f3a4e1c
+    ap-southeast-1: 
+      AMIID: ami-0afce41e503676765
+    ap-southeast-2: 
+      AMIID: ami-0628ef1f10e34307d
+    eu-central-1: 
+      AMIID: ami-018c2bcdc530c0630
+    us-east-2: 
+      AMIID: ami-0087a83ed4a60d1e9
+    us-west-1: 
+      AMIID: ami-004a782f694e8dde2
+    us-west-2: 
+      AMIID: ami-0a7f9ce0459523133
+Resources:
+  VPC: 
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.192.0.0/16
+      Tags: 
+        - Key: Name 
+          Value: !Ref EnvironmentName
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+  AttackerPublicSubnet1: 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: 10.192.30.0/24
+      MapPublicIpOnLaunch: true
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} Attacker Public Subnet (AZ1)
+  PublicSubnet1: 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: 10.192.10.0/24
+      MapPublicIpOnLaunch: true
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} webCarter Public Subnet (AZ1)
+  PublicSubnet2: 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: 10.192.11.0/24
+      MapPublicIpOnLaunch: true
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} webCarter Public Subnet (AZ2)
+  PrivateSubnet1: 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: 10.192.20.0/28
+      MapPublicIpOnLaunch: false
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} webCarter Private Subnet (AZ1)
+  PrivateSubnet2: 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: 10.192.21.0/28
+      MapPublicIpOnLaunch: false
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} webCarter Private Subnet (AZ2)
+  DatabaseSubnet1: 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: 10.192.20.128/28
+      MapPublicIpOnLaunch: false
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} webCarter Database Subnet (AZ1)
+  DatabaseSubnet2: 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: 10.192.21.128/28
+      MapPublicIpOnLaunch: false
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} webCarter Database Subnet (AZ2)
+  NatGateway1EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties: 
+      Domain: vpc
+  NatGateway2EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+  NatGateway1: 
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt NatGateway1EIP.AllocationId
+      SubnetId: !Ref PublicSubnet1
+  NatGateway2: 
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGateway2EIP.AllocationId
+      SubnetId: !Ref PublicSubnet2
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      VpcId: !Ref VPC
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} Public Routes
+  DefaultPublicRoute: 
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties: 
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  webCarterPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+  AttackerPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref AttackerPublicSubnet1
+  webCarterPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet2
+  
+  webCarterNetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    Properties: 
+      VpcId: !Ref VPC
+
+  DefaultAllowIngress:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties: 
+      CidrBlock: 0.0.0.0/0
+      Egress: false
+      NetworkAclId: !Ref webCarterNetworkAcl
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 999
+
+  DefaultAllowEgress:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties: 
+      CidrBlock: 0.0.0.0/0
+      Egress: true
+      NetworkAclId: !Ref webCarterNetworkAcl
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 999
+
+  webCarterDenyAttackerIngress:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties: 
+      CidrBlock: 10.192.30.0/24
+      Egress: false
+      NetworkAclId: !Ref webCarterNetworkAcl
+      Protocol: -1
+      RuleAction: "deny"
+      RuleNumber: 100
+
+  webCarterDenyAttackerEgress:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties: 
+      CidrBlock: 10.192.30.0/24
+      Egress: true
+      NetworkAclId: !Ref webCarterNetworkAcl
+      Protocol: -1
+      RuleAction: deny
+      RuleNumber: 100
+
+  webCarterPrivSubnet1BlockAttackIn:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DependsOn: webCarterDenyAttackerIngress
+    Properties: 
+      NetworkAclId: !Ref webCarterNetworkAcl
+      SubnetId: !Ref PrivateSubnet1
+  
+  webCarterPrivSubnet2BlockAttackIn:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties: 
+      NetworkAclId: !Ref webCarterNetworkAcl
+      SubnetId: !Ref PrivateSubnet2
+  
+  DatabaseSubnet1BlockAttackIn:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DependsOn: webCarterDenyAttackerIngress
+    Properties: 
+      NetworkAclId: !Ref webCarterNetworkAcl
+      SubnetId: !Ref DatabaseSubnet1
+  
+  DatabaseSubnet2BlockAttackIn:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties: 
+      NetworkAclId: !Ref webCarterNetworkAcl
+      SubnetId: !Ref DatabaseSubnet2
+  
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      VpcId: !Ref VPC
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} Private Routes (AZ1)
+  DefaultPrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: !Ref PrivateSubnet1
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      VpcId: !Ref VPC
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} Private Routes (AZ2)
+  DefaultPrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      SubnetId: !Ref PrivateSubnet2
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ALB Security Group
+      VpcId: !Ref 'VPC'
+  ALBSecurityGroupOutbound:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref 'ALBSecurityGroup'
+      IpProtocol: tcp
+      FromPort: '80'
+      ToPort: '80'
+      DestinationSecurityGroupId: !Ref webCarterSecurityGroup
+  ALBSecurityGroupHTTPInbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'ALBSecurityGroup'
+      IpProtocol: tcp
+      FromPort: '80'
+      ToPort: '80'
+      CidrIp: 0.0.0.0/0
+
+  DatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Database Security Group
+      VpcId: !Ref 'VPC'
+  webCarterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: webCarter Security Group
+      VpcId: !Ref 'VPC'
+  AttackerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Attacker Security Group
+      VpcId: !Ref 'VPC'
+  AttackerSecurityGroupSSHinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'AttackerSecurityGroup'
+      IpProtocol: tcp
+      FromPort: '3389'
+      ToPort: '3389'
+      CidrIp: !Sub ${MyIP}
+  webCarterSecurityGroupSSHinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'webCarterSecurityGroup'
+      IpProtocol: tcp
+      FromPort: '22'
+      ToPort: '22'
+      CidrIp: 0.0.0.0/0
+  webCarterSecurityGroupALBInbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'webCarterSecurityGroup'
+      IpProtocol: tcp
+      FromPort: '80'
+      ToPort: '80'
+      SourceSecurityGroupId: !Ref ALBSecurityGroup
+
+  DatabaseSecurityGroupwebCarterInbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'DatabaseSecurityGroup'
+      IpProtocol: tcp
+      FromPort: '3306'
+      ToPort: '3306'
+      SourceSecurityGroupId: !Ref webCarterSecurityGroup
+  webCarterALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn: webCarterALBAccessLogBucketPolicy
+    Properties:
+      Scheme: internal
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '30'
+      - Key: 'access_logs.s3.enabled'
+        Value: 'true'
+      - Key: 'access_logs.s3.bucket'
+        Value: !Ref webCarterALBAccessLogBucket
+      Subnets: [!Ref 'PublicSubnet1', !Ref 'PublicSubnet2']
+      SecurityGroups: [!Ref 'ALBSecurityGroup']
+  SSMSendCmdRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ec2.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+      - PolicyName: ssm-send-cmd
+        PolicyDocument: 
+          Statement:
+          - Effect: Allow
+            Action: 'ssm:SendCommand'
+            Resource: '*'
+  ECSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ecs.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+      - PolicyName: ecs-service
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action: ['elasticloadbalancing:DeregisterInstancesFromLoadBalancer', 'elasticloadbalancing:DeregisterTargets',
+              'elasticloadbalancing:Describe*', 'elasticloadbalancing:RegisterInstancesWithLoadBalancer',
+              'elasticloadbalancing:RegisterTargets', 'ec2:Describe*', 'ec2:AuthorizeSecurityGroupIngress']
+            Resource: '*'
+  webCarterALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn: ECSServiceRole
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn: !Ref 'webCarterTG'
+      LoadBalancerArn: !Ref 'webCarterALB'
+      Port: '80'
+      Protocol: HTTP
+  webCarterTG:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn: webCarterALB
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      Matcher:
+        HttpCode: 200,302
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref 'VPC'
+  webCarterALBListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    DependsOn: webCarterALBListener
+    Properties:
+      Actions:
+      - Type: forward
+        TargetGroupArn: !Ref 'webCarterTG'
+      Conditions:
+      - Field: path-pattern
+        Values: [/]
+      ListenerArn: !Ref 'webCarterALBListener'
+      Priority: 1
+  webCarterAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    DependsOn: [PrivateSubnet1RouteTableAssociation, PrivateSubnet2RouteTableAssociation, InitInstance]
+    Properties:
+      VPCZoneIdentifier: [!Ref 'PrivateSubnet1', !Ref 'PrivateSubnet2']
+      HealthCheckGracePeriod: 300
+      LaunchConfigurationName: !Ref 'ContainerInstances'
+      MinSize: '1'
+      MaxSize: !Ref 'MaxSize'
+      DesiredCapacity: !Ref 'DesiredCapacity'
+      TargetGroupARNs: [ !Ref webCarterTG ]
+      Tags:
+      - Key: Name
+        PropagateAtLaunch: true
+        Value: webCarter
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT15M
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: 'true'
+  webCarterALBAccessLogBucket:
+    Type: AWS::S3::Bucket
+  webCarterALBAccessLogBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref webCarterALBAccessLogBucket
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Join 
+            - ''
+            - - 'arn:aws:iam::'
+              - !FindInMap [LBPrincipal, !Ref 'AWS::Region', principal]
+              - ':root'
+          Action: s3:PutObject
+          Resource: !Sub arn:aws:s3:::${webCarterALBAccessLogBucket}/AWSLogs/${AWS::AccountId}/*
+
+      
+  EC2SSMRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - 
+            Effect: 'Allow'
+            Principal:
+              Service: 'ec2.amazonaws.com'
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+      -  arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      -  arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess
+      Policies:
+        -
+          PolicyName: "root"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action: 
+                  - "athena:GetNamedQuery"
+                  - "atherna:ListNamedQueries"
+                Resource: "*"
+  SSMSendCmdInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: "/"
+      Roles:
+        - 
+          Ref: SSMSendCmdRole
+
+  EC2SSMInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: "/"
+      Roles:
+        - 
+          Ref: EC2SSMRole
+  InitInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: [ MyDB, PrivateSubnet1RouteTableAssociation, AttackerInstance, SetSecIp]
+    CreationPolicy:
+      ResourceSignal:    
+        Count: 1
+        Timeout: PT10M
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            /tmp/init-db.mysql:
+              content: !Sub |
+                create database webCarter;
+                GRANT ALL on webCarter.* to ${DBAdmin}@'localhost' IDENTIFIED by '${DBPassword}';
+                GRANT ALL on webCarter.* to ${DBAdmin}@'%' IDENTIFIED by '${DBPassword}';
+              mode: "000600"
+              owner: root
+              group: "root"
+            /tmp/mysql-master.cnf:
+              content: !Sub |
+                [mysql]
+                user=${RdsAdminUsername}
+                password=${RdsAdminPassword}
+              mode: "000600"
+              owner: root
+              group: "root"
+            /tmp/mysql-webCarter.cnf:
+              content: !Sub |
+                [mysql]
+                user=${DBAdmin}
+                password=${DBPassword}
+              mode: "000600"
+              owner: root
+              group: "root"
+    Properties: 
+      ImageId: !FindInMap [AWSRegionToALAMI, !Ref 'AWS::Region', AMIID]
+      InstanceType: !Ref 'InstanceType'
+      IamInstanceProfile: !Ref 'SSMSendCmdInstanceProfile'
+      KeyName: !Ref KeyName
+      Monitoring: true
+      SecurityGroupIds: [!Ref 'webCarterSecurityGroup']
+      SubnetId: !Ref PrivateSubnet1
+      Tags: 
+      - Key: "Name"
+        Value: "WAFLABDBInit"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum -y update
+          yum -y install mysql
+          trap '/opt/aws/bin/cfn-signal --exit-code 1 --resource InitInstance --region ${AWS::Region} --stack ${AWS::StackName}' ERR
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource InitInstance --region ${AWS::Region}
+          curl -o hackazon.zip https://sdd311.s3.amazonaws.com/hackazon.zip
+          unzip -qq hackazon.zip
+          mysql --defaults-extra-file=/tmp/mysql-master.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} < /tmp/init-db.mysql
+          mysql --defaults-extra-file=/tmp/mysql-webCarter.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} --database webCarter < hackazon/database/db.sql
+          mysql --defaults-extra-file=/tmp/mysql-webCarter.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} --database webCarter < hackazon/database/migrations/2014.09.18_1_product_opt_variants.sql
+          mysql --defaults-extra-file=/tmp/mysql-webCarter.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} --database webCarter < hackazon/database/migrations/2014.10.10_1_coupons.sql
+          mysql --defaults-extra-file=/tmp/mysql-webCarter.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} --database webCarter < hackazon/database/migrations/2014.11.07_1_credit_card.sql
+          mysql --defaults-extra-file=/tmp/mysql-webCarter.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} --database webCarter --force < hackazon/database/demo_database.sql
+          mysql --defaults-extra-file=/tmp/mysql-webCarter.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} --database webCarter --force < hackazon/database/demo_database.sql
+          aws --region ${AWS::Region} ssm send-command --instance-ids "${AttackerInstance}" --document-name "${SetSecIp}" --output text
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource InitInstance --region ${AWS::Region}
+          shutdown -h now
+  AttackerInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: AttackerPublicSubnet1RouteTableAssociation
+    CreationPolicy:
+      ResourceSignal:    
+        Count: 1
+        Timeout: PT15M
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            c:\cfn\cfn-hup.conf:
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+            c:\installs\amazon-corretto-11.0.3.7.1-1-windows-x64.msi:
+              source: "https://sdd311.s3.amazonaws.com/amazon-corretto-11.0.3.7.1-1-windows-x64.msi"
+            c:\installs\httrack_x64-3.49.2.exe:
+              source: "https://sdd311.s3.amazonaws.com/httrack_x64-3.49.2.exe"
+            c:\installs\apache-jmeter-5.1.1.zip:
+              source: "https://sdd311.s3.amazonaws.com/apache-jmeter-5.1.1.zip"
+            c:\installs\AWSCLI64PY3.msi:
+              source: "https://sdd311.s3.amazonaws.com/AWSCLI64PY3.msi"
+            c:\installs\httpd-2.4.39-o102s-x64-vc14.zip:
+              source: "https://sdd311.s3.amazonaws.com/httpd-2.4.39-o102s-x64-vc14.zip"
+            c:\installs\vc_redist.x64.exe:
+              source: "https://sdd311.s3.amazonaws.com/vc_redist.x64.exe"
+            c:\installs\ChromeStandaloneSetup64.exe:
+              source: "https://sdd311.s3.amazonaws.com/ChromeStandaloneSetup64.exe"
+            c:\webCarter.jmx:
+              source: "https://sdd311.s3.amazonaws.com/Hakazon1.jmx"
+            c:\JmeterScenarios-template.jmx:
+              source: "https://sdd311.s3.amazonaws.com/JmeterScenarios.jmx"
+            c:\kibana_config.json:
+              source: "https://sdd311.s3.amazonaws.com/kibana_config.json"
+            c:\passwds.csv:
+              source: "https://sdd311.s3.amazonaws.com/passwds.csv"
+            c:\paths.csv:
+              source: "https://sdd311.s3.amazonaws.com/paths.csv"
+            c:\users.csv:
+              source: "https://sdd311.s3.amazonaws.com/users.csv"
+            c:\IP.csv:
+              content: !Sub |
+                10.192.30.50
+                10.192.30.51
+                10.192.30.52
+                10.192.30.53
+                10.192.30.54
+                10.192.30.55
+                10.192.30.56
+                10.192.30.57
+                10.192.30.58
+                10.192.30.50
+    Properties: 
+      ImageId: !FindInMap [AWSRegionToWindowsAMI, !Ref 'AWS::Region', AMIID]
+      InstanceType: !Ref 'AttackerInstanceType'
+      IamInstanceProfile: !Ref 'EC2SSMInstanceProfile'
+      KeyName: !Ref KeyName
+      Monitoring: true
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeleteOnTermination: true
+          PrivateIpAddress: 10.192.30.50
+          PrivateIpAddresses:
+            - Primary: false
+              PrivateIpAddress: 10.192.30.51
+            - Primary: false
+              PrivateIpAddress: 10.192.30.52
+            - Primary: false
+              PrivateIpAddress: 10.192.30.53
+            - Primary: false
+              PrivateIpAddress: 10.192.30.54
+            - Primary: false
+              PrivateIpAddress: 10.192.30.55
+            - Primary: false
+              PrivateIpAddress: 10.192.30.56
+            - Primary: false
+              PrivateIpAddress: 10.192.30.57
+            - Primary: false
+              PrivateIpAddress: 10.192.30.58
+            - Primary: false
+              PrivateIpAddress: 10.192.30.59
+          SubnetId: !Ref AttackerPublicSubnet1
+          GroupSet:
+            - !Ref AttackerSecurityGroup
+          DeviceIndex: 0
+      Tags: 
+      - Key: "Name"
+        Value: "Attacker"
+      UserData:
+        Fn::Base64: !Sub |
+          <script>
+          cfn-init.exe -v -s ${AWS::StackId} -r AttackerInstance --region ${AWS::Region}
+          msiexec /passive /qn /i c:\installs\AWSCLI64PY3.msi
+          c:\installs\ChromeStandaloneSetup64.exe /silent /install
+          c:\installs\amazon-corretto-11.0.3.7.1-1-windows-x64.msi /qn /L* "%temp%\Amazon Corretto 11.0.2.9.log" /norestart ALLUSERS=2
+          c:\installs\httrack_x64-3.49.2.exe /VERYSILENT /NORESTART
+          powershell.exe -NoP -NonI -Command "Expand-Archive 'c:\installs\apache-jmeter-5.1.1.zip' 'c:\Program Files'"
+          powershell.exe -NoP -NonI -Command "Expand-Archive 'c:\installs\httpd-2.4.39-o102s-x64-vc14.zip' 'c:\'"
+          c:\installs\vc_redist.x64.exe /q
+          "c:\Apache24\bin\httpd.exe" -k install -n "Apache HTTP Server"
+          net start "Apache HTTP Server"
+          mklink c:\Users\Administrator\Desktop\jmeter.lnk "c:\Program Files\apache-jmeter-5.1.1\bin\jmeter.bat"
+          powershell.exe -Command "(gc c:\JmeterScenarios-template.jmx -Encoding UTF8) -replace '<!--ALB-HERE-->', '${webCarterALB.DNSName}' | Out-File c:\JmeterScenarios.jmx" -Encoding UTF8
+          reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v MaxUserPort /t REG_DWORD /d 65534 /f
+          cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource AttackerInstance --region ${AWS::Region}
+          </script>
+  SetSecIp:
+    Type: 'AWS::SSM::Document'
+    Properties:
+      DocumentType: Command
+      Content:
+        schemaVersion: "2.2"
+        description: "Add secondary IP addresses"
+        mainSteps:
+        - action: "aws:runPowerShellScript"
+          name: "addIps"
+          inputs:
+            runCommand:
+            - "$interface = Get-NetAdapter | Select-Object -ExpandProperty Name -First 1"
+            - "netsh interface ip set address $interface static 10.192.30.50 255.255.255.0 10.192.30.1"
+            - "netsh interface ipv4 add dns $interface 10.192.0.2"
+            - "FOR ($i=51; $i -lt 60; $i++) { netsh interface ipv4 add address $interface 10.192.30.$i 255.255.255.0}"
+            - "shutdown /r"
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: webCarter DB subnet group
+      SubnetIds: 
+        - !Ref DatabaseSubnet1
+        - !Ref DatabaseSubnet2
+  MyDB:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      VPCSecurityGroups:
+      - Ref: DatabaseSecurityGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      AllocatedStorage: '5'
+      DBInstanceClass: !Ref DBInstanceType
+      Port: 3306
+      Engine: MySQL
+      BackupRetentionPeriod: 0
+      MasterUsername: !Ref RdsAdminUsername
+      MasterUserPassword: !Ref RdsAdminPassword
+  
+  ContainerInstances:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            /var/www/hackazon/assets/config/db.php:
+              content: !Sub |
+                <?php
+                return array (
+                  'default' => 
+                  array (
+                    'user' => '${DBAdmin}',
+                    'password' => '${DBPassword}',
+                    'db' => 'webCarter',
+                    'host' => '${MyDB.Endpoint.Address}',
+                    'port' => '${MyDB.Endpoint.Port}',
+                    'driver' => 'PDOV',
+                    'connection' => 'mysql:host=${MyDB.Endpoint.Address};port=${MyDB.Endpoint.Port};dbname=webCarter',
+                  ),
+                );
+              mode: "000600"
+              owner: root
+              group: "root"
+            /var/www/hackazon/assets/config/email.php:
+              content: !Sub |
+                <?php
+                return array (
+                  'default' => 
+                  array (
+                    'type' => 'sendmail',
+                    'sendmail_command' => NULL,
+                    'mail_parameters' => NULL,
+                    'hostname' => 'localhost',
+                    'port' => '25',
+                    'username' => NULL,
+                    'password' => NULL,
+                    'encryption' => NULL,
+                    'timeout' => NULL,
+                  ),
+                );
+              mode: "000600"
+              owner: root
+              group: "root"
+            /var/www/hackazon/assets/config/parameters.php:
+              content: !Sub |
+                <?php
+                return array (
+                  'host' => 'http://${webCarterALB.DNSName}',
+                  'display_errors' => true,
+                  'use_perl_upload' => false,
+                  'use_external_dir' => false,
+                  'user_pictures_external_dir' => '/lib/init/rw',
+                  'user_pictures_path' => '/web/user_pictures/',
+                  'common_path' => '/var/www/hackazon/assets/views/common/',
+                  'annotation_length' => 900,
+                  'rest_in_profile' => false,
+                  'profile_rest_data_type' => 'xml',
+                  'test_user' => 
+                  array (
+                    'username' => '${webCarterTestUsername}',
+                    'password' => '${webCarterTestPassword}',
+                  ),
+                  'installer_password' => '${webCarterInstallerPassword}',
+                );
+              mode: "000600"
+              owner: root
+              group: "root"
+    Properties:
+      ImageId: !FindInMap [AWSRegionToAMI, !Ref 'AWS::Region', AMIID]
+      SecurityGroups: [!Ref 'webCarterSecurityGroup']
+      InstanceType: !Ref 'InstanceType'
+      IamInstanceProfile: !Ref 'EC2SSMInstanceProfile'
+      KeyName: !Ref 'KeyName'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          export DEBIAN_FRONTEND=noninteractive
+          ## update all repos
+          apt-get -qq update
+
+          ## install cfn-bootstrap
+          mkdir -p /opt/aws/bin
+          wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+          apt-get -qq -y install python-pip
+          pip install -U setuptools
+          easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-latest.tar.gz
+          trap '/opt/aws/bin/cfn-signal --exit-code 1 --resource webCarterAutoScalingGroup --region ${AWS::Region} --stack ${AWS::StackName}' ERR
+
+          ## add extra repo for PHP
+          add-apt-repository -y ppa:ondrej/php
+          apt-get -qq update
+          apt-get -qq -y install apache2 zip
+
+          ## install webCarter
+          cd /var/www
+          curl -o hackazon.zip https://sdd311.s3.amazonaws.com/hackazon.zip
+          curl -o hackazon-config.zip https://sdd311.s3.amazonaws.com/hackazon-configs-20190609.zip
+          unzip -qq hackazon.zip
+          unzip -qq -u hackazon-config.zip
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource ContainerInstances --region ${AWS::Region}
+          chmod -R a+rwX /var/www/hackazon/assets/config/
+          chmod -R a+rwX /var/www/hackazon/web/upload/
+          apt-get -qq -y install mysql-server
+          apt-get -qq -y install php5.6 libapache2-mod-php5.6
+          apt-get -qq -y install php5.6-gd php5.6-mysql
+          apt-get -qq -y install php5.6-bcmath
+          apt-get -qq -y install php5.6-mbstring
+          curl -o /etc/apache2/sites-available/hackazon.lc.conf https://s3.amazonaws.com/sdd311/hackazon.lc.conf
+          a2ensite hackazon.lc.conf
+          a2dissite 000-default
+          a2enmod rewrite
+          service apache2 restart
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource webCarterAutoScalingGroup --region ${AWS::Region}
+Outputs: 
+    VPC: 
+        Description: A reference to the created VPC
+        Value: !Ref VPC
+    webCarterALB:
+        Description: Where your webCarter can be reached
+        Value: !Sub ${webCarterALB.DNSName}
+    webCarterALBSite:
+        Description: Where your webCarter can be reached
+        Value: !Sub http://${webCarterALB.DNSName}
+    abLoadTestCommand:
+        Description: Command to flood test ALB endpoint
+        Value: !Sub 'C:\Apache24\bin\ab -n 100 -l -H "User-Agent: bad-bot" http://${webCarterALB.DNSName}/'
+    AttackerInstance:
+        Description: Your attack simulation instance
+        Value: !Sub ${AttackerInstance.PublicIp}
+    webCarterALBAccessLogBucket:
+        Description: The ALB access log bucket
+        Value: !Ref webCarterALBAccessLogBucket
+    
