@@ -100,7 +100,7 @@ and the dashboards.
 
 ![](.//media/image5.png)
 
-6.  Enter a new S3 bucket to collect access logs for WAF
+6.  Enter the S3 bucket name saved in the Web Carter and Attaker stack's output (webCarterALBAccessLogBucket):
 
 ![](.//media/image6.png)
 
