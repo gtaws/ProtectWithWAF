@@ -43,7 +43,7 @@ Web Carter & Attacker workstation setup
 
 ![](.//media/image14.png)
 
-6.  Enter passwords for the following credentials:
+6.  Enter passwords for the following credentials. Passwords should be at least 8 characters long:
 
     d.  RDS instance master password
 
