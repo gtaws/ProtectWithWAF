@@ -777,7 +777,7 @@ Resources:
               group: "root"
     Properties:
       ImageId: !FindInMap [AWSRegionToALAMI, !Ref 'AWS::Region', AMIID]
-      InstanceType: !Ref 'InstanceType'
+      InstanceType: t3.micro
       IamInstanceProfile: !Ref 'SSMSendCmdInstanceProfile'
       KeyName: !Ref KeyName
       Monitoring: true
