@@ -35,15 +35,16 @@ above.
 4.  Right click on the page and choose "Inspect". Chrome Developer Tools
     will open.
 
-5.  Go to Network tab. Click on the green bar field.
-![](.//media/chromenetwork.png)
-
+5.  Go to Network tab. 
 
 6.  Type ```<script>alert(document.cookie)</script>``` in the "Search"
     text field in the WebCarter site and click "Search!"
 
-7.  Select the "search?id..." request in the Network tab and navigate to
-    Response sub tab on the right. Use CTRL-F combination to search for
+7.  In Chrome Developer tools select the "search?id..." request in the Network tab and navigate to
+    Response sub tab on the right. 
+    If you do not see "search?id.." then Click on the green bar field.
+![](.//media/chromenetwork.png)
+    Use CTRL-F combination to search for
     "alert" in the response. As far as you can see, server returned your
     input above without validating it:
 
