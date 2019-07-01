@@ -35,10 +35,9 @@ above.
 4.  Right click on the page and choose "Inspect". Chrome Developer Tools
     will open.
 
-5.  Go to Network tab. 
+5.  In Chrome Developer Tools go to Network tab. 
 
-6.  Type ```<script>alert(document.cookie)</script>``` in the "Search"
-    text field in the WebCarter site and click "Search!"
+6. In the browser window on the WebCarter site type ```<script>alert(document.cookie)</script>``` in the "Search" text field and click "Search!"
 
 7.  In Chrome Developer tools select the "search?id..." request in the Network tab and navigate to
     Response sub tab on the right. 
