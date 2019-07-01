@@ -1,4 +1,4 @@
-Description: 
+Description:
   (SDD311-webCarter) This template setups a single webCarter deployment behind an Application Load Balancer for attack testing, and an
   EC2 Windows instance for simulating attacks.
 
@@ -14,8 +14,8 @@ Description:
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      - 
-        Label: 
+      -
+        Label:
           default: Environment Configuration
         Parameters:
           - EnvironmentName
@@ -27,7 +27,7 @@ Metadata:
           - AttackerInstanceType
           - DBInstanceType
       -
-        Label: 
+        Label:
           default: Credentials
         Parameters:
           - DBAdmin
@@ -39,7 +39,8 @@ Metadata:
           - webCarterInstallerPassword
 Parameters:
   EnvironmentName:
-    Description: An environment name that will be prefixed to resource names
+    Description: An environment name that will be prefixed to resource names (DEV, TEST, PROD)
+    Default: 'DEV'
     Type: String
   KeyName:
     Type: AWS::EC2::KeyPair::KeyName
@@ -56,7 +57,7 @@ Parameters:
   DBPassword:
     Type: String
     NoEcho: true
-    Description: The admin password for the webCarter MySQL database
+    Description: The admin password for the webCarter MySQL database. Passwords should be at least 8 characters long.
   RdsAdminUsername:
     Type: String
     Default: 'master'
@@ -64,7 +65,7 @@ Parameters:
   RdsAdminPassword:
     Type: String
     NoEcho: true
-    Description: The admin password for the RDS MySQL instance
+    Description: The admin password for the RDS MySQL instance. Passwords should be at least 8 characters long.
   webCarterTestUsername:
     Type: String
     Default: 'webCarterTest'
@@ -72,11 +73,11 @@ Parameters:
   webCarterTestPassword:
     Type: String
     NoEcho: true
-    Description: The webCarter test user password
+    Description: The webCarter test user password. Passwords should be at least 8 characters long.
   webCarterInstallerPassword:
     Type: String
     NoEcho: true
-    Description: The webCarter installer password
+    Description: The webCarter installer password. Passwords should be at least 8 characters long.
   DesiredCapacity:
     Type: Number
     Default: '1'
@@ -91,8 +92,8 @@ Parameters:
     Default: c5.large
     AllowedValues: [t3.micro, t3.small, t3.medium, t3.large, t3.xlarge, m5.large,
       m5.xlarge, m5.2xlarge, m5.4xlarge, m5.12xlarge,
-      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge, c5.18xlarge, 
-      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r5.12xlarge, 
+      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge, c5.18xlarge,
+      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r5.12xlarge,
       i3.xlarge, i3.2xlarge, i3.4xlarge, i3.8xlarge]
     ConstraintDescription: Please choose a valid instance type.
   DBInstanceType:
@@ -106,10 +107,10 @@ Parameters:
     Description: EC2 instance type
     Type: String
     Default: t3.xlarge
-    AllowedValues: [t3.micro, t3.small, t3.medium, t3.large, t3.xlarge, m5.large,
+    AllowedValues: [t3.large, t3.xlarge, m5.large,
       m5.xlarge, m5.2xlarge, m5.4xlarge, m5.12xlarge,
-      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge, c5.18xlarge, 
-      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r5.12xlarge, 
+      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge, c5.18xlarge,
+      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r5.12xlarge,
       i3.xlarge, i3.2xlarge, i3.4xlarge, i3.8xlarge]
     ConstraintDescription: Please choose a valid instance type.
 Mappings:
@@ -155,113 +156,113 @@ Mappings:
       AMIID: ami-0a313d6098716f372
     eu-north-1:
       AMIID: ami-5e9c1520
-    ap-south-1: 
+    ap-south-1:
       AMIID: ami-007d5db58754fa284
-    eu-west-3: 
+    eu-west-3:
       AMIID: ami-03bca18cb3dc173c9
-    eu-west-2: 
+    eu-west-2:
       AMIID: ami-07dc734dc14746eab
-    eu-west-1: 
+    eu-west-1:
       AMIID: ami-08d658f84a6d84a80
-    ap-northeast-3: 
+    ap-northeast-3:
       AMIID: ami-0babd61cf592f1c03
-    ap-northeast-2: 
+    ap-northeast-2:
       AMIID: ami-078e96948945fc2c9
-    ap-northeast-1: 
+    ap-northeast-1:
       AMIID: ami-0eb48a19a8d81e20b
-    sa-east-1: 
+    sa-east-1:
       AMIID: ami-09f4cd7c0b533b081
-    ca-central-1: 
+    ca-central-1:
       AMIID: ami-01b60a3259250381b
-    ap-southeast-1: 
+    ap-southeast-1:
       AMIID: ami-0dad20bd1b9c8c004
-    ap-southeast-2: 
+    ap-southeast-2:
       AMIID: ami-0b76c3b150c6b1423
-    eu-central-1: 
+    eu-central-1:
       AMIID: ami-090f10efc254eaf55
-    us-east-2: 
+    us-east-2:
       AMIID: ami-0c55b159cbfafe1f0
-    us-west-1: 
+    us-west-1:
       AMIID: ami-06397100adf427136
-    us-west-2: 
+    us-west-2:
       AMIID: ami-005bdb005fb00e791
   AWSRegionToALAMI:
     us-east-1:
       AMIID: ami-0c6b1d09930fac512
-    eu-north-1: 
+    eu-north-1:
       AMIID: ami-1fb13961
-    ap-south-1: 
+    ap-south-1:
       AMIID: ami-00e782930f1c3dbc7
-    eu-west-3: 
+    eu-west-3:
       AMIID: ami-0ebb3a801d5fb8b9b
-    eu-west-2: 
+    eu-west-2:
       AMIID: ami-0009a33f033d8b7b6
-    eu-west-1: 
+    eu-west-1:
       AMIID: ami-030dbca661d402413
-    ap-northeast-3: 
+    ap-northeast-3:
       AMIID: ami-018aec30b63a5a9aa
-    ap-northeast-2: 
+    ap-northeast-2:
       AMIID: ami-08ab3f7e72215fe91
-    ap-northeast-1: 
+    ap-northeast-1:
       AMIID: ami-00d101850e971728d
-    sa-east-1: 
+    sa-east-1:
       AMIID: ami-058141e091292ecf0
-    ca-central-1: 
+    ca-central-1:
       AMIID: ami-08a9b721ecc5b0a53
-    ap-southeast-1: 
+    ap-southeast-1:
       AMIID: ami-0b5a47f8865280111
-    ap-southeast-2: 
+    ap-southeast-2:
       AMIID: ami-0fb7513bcdc525c3b
-    eu-central-1: 
+    eu-central-1:
       AMIID: ami-0ebe657bc328d4e82
-    us-east-2: 
+    us-east-2:
       AMIID: ami-0ebbf2179e615c338
-    us-west-1: 
+    us-west-1:
       AMIID: ami-015954d5e5548d13b
-    us-west-2: 
-      AMIID: ami-0cb72367e98845d43     
+    us-west-2:
+      AMIID: ami-0cb72367e98845d43
   AWSRegionToWindowsAMI:
     us-east-1:
       AMIID: ami-0a9ca0496f746e6e0
-    eu-north-1: 
+    eu-north-1:
       AMIID: ami-0c8f5da45a93c8ea1
-    ap-south-1: 
+    ap-south-1:
       AMIID: ami-0e719217acb64308e
-    eu-west-3: 
+    eu-west-3:
       AMIID: ami-022cfeccb4b72d6b8
-    eu-west-2: 
+    eu-west-2:
       AMIID: ami-0ebf422d2a92724ec
-    eu-west-1: 
+    eu-west-1:
       AMIID: ami-03838ccd5cfb84782
-    ap-northeast-3: 
+    ap-northeast-3:
       AMIID: ami-0fe4dd6dce0a6f36c
-    ap-northeast-2: 
+    ap-northeast-2:
       AMIID: ami-0708a3b845edea89c
-    ap-northeast-1: 
+    ap-northeast-1:
       AMIID: ami-02192102f14f0a10a
-    sa-east-1: 
+    sa-east-1:
       AMIID: ami-07df12f3c5005cd1f
-    ca-central-1: 
+    ca-central-1:
       AMIID: ami-020e569ea1f3a4e1c
-    ap-southeast-1: 
+    ap-southeast-1:
       AMIID: ami-0afce41e503676765
-    ap-southeast-2: 
+    ap-southeast-2:
       AMIID: ami-0628ef1f10e34307d
-    eu-central-1: 
+    eu-central-1:
       AMIID: ami-018c2bcdc530c0630
-    us-east-2: 
+    us-east-2:
       AMIID: ami-0087a83ed4a60d1e9
-    us-west-1: 
+    us-west-1:
       AMIID: ami-004a782f694e8dde2
-    us-west-2: 
+    us-west-2:
       AMIID: ami-0a7f9ce0459523133
 Resources:
-  VPC: 
+  VPC:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.192.0.0/16
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Ref EnvironmentName
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -274,107 +275,107 @@ Resources:
     Properties:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref VPC
-  AttackerPublicSubnet1: 
+  AttackerPublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: 10.192.30.0/24
       MapPublicIpOnLaunch: true
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} Attacker Public Subnet (AZ1)
-  PublicSubnet1: 
+  PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: 10.192.10.0/24
       MapPublicIpOnLaunch: true
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} webCarter Public Subnet (AZ1)
-  PublicSubnet2: 
+  PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: 10.192.11.0/24
       MapPublicIpOnLaunch: true
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} webCarter Public Subnet (AZ2)
-  PrivateSubnet1: 
+  PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: 10.192.20.0/28
       MapPublicIpOnLaunch: false
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} webCarter Private Subnet (AZ1)
-  PrivateSubnet2: 
+  PrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: 10.192.21.0/28
       MapPublicIpOnLaunch: false
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} webCarter Private Subnet (AZ2)
-  DatabaseSubnet1: 
+  DatabaseSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: 10.192.20.128/28
       MapPublicIpOnLaunch: false
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} webCarter Database Subnet (AZ1)
-  DatabaseSubnet2: 
+  DatabaseSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: 10.192.21.128/28
       MapPublicIpOnLaunch: false
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} webCarter Database Subnet (AZ2)
   NatGateway1EIP:
     Type: AWS::EC2::EIP
     DependsOn: InternetGatewayAttachment
-    Properties: 
+    Properties:
       Domain: vpc
   NatGateway2EIP:
     Type: AWS::EC2::EIP
     DependsOn: InternetGatewayAttachment
     Properties:
       Domain: vpc
-  NatGateway1: 
+  NatGateway1:
     Type: AWS::EC2::NatGateway
-    Properties: 
+    Properties:
       AllocationId: !GetAtt NatGateway1EIP.AllocationId
       SubnetId: !Ref PublicSubnet1
-  NatGateway2: 
+  NatGateway2:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt NatGateway2EIP.AllocationId
       SubnetId: !Ref PublicSubnet2
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
-    Properties: 
+    Properties:
       VpcId: !Ref VPC
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} Public Routes
-  DefaultPublicRoute: 
+  DefaultPublicRoute:
     Type: AWS::EC2::Route
     DependsOn: InternetGatewayAttachment
-    Properties: 
+    Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
@@ -393,15 +394,15 @@ Resources:
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet2
-  
+
   webCarterNetworkAcl:
     Type: AWS::EC2::NetworkAcl
-    Properties: 
+    Properties:
       VpcId: !Ref VPC
 
   DefaultAllowIngress:
     Type: AWS::EC2::NetworkAclEntry
-    Properties: 
+    Properties:
       CidrBlock: 0.0.0.0/0
       Egress: false
       NetworkAclId: !Ref webCarterNetworkAcl
@@ -411,7 +412,7 @@ Resources:
 
   DefaultAllowEgress:
     Type: AWS::EC2::NetworkAclEntry
-    Properties: 
+    Properties:
       CidrBlock: 0.0.0.0/0
       Egress: true
       NetworkAclId: !Ref webCarterNetworkAcl
@@ -421,7 +422,7 @@ Resources:
 
   webCarterDenyAttackerIngress:
     Type: AWS::EC2::NetworkAclEntry
-    Properties: 
+    Properties:
       CidrBlock: 10.192.30.0/24
       Egress: false
       NetworkAclId: !Ref webCarterNetworkAcl
@@ -431,7 +432,7 @@ Resources:
 
   webCarterDenyAttackerEgress:
     Type: AWS::EC2::NetworkAclEntry
-    Properties: 
+    Properties:
       CidrBlock: 10.192.30.0/24
       Egress: true
       NetworkAclId: !Ref webCarterNetworkAcl
@@ -442,35 +443,35 @@ Resources:
   webCarterPrivSubnet1BlockAttackIn:
     Type: AWS::EC2::SubnetNetworkAclAssociation
     DependsOn: webCarterDenyAttackerIngress
-    Properties: 
+    Properties:
       NetworkAclId: !Ref webCarterNetworkAcl
       SubnetId: !Ref PrivateSubnet1
-  
+
   webCarterPrivSubnet2BlockAttackIn:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Properties: 
+    Properties:
       NetworkAclId: !Ref webCarterNetworkAcl
       SubnetId: !Ref PrivateSubnet2
-  
+
   DatabaseSubnet1BlockAttackIn:
     Type: AWS::EC2::SubnetNetworkAclAssociation
     DependsOn: webCarterDenyAttackerIngress
-    Properties: 
+    Properties:
       NetworkAclId: !Ref webCarterNetworkAcl
       SubnetId: !Ref DatabaseSubnet1
-  
+
   DatabaseSubnet2BlockAttackIn:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Properties: 
+    Properties:
       NetworkAclId: !Ref webCarterNetworkAcl
       SubnetId: !Ref DatabaseSubnet2
-  
+
   PrivateRouteTable1:
     Type: AWS::EC2::RouteTable
-    Properties: 
+    Properties:
       VpcId: !Ref VPC
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} Private Routes (AZ1)
   DefaultPrivateRoute1:
     Type: AWS::EC2::Route
@@ -485,10 +486,10 @@ Resources:
       SubnetId: !Ref PrivateSubnet1
   PrivateRouteTable2:
     Type: AWS::EC2::RouteTable
-    Properties: 
+    Properties:
       VpcId: !Ref VPC
-      Tags: 
-        - Key: Name 
+      Tags:
+        - Key: Name
           Value: !Sub ${EnvironmentName} Private Routes (AZ2)
   DefaultPrivateRoute2:
     Type: AWS::EC2::Route
@@ -597,7 +598,7 @@ Resources:
       Path: /
       Policies:
       - PolicyName: ssm-send-cmd
-        PolicyDocument: 
+        PolicyDocument:
           Statement:
           - Effect: Allow
             Action: 'ssm:SendCommand'
@@ -689,7 +690,7 @@ Resources:
         Statement:
         - Effect: Allow
           Principal:
-            AWS: !Join 
+            AWS: !Join
             - ''
             - - 'arn:aws:iam::'
               - !FindInMap [LBPrincipal, !Ref 'AWS::Region', principal]
@@ -697,14 +698,14 @@ Resources:
           Action: s3:PutObject
           Resource: !Sub arn:aws:s3:::${webCarterALBAccessLogBucket}/AWSLogs/${AWS::AccountId}/*
 
-      
+
   EC2SSMRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - 
+          -
             Effect: 'Allow'
             Principal:
               Service: 'ec2.amazonaws.com'
@@ -720,7 +721,7 @@ Resources:
             Statement:
               -
                 Effect: "Allow"
-                Action: 
+                Action:
                   - "athena:GetNamedQuery"
                   - "atherna:ListNamedQueries"
                 Resource: "*"
@@ -729,7 +730,7 @@ Resources:
     Properties:
       Path: "/"
       Roles:
-        - 
+        -
           Ref: SSMSendCmdRole
 
   EC2SSMInstanceProfile:
@@ -737,13 +738,13 @@ Resources:
     Properties:
       Path: "/"
       Roles:
-        - 
+        -
           Ref: EC2SSMRole
   InitInstance:
     Type: AWS::EC2::Instance
     DependsOn: [ MyDB, PrivateSubnet1RouteTableAssociation, AttackerInstance, SetSecIp]
     CreationPolicy:
-      ResourceSignal:    
+      ResourceSignal:
         Count: 1
         Timeout: PT10M
     Metadata:
@@ -774,7 +775,7 @@ Resources:
               mode: "000600"
               owner: root
               group: "root"
-    Properties: 
+    Properties:
       ImageId: !FindInMap [AWSRegionToALAMI, !Ref 'AWS::Region', AMIID]
       InstanceType: !Ref 'InstanceType'
       IamInstanceProfile: !Ref 'SSMSendCmdInstanceProfile'
@@ -782,7 +783,7 @@ Resources:
       Monitoring: true
       SecurityGroupIds: [!Ref 'webCarterSecurityGroup']
       SubnetId: !Ref PrivateSubnet1
-      Tags: 
+      Tags:
       - Key: "Name"
         Value: "WAFLABDBInit"
       UserData:
@@ -808,7 +809,7 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: AttackerPublicSubnet1RouteTableAssociation
     CreationPolicy:
-      ResourceSignal:    
+      ResourceSignal:
         Count: 1
         Timeout: PT15M
     Metadata:
@@ -858,7 +859,7 @@ Resources:
                 10.192.30.57
                 10.192.30.58
                 10.192.30.50
-    Properties: 
+    Properties:
       ImageId: !FindInMap [AWSRegionToWindowsAMI, !Ref 'AWS::Region', AMIID]
       InstanceType: !Ref 'AttackerInstanceType'
       IamInstanceProfile: !Ref 'EC2SSMInstanceProfile'
@@ -891,7 +892,7 @@ Resources:
           GroupSet:
             - !Ref AttackerSecurityGroup
           DeviceIndex: 0
-      Tags: 
+      Tags:
       - Key: "Name"
         Value: "Attacker"
       UserData:
@@ -931,9 +932,9 @@ Resources:
             - "shutdown /r"
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
-    Properties: 
+    Properties:
       DBSubnetGroupDescription: webCarter DB subnet group
-      SubnetIds: 
+      SubnetIds:
         - !Ref DatabaseSubnet1
         - !Ref DatabaseSubnet2
   MyDB:
@@ -950,7 +951,7 @@ Resources:
       BackupRetentionPeriod: 0
       MasterUsername: !Ref RdsAdminUsername
       MasterUserPassword: !Ref RdsAdminPassword
-  
+
   ContainerInstances:
     Type: AWS::AutoScaling::LaunchConfiguration
     Metadata:
@@ -961,7 +962,7 @@ Resources:
               content: !Sub |
                 <?php
                 return array (
-                  'default' => 
+                  'default' =>
                   array (
                     'user' => '${DBAdmin}',
                     'password' => '${DBPassword}',
@@ -979,7 +980,7 @@ Resources:
               content: !Sub |
                 <?php
                 return array (
-                  'default' => 
+                  'default' =>
                   array (
                     'type' => 'sendmail',
                     'sendmail_command' => NULL,
@@ -1009,7 +1010,7 @@ Resources:
                   'annotation_length' => 900,
                   'rest_in_profile' => false,
                   'profile_rest_data_type' => 'xml',
-                  'test_user' => 
+                  'test_user' =>
                   array (
                     'username' => '${webCarterTestUsername}',
                     'password' => '${webCarterTestPassword}',
@@ -1065,8 +1066,8 @@ Resources:
           a2enmod rewrite
           service apache2 restart
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource webCarterAutoScalingGroup --region ${AWS::Region}
-Outputs: 
-    VPC: 
+Outputs:
+    VPC:
         Description: A reference to the created VPC
         Value: !Ref VPC
     webCarterALB:
@@ -1084,4 +1085,3 @@ Outputs:
     webCarterALBAccessLogBucket:
         Description: The ALB access log bucket
         Value: !Ref webCarterALBAccessLogBucket
-    

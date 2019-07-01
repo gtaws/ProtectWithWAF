@@ -33,7 +33,7 @@ Web Carter & Attacker workstation setup
 
 ![](.//media/image13.png)
 
-5.  Get your IP from Google with "what is my ip".
+5.  Get your IP from Amazon checkip -> http://checkip.amazonaws.com/.
 
 ![](.//media/image7.png)
 
