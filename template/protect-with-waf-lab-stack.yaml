@@ -1,8 +1,8 @@
 Description:
-  (SDD311-webCarter) This template setups a single webCarter deployment behind an Application Load Balancer for attack testing, and an
-  EC2 Windows instance for simulating attacks.
+  This template launches downstream stacks consisting of a sample web application, a simulated attacker instance, and WAF 
+  automation to protect the web application.
 
-  **WARNING** This template creates an AWS Application Load Balancer, EIPs, NAT Gateways, and EC2 instances. You will be billed for the AWS resources used if you
+  **WARNING** This template creates numerous downstream AWS resources. You will be billed for the AWS resources used if you
   create a stack from this template.
 
   **NOTICE** Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. Licensed under
