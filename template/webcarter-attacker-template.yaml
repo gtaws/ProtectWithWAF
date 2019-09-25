@@ -223,39 +223,39 @@ Mappings:
       AMIID: ami-0cb72367e98845d43
   AWSRegionToWindowsAMI:
     us-east-1:
-      AMIID: ami-0a9ca0496f746e6e0
+      AMIID: ami-0dbbd6f952e12feba
     eu-north-1:
-      AMIID: ami-0c8f5da45a93c8ea1
+      AMIID: ami-09812ee174a6cb377
     ap-south-1:
-      AMIID: ami-0e719217acb64308e
+      AMIID: ami-0eee945deafa2287b
     eu-west-3:
-      AMIID: ami-022cfeccb4b72d6b8
+      AMIID: ami-098a3826be1ee7dbf
     eu-west-2:
-      AMIID: ami-0ebf422d2a92724ec
+      AMIID: ami-014b5342eb453afee
     eu-west-1:
-      AMIID: ami-03838ccd5cfb84782
+      AMIID: ami-011b5156c098025a0
     ap-northeast-3:
-      AMIID: ami-0fe4dd6dce0a6f36c
+      AMIID: ami-0641f9c7974cf78e8
     ap-northeast-2:
-      AMIID: ami-0708a3b845edea89c
+      AMIID: ami-069e7b1c1551c3349
     ap-northeast-1:
-      AMIID: ami-02192102f14f0a10a
+      AMIID: ami-04b47b75a5897bac8
     sa-east-1:
-      AMIID: ami-07df12f3c5005cd1f
+      AMIID: ami-0ed0752f521439848
     ca-central-1:
-      AMIID: ami-020e569ea1f3a4e1c
+      AMIID: ami-05fbbab1511f0f785
     ap-southeast-1:
-      AMIID: ami-0afce41e503676765
+      AMIID: ami-06bfbc4807fa73e58
     ap-southeast-2:
-      AMIID: ami-0628ef1f10e34307d
+      AMIID: ami-04486ce22dea44562
     eu-central-1:
-      AMIID: ami-018c2bcdc530c0630
+      AMIID: ami-0091012d8fbe033f5
     us-east-2:
-      AMIID: ami-0087a83ed4a60d1e9
+      AMIID: ami-04203dd87d4abd6f6
     us-west-1:
-      AMIID: ami-004a782f694e8dde2
+      AMIID: ami-0f822e92f3218a4ff
     us-west-2:
-      AMIID: ami-0a7f9ce0459523133
+      AMIID: ami-0e65e5829cd5a9dcd
 Resources:
   VPC:
     Type: AWS::EC2::VPC
