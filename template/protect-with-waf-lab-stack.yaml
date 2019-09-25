@@ -1,0 +1,344 @@
+Description:
+  This template launches downstream stacks consisting of a sample web application, a simulated attacker instance, and WAF 
+  automation to protect the web application.
+
+  **WARNING** This template creates numerous downstream AWS resources. You will be billed for the AWS resources used if you
+  create a stack from this template.
+
+  **NOTICE** Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. Licensed under
+  the Amazon Software License (the License). You may not use this file except in compliance with the
+  License. A copy of the License is located at http://aws.amazon.com/asl/ or in the license file
+  accompanying this file. This file is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing
+  permissions and limitations under the License.
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: Environment Configuration
+        Parameters:
+          - EnvironmentName
+          - KeyName
+          - MyIP
+          - AttackerInstanceType
+      -
+        Label:
+          default: WebCarter Settings
+        Parameters:
+          - ContainerInstanceType
+          - DesiredCapacity
+          - MaxSize
+          - DBInstanceType
+      -
+        Label:
+          default: WebCarter Credentials
+        Parameters:
+          - DBAdmin
+          - DBPassword
+          - RdsAdminUsername
+          - RdsAdminPassword
+          - webCarterTestUsername
+          - webCarterTestPassword
+          - webCarterInstallerPassword
+      - 
+        Label:
+          default: WAF Settings
+        Parameters:
+          - ElasticSearchDomain
+          - ActivateSqlInjectionProtectionParam
+          - ActivateCrossSiteScriptingProtectionParam
+          - ActivateHttpFloodProtectionParam
+          - ActivateScannersProbesProtectionParam
+          - ActivateReputationListsProtectionParam
+          - ActivateBadBotProtectionParam
+
+      - Label:
+          default: Advanced Settings
+        Parameters:
+          - EndpointType
+          - RequestThreshold
+          - ErrorThreshold
+          - WAFBlockPeriod
+    
+    ParameterLabels:
+      ActivateSqlInjectionProtectionParam:
+        default: Activate SQL Injection Protection
+
+      ActivateCrossSiteScriptingProtectionParam:
+        default: Activate Cross-site Scripting Protection
+
+      ActivateHttpFloodProtectionParam:
+        default: Activate HTTP Flood Protection
+
+      ActivateScannersProbesProtectionParam:
+        default: Activate Scanner & Probe Protection
+
+      ActivateReputationListsProtectionParam:
+        default: Activate Reputation List Protection
+
+      ActivateBadBotProtectionParam:
+        default: Activate Bad Bot Protection
+
+      EndpointType:
+        default: Endpoint Type
+
+      RequestThreshold:
+        default: Request Threshold
+
+      ErrorThreshold:
+        default: Error Threshold
+
+      WAFBlockPeriod:
+        default: WAF Block Period
+      
+      ElasticSearchDomain:
+        default: Elastic Search Domain Name
+
+Parameters:
+  EnvironmentName:
+    Description: An environment name that will be prefixed to resource names (DEV, TEST, PROD)
+    Default: 'DEV'
+    Type: String
+  
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the ECS instances.
+  
+  MyIP:
+    Type: String
+    Description: Your IPv4 Address to lock down RDP and ElasticSearch Access
+    Default: '0.0.0.0/0'
+    AllowedPattern: "^(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])/([0-9]|1[0-9]|2[0-9]|3[0-2])$"
+  
+  DBAdmin:
+    Type: String
+    Default: 'webCarter'
+    Description: The admin userid for the webCarter MySQL database
+  
+  DBPassword:
+    Type: String
+    NoEcho: true
+    Description: The admin password for the webCarter MySQL database. Passwords should be at least 8 characters long.
+  
+  RdsAdminUsername:
+    Type: String
+    Default: 'master'
+    Description: The admin username for the RDS MySQL instance
+  
+  RdsAdminPassword:
+    Type: String
+    NoEcho: true
+    Description: The admin password for the RDS MySQL instance. Passwords should be at least 8 characters long.
+  
+  webCarterTestUsername:
+    Type: String
+    Default: 'webCarterTest'
+    Description: Username for webCarter test user
+  
+  webCarterTestPassword:
+    Type: String
+    NoEcho: true
+    Description: The webCarter test user password. Passwords should be at least 8 characters long.
+  
+  webCarterInstallerPassword:
+    Type: String
+    NoEcho: true
+    Description: The webCarter installer password. Passwords should be at least 8 characters long.
+  
+  DesiredCapacity:
+    Type: Number
+    Default: '1'
+    Description: Number of instances to launch in your ECS cluster.
+  
+  MaxSize:
+    Type: Number
+    Default: '1'
+    Description: Maximum number of instances that can be launched in your ECS cluster.
+  
+  ContainerInstanceType:
+    Description: EC2 instance type for WebCarter container deployment
+    Type: String
+    Default: c5.large
+    AllowedValues: [t3.micro, t3.small, t3.medium, t3.large, t3.xlarge, m5.large,
+      m5.xlarge, m5.2xlarge, m5.4xlarge, m5.12xlarge,
+      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge, c5.18xlarge,
+      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r5.12xlarge,
+      i3.xlarge, i3.2xlarge, i3.4xlarge, i3.8xlarge]
+    ConstraintDescription: Please choose a valid instance type.
+  
+  DBInstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: db.m5.4xlarge
+    AllowedValues: [db.t2.micro, db.t2.small, db.t2.medium, db.t2.large, db.t2.xlarge, db.t2.2xlarge,
+      db.m5.large, db.m5.xlarge, db.m5.2xlarge, db.m5.4xlarge, db.m5.12xlarge, db.m5.24xlarge]
+    ConstraintDescription: Please choose a valid instance type.
+  
+  AttackerInstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t3.xlarge
+    AllowedValues: [t3.large, t3.xlarge, m5.large,
+      m5.xlarge, m5.2xlarge, m5.4xlarge, m5.12xlarge,
+      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge, c5.18xlarge,
+      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r5.12xlarge,
+      i3.xlarge, i3.2xlarge, i3.4xlarge, i3.8xlarge]
+    ConstraintDescription: Please choose a valid instance type.
+  
+  ActivateSqlInjectionProtectionParam:
+    Type: String
+    Default: 'yes'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+    Description: Choose yes to enable the component designed to block common SQL injection attacks.
+
+  ActivateCrossSiteScriptingProtectionParam:
+    Type: String
+    Default: 'yes'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+    Description: Choose yes to enable the component designed to block common XSS attacks.
+
+  ActivateHttpFloodProtectionParam:
+    Type: String
+    Default: 'yes - AWS WAF rate based rule'
+    AllowedValues:
+      - 'yes - AWS WAF rate based rule'
+      - 'yes - AWS Lambda log parser'
+      - 'yes - Amazon Athena log parser'
+      - 'no'
+    Description: Choose yes to enable the component designed to block HTTP flood attacks.
+
+  ActivateScannersProbesProtectionParam:
+    Type: String
+    Default: 'yes - Amazon Athena log parser'
+    AllowedValues:
+      - 'yes - AWS Lambda log parser'
+      - 'yes - Amazon Athena log parser'
+      - 'no'
+    Description: Choose yes to enable the component designed to block scanners and probes.
+
+  ActivateReputationListsProtectionParam:
+    Type: String
+    Default: 'yes'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+    Description: >-
+      Choose yes to block requests from IP addresses on third-party reputation lists (supported
+      lists: spamhaus, torproject, and emergingthreats).
+
+  ActivateBadBotProtectionParam:
+    Type: String
+    Default: 'yes'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+    Description: Choose yes to enable the component designed to block bad bots and content scrapers.
+
+  EndpointType:
+    Type: String
+    Default: 'ALB'
+    AllowedValues:
+      - 'ALB'
+    Description: Select the type of resource being used.
+
+  RequestThreshold:
+    Type: Number
+    Default: 2000
+    MinValue: 0
+    Description:  >-
+      If you chose yes for the Activate HTTP Flood Protection parameter, enter the maximum
+      acceptable requests per FIVE-minute period per IP address. Please note that AWS WAF rate
+      based rule requires values greather than 2,000 (if you chose Lambda/Athena log parser options,
+      you can use any value greather than zero). If you chose to deactivate this protection, ignore
+      this parameter.
+
+  ErrorThreshold:
+    Type: Number
+    Default: 50
+    MinValue: 0
+    Description:  >-
+      If you chose yes for the Activate Scanners & Probes Protection parameter, enter the maximum
+      acceptable bad requests per minute per IP. If you chose to deactivate this protection
+      protection, ignore this parameter.
+
+  WAFBlockPeriod:
+    Type: Number
+    Default: 240
+    MinValue: 0
+    Description: >-
+      If you chose yes for the Activate Scanners & Probes Protection or HTTP Flood Lambda/Athena log
+      parser parameters, enter the period (in minutes) to block applicable IP addresses. If you
+      chose to deactivate log parsing, ignore this parameter.
+  
+  ElasticSearchDomain:
+    Type: String
+    Default: waf-lab-es
+    AllowedPattern: '[a-z][a-z0-9\-]+'
+    ConstraintDescription: Name must start with a lower-case letter and can only contain lower-case letters, numbers, and hyphens.
+    MaxLength: 28
+
+
+Mappings:
+    SourceCode:
+        General:
+            S3Bucket: 'waf-lab-nested-stacks'
+            KeyPrefix: "templates"
+            Region: 'us-east-2'
+
+Resources:
+  webCarterALBAccessLogBucket:
+    Type: AWS::S3::Bucket
+
+  WebCarter:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.amazonaws.com/${KeyPrefix}/webcarter-attacker-template.yaml'
+        -
+          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+          KeyPrefix: !FindInMap ["SourceCode", "General", "KeyPrefix"]
+      Parameters:
+        EnvironmentName: !Ref EnvironmentName
+        KeyName: !Ref KeyName
+        MyIP: !Ref MyIP
+        ContainerInstanceType: !Ref ContainerInstanceType
+        DesiredCapacity: !Ref DesiredCapacity
+        MaxSize: !Ref MaxSize
+        AttackerInstanceType: !Ref AttackerInstanceType
+        DBInstanceType: !Ref DBInstanceType
+        DBAdmin: !Ref DBAdmin
+        DBPassword: !Ref DBPassword
+        RdsAdminUsername: !Ref RdsAdminUsername
+        RdsAdminPassword: !Ref RdsAdminPassword
+        webCarterTestUsername: !Ref webCarterTestUsername
+        webCarterTestPassword: !Ref webCarterTestPassword
+        webCarterInstallerPassword: !Ref webCarterInstallerPassword
+        webCarterALBAccessLogBucket: !Ref webCarterALBAccessLogBucket
+
+  WafAutomation:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.amazonaws.com/${KeyPrefix}/aws-waf-security-automations-template.yaml'
+        -
+          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+          KeyPrefix: !FindInMap ["SourceCode", "General", "KeyPrefix"]
+      Parameters:
+        MyIP: !Ref MyIP
+        ActivateSqlInjectionProtectionParam: !Ref ActivateSqlInjectionProtectionParam
+        ActivateCrossSiteScriptingProtectionParam: !Ref ActivateCrossSiteScriptingProtectionParam
+        ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
+        ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
+        ActivateReputationListsProtectionParam: !Ref ActivateReputationListsProtectionParam
+        ActivateBadBotProtectionParam: !Ref ActivateBadBotProtectionParam
+        EndpointType: !Ref EndpointType
+        AppAccessLogBucket: !Ref webCarterALBAccessLogBucket
+        RequestThreshold: !Ref RequestThreshold
+        ErrorThreshold: !Ref ErrorThreshold
+        WAFBlockPeriod: !Ref WAFBlockPeriod
+        ElasticSearchDomain: !Ref ElasticSearchDomain
