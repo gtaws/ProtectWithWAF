@@ -1,5 +1,5 @@
 Description:
-  (SDD311-webCarter) This template setups a single webCarter deployment behind an Application Load Balancer for attack testing, and an
+  (ProtectWithWAF-webCarter) This template setups a single webCarter deployment behind an Application Load Balancer for attack testing, and an
   EC2 Windows instance for simulating attacks.
 
   **WARNING** This template creates an AWS Application Load Balancer, EIPs, NAT Gateways, and EC2 instances. You will be billed for the AWS resources used if you
