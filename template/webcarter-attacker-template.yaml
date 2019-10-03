@@ -256,6 +256,10 @@ Mappings:
       AMIID: ami-0f822e92f3218a4ff
     us-west-2:
       AMIID: ami-0e65e5829cd5a9dcd
+  SourceCode:
+    General:
+      S3Bucket: 'protectwithwaf'
+      KeyPrefix: 'ProtectWithWAF'
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -1066,6 +1070,65 @@ Resources:
           a2enmod rewrite
           service apache2 restart
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource webCarterAutoScalingGroup --region ${AWS::Region}
+
+  cleanupBucketOnDelete:
+    Type: Custom::cleanupbucket
+    Properties:
+      ServiceToken: !GetAtt LambdaS3CleanupFunction.Arn
+      BucketName: !Ref webCarterALBAccessLogBucket
+
+  LambdaRoleS3Cleanup:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Path: /
+        Policies:
+          - PolicyName: S3Access
+            PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 's3:*'
+                  Resource:
+                    - !Sub 'arn:aws:s3:::${webCarterALBAccessLogBucket}'
+                    - !Sub 'arn:aws:s3:::${webCarterALBAccessLogBucket}/*'
+                - Effect: Deny
+                  Action:
+                    - 's3:DeleteBucket'
+                  Resource: '*'
+          - PolicyName: LogsAccess
+            PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 'logs:*'
+                  Resource:
+                    - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*'
+
+  LambdaS3CleanupFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Description: >-
+        This lambda function is used to clean up s3 bucket created in this cloudformation.  It will delete all objects in the bucket, to allow cloudformation to delete the bucket successfully.
+      Handler:  's3cleanup.handler'
+      Role: !GetAtt LambdaRoleS3Cleanup.Arn
+      Code:
+        S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+        S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "KeyPrefix"], 's3cleanup.zip']]
+      Runtime: python3.7
+      MemorySize: 128
+      Timeout: 300
+
 Outputs:
     VPC:
         Description: A reference to the created VPC
