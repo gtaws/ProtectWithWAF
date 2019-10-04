@@ -258,7 +258,7 @@ Mappings:
       AMIID: ami-0e65e5829cd5a9dcd
   SourceCode:
     General:
-      S3Bucket: 'protectwithwaf'
+      S3Bucket: 'dagint'
       KeyPrefix: 'ProtectWithWAF'
 Resources:
   VPC:
@@ -1123,7 +1123,7 @@ Resources:
       Handler:  's3cleanup.handler'
       Role: !GetAtt LambdaRoleS3Cleanup.Arn
       Code:
-        S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+        S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
         S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "KeyPrefix"], 's3cleanup.zip']]
       Runtime: python3.7
       MemorySize: 128
