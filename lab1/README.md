@@ -201,9 +201,9 @@ If you are doing this in your own account you will want to clean up any of the m
 8. Select HTTPFlood1Rule and select the Delete button.  You will be prompted with a warning, Click the Delete button.
 
 9. For the remaining rules you will need to click on the rule name, for instance BadBot1Rule, in the right pane 
-  1. Click "Edit rule".  
-  2. Select the "X" in the top right of the defined condition filter.
-  3. Select update.  You should get the message "All conditions for this rule will be removed" in a yellow box.
-  4. Once you have removed all matched conditions for the the rule you can then delete the rule by selecting the radio button and then clicking the "Delete" button.  You will get a warning again, click the "Delete" button.
+  * Click "Edit rule".  
+  * Select the "X" in the top right of the defined condition filter.
+  * Select update.  You should get the message "All conditions for this rule will be removed" in a yellow box.
+  * Once you have removed all matched conditions for the the rule you can then delete the rule by selecting the radio button and then clicking the "Delete" button.  You will get a warning again, click the "Delete" button.
 
 10. Perform the steps outline in step 9 above for each of the remaining rules (SQLInjection1Rule & XSS1Rule)
