@@ -29,7 +29,8 @@ These tools have been pre-installed on the Windows instance created above.<br>
 
 3.  In Chrome Developer Tools go to "Network" tab.<br>
 
-4. In the browser window on the WebCarter site type ```<script>alert(document.cookie)</script>``` in the "Search" text field and click "Search!"<br>
+4. In the browser window on the WebCarter site type the following in the "Search" text field and click "Search!":
+```<script>alert(document.cookie)</script>```
 
 5.  In Chrome Developer tools select the "search?id..." request in the Network tab and navigate to Response sub tab on the right. If you do not see "search?id.." then Click on the first green bar field.<br>
 ![](.//media/chromenetwork.png)
