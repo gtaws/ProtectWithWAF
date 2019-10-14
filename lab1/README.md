@@ -129,7 +129,7 @@ You can have up to 10 filters in each condition (hard limit).
 9.  Click "Next" on the *Create Conditions* page.
 
 10. Click "Create Rule" button.<br>
-**Note:** Be sure to pick the appropriate match condition for each of the rules you are creating.  For example the XSS1 condition you would want to select the "match at least one of the filters in the cross-site scripting match condition".  The screenshots below each rule include the appropriate match condition.
+**Note:** Be sure to pick the appropriate match condition for each of the rules you are creating.  For example the XSS1 condition you would want to select the "match at least one of the filters in the cross-site scripting match condition".  In the screenshots below each rule include the appropriate match condition.
 
 11. Create a simple Cross-site scripting rule that in our example will contain a single XSS condition created above. Select the condition "XSS1" as below and click "Add Condition":
 ![](.//media/image20.png)
