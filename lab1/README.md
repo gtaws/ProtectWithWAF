@@ -48,7 +48,8 @@ These tools have been pre-installed on the Windows instance created above.<br>
 
 9. In the "Search" field enter the following:
 > *\' and 1=0 union select 1,group\_concat(table\_name) from
-> information\_schema.tables \#*<br>
+> information\_schema.tables \#*
+
 ![](.//media/image6.png)
 
 10. Server returns "Database Error" page displaying the SQL statement been executed. You started SQL Injection attack and got a desired output from the server. You can continue to explore SQL Injection vulnerabilities of WebCarter application later on.<br>
