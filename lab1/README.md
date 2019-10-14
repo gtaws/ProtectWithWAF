@@ -46,7 +46,6 @@ These tools have been pre-installed on the Windows instance created above.<br>
 8.  Click "Clear" button to clear the Developer Tools output:<br>
 ![](.//media/image5.png)
 
-
 9. In the "Search" field enter the following:
 > *\' and 1=0 union select 1,group\_concat(table\_name) from
 > information\_schema.tables \#*<br>
@@ -128,7 +127,8 @@ You can have up to 10 filters in each condition (hard limit).
 
 9.  Click "Next" on the *Create Conditions* page.
 
-10. Click "Create Rule" button.
+10. Click "Create Rule" button.<br>
+**Note:** Be sure to pick the appropriate match condition for each of the rules you are creating.  For example the XSS1 condition you would want to select the "match at least one of the filters in the cross-site scripting match condition"
 
 11. Create a simple Cross-site scripting rule that in our example will contain a single XSS condition created above. Select the condition "XSS1" as below and click "Add Condition":
 ![](.//media/image20.png)
