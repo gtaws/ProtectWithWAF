@@ -12,7 +12,7 @@ Lab 1 -- Manually testing attacks and protections
 
 4. You will then be prompted to supply a verification code which was sent to the email address you used in step 3.  Enter the code and click "Confirm". If you do not see the verifcation email right away please check your spam/junk folder.
 
-5. You will then be prompted to Join a Jam.  Enter the secret key provided in the workshop. You can skip the next step.
+5. You will then be prompted to [Join a Jam](https://jam.awsevents.com/home/join).  Enter the secret key provided in the workshop. 
 
 6. 
 
