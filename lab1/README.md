@@ -1,6 +1,20 @@
 Lab 1 -- Manually testing attacks and protections
 =================================================
 
+**PREP:**
+
+1. Go to the following URL [jam.awsevents.com](https://jam.awsevents.com)
+
+2. If you have an account already you can login and can skip to step 6 in this section, else click the ["Register"](https://jam.awsevents.com/register) link in the top right corner.
+
+3. Supply the requested information (email address, displayname, password) and click submit. You will need to have access to the email account you register with.
+
+4. You will then be prompted to register with a verification code which was sent to the email address you used in step 3.  Enter the code and click "Confirm". If you do not see the verifcation email right away please check your spam/junk folder.
+
+5. You will then be prompted to Join a Jam.  Enter the secret key provided in the workshop. You can skip the next step.
+
+6. If you are already logged in you can select the Join a Jam from the menu option in the top right or you can go to the following link [Join a Jam](https://jam.awsevents.com/home/join) and enter the secret key provided in the workshop.
+
 **Step 1: Simulate Cross-Site Scripting, SQL Injection, HTTP Flood, and
 Bad BOT activities.**<br>
 
