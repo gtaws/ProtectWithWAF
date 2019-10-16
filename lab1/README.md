@@ -1,7 +1,7 @@
 Lab 1 -- Manually testing attacks and protections
 =================================================
 
-**PREP:**
+###Preparation: Signup for AWS Jam events and launch the lab
 
 1. Go to the following URL [https://jam.awsevents.com](https://jam.awsevents.com)
 
@@ -10,97 +10,98 @@ Lab 1 -- Manually testing attacks and protections
 
 3. Supply the requested information (email address, displayname, password) and click submit. You will need to have access to the email account you register with.
 
-4. You will then be prompted to supply a verification code which was sent to the email address you used in step 3.  Enter the code and click "Confirm". If you do not see the verifcation email right away please check your spam/junk folder.
+4. You will then be prompted to supply a verification code which was sent to the email address you used in step 3.  Enter the code and click **Confirm**. If you do not see the verifcation email right away please check your spam/junk folder.
 
 5. You will then be prompted to [Join a Jam](https://jam.awsevents.com/home/join).  Enter the secret key provided in the workshop. 
 
-6. 
+6. Download the SSH Key Pair by selecting **AWS account** on the left side and select the SSH Key Pair **Download** button.
 
+7. In **Output Properties** launch the link for **UpdateAttakerSecurityGroup**. This will determine your internet IP address and add it to the appropriate security groups to allow access. 
 
-**Step 1: Simulate Cross-Site Scripting, SQL Injection, HTTP Flood, and
-Bad BOT activities.**<br>
+8. While in **Output Properties** copy and save the ALB name
 
-1.   When WebCarter-attacker-template CloudFormation stack has been created, go to **Outputs** tab and save the ALB endpoint for your WebCarter web site:<br>
-![](.//media/image1.png)
+***
 
-2.  RDP (Remote Desktop Protocol) to the Attacker windows instance created by WebCarter-attacker-template CloudFormation stack.<br>
+###Step 1: Simulate Cross-Site Scripting, SQL Injection, HTTP Flood, and Bad BOT activities####
 
-**NOTE:** You can find the public ip of the Attacker windows instance in the **Outputs** tab of the cloudformation and here are instructions on [how RDP to ec2 instance](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html)<br>
+####Introduction:
+You will be using this Windows instance to simulate web application attacks using the following tools, which have been pre-installed on the Windows Attacker instance, which you will be using throughout lab.  
 
-You will be using this Windows instance to simulate web application attacks with the following tools:<br>
+- Chrome Browser
+- Apache JMeter: <https://jmeter.apache.org/>
+- Apache Benchmark (Ab):
+<https://httpd.apache.org/docs/2.4/programs/ab.html>
+- HTTRack: <https://www.httrack.com/>
 
-Apache JMeter: <https://jmeter.apache.org/><br>
+You will also be using AWS console, to access you must use the link supplied in the AWS Jam events web page, selecting the **Open AWS Console** button.
 
-Apache Benchmark (Ab):
-<https://httpd.apache.org/docs/2.4/programs/ab.html><br>
+1.  RDP (Remote Desktop Protocol) to the Attacker windows instance.  
+**Note:** You can find the public ip of the Attacker windows instance in the **Output Properties** section on the Jam event web page and here are instructions on [how RDP to ec2 instance](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html)
 
-HTTRack: <https://www.httrack.com/><br>
-
-These tools have been pre-installed on the Windows instance created above.<br>
-
-1.  Open Chrome browser and navigate to the ALB endpoint you saved above:<br>
+2.  On the Attacker instance (RDP Session) open Chrome browser and navigate to the ALB endpoint you saved above:
 ![](.//media/image2.png)
 
-2.  Right click on the page and choose "Inspect". Chrome Developer Tools will open.<br>
+3.  Right click on the page and choose "Inspect". Chrome Developer Tools will open.  
 
-3.  In Chrome Developer Tools go to "Network" tab.<br>
+4.  In Chrome Developer Tools go to "Network" tab.  
 
-4. In the browser window on the WebCarter site type the following in the "Search" text field and click "Search!":
+5. In the browser window on the WebCarter site type the following in the "Search" text field and click "Search!":
 ```<script>alert(document.cookie)</script>```
 
-5.  In Chrome Developer tools select the "search?id..." request in the Network tab and navigate to Response sub tab on the right. If you do not see "search?id.." then Click on the first green bar field.<br>
+6. In Chrome Developer tools select the "search?id..." request in the Network tab and navigate to Response sub tab on the right. If you do not see "search?id.." then Click on the first green bar field.  
 ![](.//media/chromenetwork.png)
 
-6.  Use CTRL-F combination to search for "alert" in the response. As far as you can see, server returned your input above without validating it:<br>
+7.  Use CTRL-F combination to search for "alert" in the response. As far as you can see, server returned your input above without validating it:  
 ![](.//media/image3.png)
 
 
-7.  Click on any of the Brands filters (Apple, NBA). The script will be executed and the session cookie will be printed in the alert. Your Cross-site scripting attack was successful:<br>
+8.  Click on any of the Brands filters (Apple, NBA). The script will be executed and the session cookie will be printed in the alert. Your Cross-site scripting attack was successful:  
 ![](.//media/image4.png)
 
 
-8.  Click "Clear" button to clear the Developer Tools output:<br>
+9.  Click "Clear" button to clear the Developer Tools output:  
 ![](.//media/image5.png)
 
-9. In the "Search" field enter the following:
+10. In the "Search" field enter the following:  
 > *\' and 1=0 union select 1,group\_concat(table\_name) from
 > information\_schema.tables \#*
 
 ![](.//media/image6.png)
 
-10. Server returns "Database Error" page displaying the SQL statement been executed. You started SQL Injection attack and got a desired output from the server. You can continue to explore SQL Injection vulnerabilities of WebCarter application later on.<br>
+11. Server returns "Database Error" page displaying the SQL statement been executed. You started SQL Injection attack and got a desired output from the server. You can continue to explore SQL Injection vulnerabilities of WebCarter application later on.  
 ![](.//media/image7.png)
 
-11. Run Apache JMeter by clicking on the JMeter shortcut on the desktop.<br>
+12. Run Apache JMeter by clicking on the JMeter shortcut on the desktop.  
 ![](.//media/image8.png)
 
-12. Go to File -\> Open menu and navigate to c:\\JmeterScenarios.jmx file and click Open:<br>
+13. Go to File -\> Open menu and navigate to c:\\JmeterScenarios.jmx file and click Open:  
 ![](.//media/image9.png)
 
 
-13. Click the most top "HTTP Requests Defaults" entry in the test plan menu. Update the "Server Name or IP" with the ALB endpoint saved in the p. 1 above. Enter the server name only without and without the "/" suffuxs:<br>
+14. Click the most top "HTTP Requests Defaults" entry in the test plan menu. Update the "Server Name or IP" with the ALB endpoint saved in the p. 1 above. Enter the server name only without and without the "/" suffuxs:  
 ![](.//media/image10.png)
 
 
-14. Save changes by navigating to File-\>Save menu.
+15. Save changes by navigating to File-\>Save menu.
 
-15. Right click on the "DoS" scenario and then click "Start":<br>
+16. Right click on the "DoS" scenario and then click "Start":  
 ![](.//media/image11.png)
 
-
-16. Navigate to "View Results Tree" and assure you're getting 200 OK responses. Your attack was successful:<br>
+17. Navigate to "View Results Tree" and assure you're getting 200 OK responses. Your attack was successful:  
 ![](.//media/image12.png)
 
-17. Clear the results tree for the next tests:<br>
+18. Clear the results tree for the next tests:  
 ![](.//media/image13.png)
 
-18. Open a cmd window and change directory to "C:\Apache24\bin".<br>
+19. Open a cmd window and change directory to "C:\Apache24\bin".  
 
-19. Run Apache Benchmark:<br>
-    -  Copy the abLoadTestCommand from the **Outputs** tab in your Cloudformation stack<br>
-![](.//media/image14.png)<br>
-	-   Run the command in a Command Prompt window<br>
-	-   Assure that ab run above was successful:<br>
+20. Run Apache Benchmark:
+    -  Copy the abLoadTestCommand from the **Output Properties** tab on the AWS Jam events web page.  
+
+###Needs new image
+![](.//media/image14.png). 
+	-   Run the command in a Command Prompt window  
+	-   Assure that ab run above was successful:  
 
 > *Concurrency Level: 1*
 >
@@ -114,16 +115,18 @@ These tools have been pre-installed on the Windows instance created above.<br>
 > the server and can be identified by its *User-Agent.*
 > 	
 
+***
+
 **Step 2: Configure protection against the above attacks using WAF
-native rules.**<br>
+native rules.**  
 
 1.  Login to AWS console and choose EC2 service.
 
-2.  Choose "Load Balancers" in the left menu and then choose your load balancer created by CloudFormation stack.<br>
+2.  Choose "Load Balancers" in the left menu and then choose your load balancer created by CloudFormation stack.  
 
-3.  Go to "Integrated Services" tab and click on "Create Web ACL" button. You'll be directed to the WAF & Shield service console.<br>
+3.  Go to "Integrated Services" tab and click on "Create Web ACL" button. You'll be directed to the WAF & Shield service console.  
 
-4.  Choose the region you're using in the "Filter" field:<br>
+4.  Choose the region you're using in the "Filter" field:  
 ![](.//media/image15.png)
 **Note**: WAF configuration is separate for each region and separate for "Global" deployment used for CloudFront deployments. You must configure
 your Web ACL in the same region where you have your ALB deployed.
@@ -144,10 +147,11 @@ You can have up to 10 filters in each condition (hard limit).
 
 9.  Click "Next" on the *Create Conditions* page.
 
-10. Click "Create Rule" button.<br>
+10. Click "Create Rule" button.  
 **Note:** Be sure to pick the appropriate match condition for each of the rules you are creating.  For example the XSS1 condition you would want to select the "match at least one of the filters in the cross-site scripting match condition".  In the screenshots below each rule include the appropriate match condition.
 
 11. Create a simple Cross-site scripting rule that in our example will contain a single XSS condition created above. Select the condition "XSS1" as below and click "Add Condition":
+###Needs new image  
 ![](.//media/image20.png)
 **Note**: Conditions in the rule are logically joined, i.e. "AND". You can have up to 100 conditions of each type per account (soft limit).
 
@@ -196,7 +200,9 @@ These IP addresses configured in JMeter in "CSV Data Set Config" section and ori
 
 In this lab you protected your Web application against Cross-site scripting, SQL Injection, HTTP flood and simple BOTs using AWS WAF native rules.
 
-**Cleanup**
+***
+
+###Cleanup
 
 If you are doing this in your own account you will want to clean up any of the manual steps you performed to create the WAF to avoid any unnecessary charges. 
 
