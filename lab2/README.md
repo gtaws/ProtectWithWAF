@@ -6,18 +6,18 @@ Lab 2 -- Automating Protections and Tracking Attacks
 **Note** Please see the appendix at the end if you are unable able to see the WAF ACLs in the WAF & Shield console.
 
 1.  Go to AWS WAF & Shield console, choose the region you're working at, and open **waf-lab-1** Web ACL and navigate to the **Rules** tab on the right.  
-![](.//media/image22.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image22.png" width="700" />  
 
 2.  In **AWS resources using this web ACL** delete association with WebCarter ALB.  
-![](.//media/image21.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image21.png" width="700" />  
 
 3.  Choose WAF-automation Web ACL and open **Rules** tab.  
-![](.//media/image23.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image23.png" width="700" />  
 
 4.  Click **Add association**, then choose **Application load balancer** as **Resource type** and choose your WebCarter load balancer. Click **Add**.  
-![](.//media/image24.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image24.png" width="700" />  
 When you are done it should look similar to this.  
-![](.//media/image25.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image25.png" width="700" />  
 
 Now your WebCarter Web application is protected with the Web ACL created for this lab.
 
@@ -34,10 +34,10 @@ Below you will create indexes and visualizations in your domain.
 **Note:** Please be sure to perform the steps in the order listed below when configuring Kibana. 
 
 1.  Go to ElasticSearch console, choose the domain created by waf-automation template, and click on the Kibana link:  
-![](.//media/image1.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image1.png" width="700" />  
 
 2.  In the Kibana console  
- -  click on **DevTools** from the menu on the left -  Then click the button **Get to work** 	-  create an index using the following statement:  
+ -  click on **DevTools** from the menu on the left -  Then click the button **Get to work**  -  create an index using the following statement:  
 
 ```
 PUT _template/awswaf-logs
@@ -72,39 +72,39 @@ PUT _template/awswaf-logs
 ```  
 
  - Paste the statement in Kibana console and click on the green **play** button to execute it:  
-![](.//media/image2.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image2.png" width="700" />  
 Now you will need to configure Web ACL logging functionality.  
 
-3.	In the WAF & Shield AWS console, open **Logging** tab of the **mod-module-1** Web ACL and click **Enable Logging**.  
+3.  In the WAF & Shield AWS console, open **Logging** tab of the **mod-module-1** Web ACL and click **Enable Logging**.  
 
-4.	Choose Kinesis Data Firehose stream created for the lab **aws-waf-logs-mod-module-1**.  
+4.  Choose Kinesis Data Firehose stream created for the lab **aws-waf-logs-mod-module-1**.  
 
-5.	**Do Not** add **Redacted Fields** and click **Create**.  
+5.  **Do Not** add **Redacted Fields** and click **Create**.  
 
-6.	RDP to the Attacker Windows instance and run **BOT1** Jmeter scenario to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.  
+6.  RDP to the Attacker Windows instance and run **BOT1** Jmeter scenario to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.  
 
 7.  Wait for a couple of minutes till WAF logs will get to the ElasticSearch domain, then click on the **Discover** menu and define an index pattern as *awswaf-\** and click **Next step**:  
-![](.//media/image3.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image3.png" width="700" />  
 
 8.  Choose timestamp as a Filter and click **Create index pattern**.  
-![](.//media/image4.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image4.png" width="700" />  
 
 9.  Now you're able to run searches through your logs by going into the Discover tab in Kibana. For example, you can look for specific HTTP headers, query strings, or source IP addresses:  
 > Now upload visualizations and a dashboard. You can always customize
 > them or create your visualizations as required.  
 
 10.  Go to **Management** menu and click **Advanced**. Search for the the defaultindex and copy and save the default index id value:  
-![](.//media/image5.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image5.png" width="700" />  
 
 11.  Download and  using the URL in the JAM **Output Properties** webpage or you can right click the kibana-config.json url and select save link as. Open kibana-configruation.json locally and replace the ```_YOUR_ES_INDEX_``` value with the one saved above. Please do it everywhere in the file (approximately 5 times).  
-![](.//media/image26.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image26.png" width="700" />  
 
 12.  Save the file.  
 
 13.  Go to **Management -> Saved Objects** tab, click **Import** and upload the modified kibana-configruation.json file. Click **Yes** for the overwrite question.  
 
 14. You'll see your dashboard and visualizations have been uploaded successfully:  
-![](.//media/image6.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image6.png" width="700" />  
 
 15. Navigate to the **Dashboard** menu and choose **WAF** dashboard you just uploaded.  
 
@@ -154,14 +154,14 @@ httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
 10. Go to AWS WAF & Shield console and navigate to **String and regex matching**.  
 
 11. Click **Create condition** and create BOT10 condition as following:  
-![](.//media/image7.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image7.png" width="700" />  
 
 12. Click **Add filter** then **Create**.  
 
 13. Go to **Rules** menu and click **Create rule**.  
 
 14. Create BOT10 rule as following:  
-![](.//media/image8.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image8.png" width="700" />  
 
 15. Click **Create**.  
 
@@ -199,11 +199,11 @@ In the next steps we'll look at ALB access logs using Amazon Athena.
     Database.  
     **Note:** You will need to supply a s3 bucket location to store the query editor output before you are able to run a query.  You can get the location information from the AWS JAM **Output Properties** page.  
     1a.  Click **setup a query result location in Amazon S3**.  
-    ![](.//media/image27.png)  
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image27.png" width="700" />  
     2a.  Copy the bucket information from the **Output Properties**: **AthenaEditorOutput**.  
-    ![](.//media/image31.png)  
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image31.png" width="700" />  
     3a.  Paste the copied bucket location in the **Query result location** and then click **Save**.  
-    ![](.//media/image30.png)  
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image30.png" width="700" />  
 
 25. Run the following SQL query:  
 ```SQL
@@ -221,12 +221,12 @@ You can get an additional information about incoming requests from these logs, s
 
 ```SQL
 SELECT client_ip,
-			request_url,
-			target_status_code,
-			COUNT(*) AS counter
+      request_url,
+      target_status_code,
+      COUNT(*) AS counter
 FROM app_access_logs
 WHERE parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z') > DATE_ADD('minute', -5, NOW())
-			AND target_status_code = ANY (VALUES '400', '401', '403', '404', '405', '500')
+      AND target_status_code = ANY (VALUES '400', '401', '403', '404', '405', '500')
 GROUP BY client_ip, request_url, date_trunc('minute', parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z')), target_status_code;
 ```  
 
@@ -235,19 +235,19 @@ As far we can see, there are malicious requests coming from the same IP address 
 28. Go to AWS WAF & Shield console and navigate to **String and regex matching**.  
 
 29. Click **Create condition** and create RESTAPI condition as following:  
-![](.//media/image9.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image9.png" width="700" />  
 
 
 30. Click **Add filter** then **Create**.  
 
 31. Go to **IP addresses** and click **Create condition**:  
-![](.//media/image10.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image10.png" width="700" />  
 
 32. Click **Add IP address...** then **Create**.
 
 33. Go to the **Rules** menu and click **Create rule**:  
-![](.//media/image11.png)  
-![](.//media/image12.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image11.png" width="700" />  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image12.png" width="700" />  
 
 **Note** we added two conditions in this rule.
 
@@ -265,12 +265,12 @@ As far we can see, there are malicious requests coming from the same IP address 
 
 ```SQL
 SELECT client_ip,
-			request_url,
-			target_status_code,
-			COUNT(*) AS counter
+      request_url,
+      target_status_code,
+      COUNT(*) AS counter
 FROM app_access_logs
 WHERE parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z') > DATE_ADD('minute', -5, NOW())
-			AND elb_status_code = '403'
+      AND elb_status_code = '403'
 GROUP BY client_ip, request_url, date_trunc('minute', parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z')), target_status_code
 ```
 
@@ -279,10 +279,10 @@ You can see that requests from that IP address to /api url been blocked by the W
 **Step 4: Honeypot for bad bots and scrapers.**
 
 1. Copy AddHoneypotSsmCommand from the AWS JAM **Output Properties** webpage.
-![](.//media/RunCommand.png)   
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/RunCommand.png" width="700" />   
 
 2. Paste into the Command Prompt inside the Attacker Windows instance
-![](media/RunCommand-cmd.png)
+![](media/RunCommand-cmd.png" width="700" />
 
 3. Wait a few moments
 
@@ -291,7 +291,7 @@ You can see that requests from that IP address to /api url been blocked by the W
 5.  Right click on the page and choose **Inspect**.
 
 6.  Verify the honeypot link is present on the page. This link has been inserted into your application by AWS Systems Manager, which was configured by WAF Automation CloudFormation stack.
-![](.//media/image13.png)
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image13.png" width="700" />
 
 An API Gateway instance has been preconfigured with a Lambda function that parses the source IP address of the request and adds the source IP address to the black list.
 
@@ -300,18 +300,18 @@ An API Gateway instance has been preconfigured with a Lambda function that parse
 2.  Choose **Security Automation -- WAF..** API and click **ANY**.
 
 3.  Click on the Lambda function on the right if you'd like to customize this function:  
-![](.//media/image14.png)
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image14.png" width="700" />
 
 4.  Run HTTTRack web copier on your Windows instance.
 
 5.  Select your language and click **Next** on the Welcome page and enter your project name (WebCarter for example), then click **Next**:
-![](.//media/image15.png)
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image15.png" width="700" />
 
 6.  Click **Add URL**, enter the ALB endpoint and click **OK**:  
-![](.//media/image16.png)
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image16.png" width="700" />
 
 7. Click **Set options** button and go to **Experts Only** tab. Change **Global travel mode** to **Go everywhere...** and click **OK**. Because the honeypot is a different domain, this will allow us to simulate a bad bot hitting the **no-follow** hidden honeypot link above:
-![](.//media/image17.png)
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image17.png" width="700" />
 
 8. Click **Next** then **Finish**.
 
@@ -345,14 +345,14 @@ Now this modified query will be looking for any IP address that got \>=50 of the
 ```
 aws athena list-named-queries --region us-west-2
 ```  
-![](.//media/image18.png)
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image18.png" width="700" />
 
 
 8.  Copy the id of the first query in the list and run the following command with that query id:
 ```
 aws athena get-named-query --region us-west-2 --named-query-id 2ff43345-277d-4614-8020-b76f56e02757
 ```  
-![](.//media/image19.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image19.png" width="700" />  
 
 9.  Check the query name and assure this is the query we just saved on the console.
 
@@ -366,7 +366,7 @@ aws athena get-named-query --region us-west-2 --named-query-id 2ff43345-277d-461
 13. In the CloudWatch window click **Action-\>Edit** on the top right corner.
 
 14. In the JSON input definition scroll right and replace the query id with the one you saved above:  
-![](.//media/image20.png)
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image20.png" width="700" />
 
 15. Click **Configure details** and then **Update rule**.
 
@@ -384,9 +384,9 @@ In this scenario we used automated detection of probes and scanners, that are ge
 
 ###Appendix:
 - When opening the AWS WAF & Shield console you maybe prompted with the WAF & Shield splash screen instead WAF specific console.  
-![](.//media/image28.png)   
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image28.png" width="700" />   
 - Click the **Go to AWS WAF** button
-![](.//media/image29.png)  
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image29.png" width="700" />  
 - Then click **Web ACLs**
 - Update the **Filter** to reflect the appropriate region.  This is defined on the JAM AWS webpage listed under **AWS Account -> AWS Region**.  
-- ![](.//media/image34.png)
+- <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image34.png" width="700" />
