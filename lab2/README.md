@@ -175,15 +175,17 @@ httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
 
 20. Wait for couple for minutes and refresh Kibana dashboard. Check if you see blocked request to the login page.  
 
-21. Note the **Terminating Rule ID** in the **WAF Rules Hit** visualization and check the rule that block these requests. To do so, run the following AWS CLI command from the Attacker Windows instance. Update the region and the rule id as required:  
+21. Note the **Terminating Rule ID** in the **WAF Rules Hit** visualization and check the rule that block these requests.  You can check the rule by going to the **WAF & Shield Console**, filter on the appropriate region and select **Rules** from the left side.  This shdould display a list of all the rules and ID of each rule.  The **Terminating Rule ID** should match the rule you recently defined.
 
-Example:
-```
+>You can also run the following AWS CLI command from a machine that has the AWS CLI installed, permission information from the **AWS Account** section on the JAM webpage and internet access. Update the region and the rule id as required:  
+
+>Example:
+>```
 aws waf-regional get-rule --region us-west-2 --rule-id d3458c9b-5bba-4361-a7ce-e28d66a86d27
 ```
 
-You would run the following replacing items in "<>":
-```
+>You would run the following replacing items in "<>":
+>```
 aws waf-regional get-rule --region <Region> --rule-id <Terminating Rule ID>
 ```  
 
