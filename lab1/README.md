@@ -28,7 +28,7 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 11. Select **Download Remote Desktop File** and then run it.
 12. You should be prompted for user credentials and the user name should be prefilled with **Administrator** and you can paste in the password copied above.  Once you have supplied the ID/Password click the appropriate button to proceed.
     *   If you have the option to save the password feel free to check that box before connecting.
-    *   If you are not prompted for credentials it's likely the security group on your instance is not allowing your source IP address.  Please make sure you have completed all of preperation steps and you can also review your security group rules assigned to the ec2 instance.
+    *   If you are not prompted for credentials it's likely the security group on your instance is not allowing your source IP address.  Please make sure you have completed all of preperation steps.  You can also review your security group rules assigned to the ec2 instance.
 
 ***
 
