@@ -100,7 +100,7 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 19. Open a cmd window and change directory to **C:\Apache24\bin**.
 
 20. Run Apache Benchmark:
-    -  Copy the abLoadTestCommand from the **Output Properties** tab on the AWS Jam events web page.
+    -  Copy the abLoadTestCommand from the **Outputs** tab on of the CloudFormation stack.
 ![](.//media/image14.png)
 	  -  Run the command in a Command Prompt window
 	  -  Assure that ab run above was successful:
@@ -215,6 +215,6 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 *   Click the **Go to AWS WAF** button
 ![](.//media/image29.png)
 *   Then click **Web ACLs**
-*   Update the **Filter** to reflect the appropriate region.  This is defined on the JAM AWS webpage listed under **AWS Account -> AWS Region**.
+*   Update the **Filter** to reflect the appropriate region where the ALB is deployed.
 
     ![](.//media/image34.png)
