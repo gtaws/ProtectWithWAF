@@ -174,12 +174,13 @@ You can have up to 10 filters in each condition (hard limit).
 
 ***
 
-**Step 3: Demonstrate protection against the above attacks using WAF
-native rules.**
+### Step 3: Demonstrate protection against the above attacks using WAF native rules.
 
 In this step we'll repeat the attacks in Step 1 above and assure they're blocked by the rules we created in Step 2.
 
-1.  In a Chrome browser window navigate to your ALB endpoint and type following in the **Search** string.  Then click **Search!**. ```<script>alert(document.cookie)</script>```
+1.  In a Chrome browser window navigate to your ALB endpoint and type following in the **Search** string.  Then click **Search!**.
+
+    ```<script>alert(document.cookie)</script>```
 
 2.  Assure you get HTTP 403 response from WAF:
 ![](.//media/image24.png)
@@ -206,7 +207,7 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 
 ***
 
-###Appendix:
+### Appendix:
 *   When opening the AWS WAF & Shield console you maybe prompted with the WAF & Shield splash screen instead WAF specific console.
 ![](.//media/image28.png)
 *   Click the **Go to AWS WAF** button
