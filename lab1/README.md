@@ -15,20 +15,20 @@ Then you will be creating an AWS WAF to protect against these simulated attacks 
 ### Preparation:
 You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to connect to an EC2 windows instance in AWS.  You will need to have a remote desktop client installed to procceed with the lab.  If you are not formiliar with how to connect to an EC2 instance I would suggest reviewing the full instructions on the AWS website <a href="https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html#rdp-prereqs">Connecting to Your Windows Instance</a>.  Here is a summary of the steps you will need to perform to connect to the Attacker instance throughout the lab.
 
-*   You will need your EC2 keypair pem file (\<keypair filename\>.pem), which was used to create these instances.
-*   Login to the **AWS console** and choose the **EC2** service, typing *EC2* in the **Find Services** search is one way to get to the EC2 console.
-*   Be sure to select the appropriate region from the top right drop down box.  This should match where the lab resources are deployed.
-*   From the menu on the left choose **Instances**
-*   Select the **Attacker** instance by selecting the box to the left of the instance name.  This should be the only instance selected.
-*   Near the top of the EC2 console select the **Connect** button
-*   Select the **Get Password** button
-*   Select **Choose File** and supply the keypair pem file
-*   Select **Decrypt Password**
-*   Hover your mouse just over to the right of the password displayed and you should see an icon which when clicked will copy the password.
-*   Select **Download Remote Desktop File** to download and then run it.
-*   You should be prompted for user credentials and the user name should be prefilled with **Administrator** and you can paste in the password copied above.  Once you have supplied the ID/Password click the appropriate button to proceed.
-    -   If you have the option to save the password feel free to check that box before connecting.
-    -   If you are not prompted for credentials it's likely the security group on your instance is not allowing your source IP address.  Please make sure you have completed all of preperation steps and you can also review your security group rules assigned to the ec2 instance.
+1.  You will need your EC2 keypair pem file (\<keypair filename\>.pem), which was used to create these instances.
+2.  Login to the **AWS console** and choose the **EC2** service, typing *EC2* in the **Find Services** search is one way to get to the EC2 console.
+3.  Be sure to select the appropriate region from the top right drop down box.  This should match where the lab resources are deployed.
+4.  From the menu on the left choose **Instances**
+5.  Select the **Attacker** instance by selecting the box to the left of the instance name.  This should be the only instance selected.
+6.  Near the top of the EC2 console select the **Connect** button
+7.  Select the **Get Password** button
+8.  Select **Choose File** and supply the keypair pem file
+9.  Select **Decrypt Password**
+10. Hover your mouse just over to the right of the password displayed and you should see an icon which when clicked will copy the password.
+11. Select **Download Remote Desktop File** to download and then run it.
+12.You should be prompted for user credentials and the user name should be prefilled with **Administrator** and you can paste in the password copied above.  Once you have supplied the ID/Password click the appropriate button to proceed.
+    *   If you have the option to save the password feel free to check that box before connecting.
+    *   If you are not prompted for credentials it's likely the security group on your instance is not allowing your source IP address.  Please make sure you have completed all of preperation steps and you can also review your security group rules assigned to the ec2 instance.
 
 ***
 
@@ -205,6 +205,33 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
 ![](.//media/image27.png)
 
 In this lab you protected your Web application against Cross-site scripting, SQL Injection, HTTP flood and simple BOTs using AWS WAF native rules.
+
+***
+
+### Cleanup
+1.  Login to AWS console and choose **WAF & Shield** service.
+
+2.  In the **Filter** section select the appropriate region you created the WAF in.
+
+3.  In the **Web ACLs** section.  Click on the WAF name you created and select the **Rules** tab. If you followed name listed in the lab the name will be **waf-lab-1**.
+
+4.  Under **AWS resources using web ACL** (bottom) click the **X** icon to remove the ACL from the Application load balancer.
+
+5.  Select the **Edit web ACL** button (top right of the **Rules** tab).  On the **Edit web ACL \<waf name\>** click the **X** icons for each of the rules attached to the web ACL until there are no rules remaining.  Then select **Update**.
+
+6.  You should be back at the **Web ACLs** page.  Make sure the WAF you created is selected still and click the delete button.
+
+7.  Click Rules from the left hand side.  You should see the 4 rules BadBot1Rule, HTTPFlood1Rule, SQLInjection1Rule, and XSS1Rule if you followed the naming in the lab.
+
+8.  Select HTTPFlood1Rule and select the **Delete** button.  You will be prompted with a warning, Click the **Delete** button.
+
+9.  For the remaining rules you will need to click on the rule name, example select BadBot1Rule, in the right pane
+    1.  Click **Edit rule**.
+    2.  Select the **X** in the top right of the defined condition filter.
+    3.  Select update.  You should get the message **All conditions for this rule will be removed** in a yellow box.
+    4.  Once you have removed all matched conditions for the the rule you can then delete the rule by selecting the radio button and then clicking the **Delete** button.  You will get a warning again, click the **Delete** button.
+
+10. Perform the steps outlined in step 9 above for each of the remaining rules (SQLInjection1Rule & XSS1Rule)
 
 ***
 
