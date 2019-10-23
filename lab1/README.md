@@ -19,15 +19,14 @@ Lab 1 -- Manually testing attacks and protections
 6. Download the SSH Key Pair by selecting **AWS account** on the left side and select the SSH Key Pair **Download** button.  
 ![](.//media/jam3.png)
 
-7. In **Output Properties** launch the link for **UpdateAttakerSecurityGroup**. This will determine your internet IP address and add it to the appropriate security groups to allow access.  
+7. In **Output Properties** launch the link for **UpdateAttakerSecurityGroup**. This will determine your internet IP address and add the appropriate security to allow access to resources we will be using in the lab.  
 ![](.//media/jam5.png)
 ![](.//media/jam6.png)
 
 8. While in **Output Properties** copy and save the ALB name and ALB URL.  
 ![](.//media/jam5.png)
-***
-###NEEDS IMAGES (ALBNAME & ALBURL)
-***
+![](.//media/image32.png)
+![](.//media/image33.png)
 
 ***
 
@@ -179,6 +178,8 @@ You can have up to 10 filters in each condition (hard limit).
 
 **Note**: Because we started creating a Web ACL from the ALB console, your Web ACL is already associated with your load balancer. You also can just create Web ACL and then associate it with one or more load balancers.
 
+*** 
+
 **Step 3: Demonstrate protection against the above attacks using WAF
 native rules.**
 
@@ -216,3 +217,5 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 - Click the **Go to AWS WAF** button
 ![](.//media/image29.png)  
 - Then click **Web ACLs**
+- Update the **Filter** to reflect the appropriate region.  This is defined on the JAM AWS webpage listed under **AWS Account -> AWS Region**.  
+- ![](.//media/image34.png)

@@ -1,4 +1,6 @@
-# SDD311
+# ProtechWithWAF
+
+##Introduction
 Protecting from Bots and Scrapers workshop
 
 [Lab Prep](labPrep/README.md)
