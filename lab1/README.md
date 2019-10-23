@@ -128,7 +128,7 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 
 4.  Choose the region you're using in the **Filter** field:
 ![](.//media/image15.png)
-  **Note**: WAF configuration is separate for each region and separate for **Global** deployment used for CloudFront deployments. You must configure your Web ACL in the same region where you have your ALB deployed.
+  **Note**: WAF configuration is separate for each region and Global for CloudFront deployments. You must configure your Web ACL in the same region where you have your ALB deployed.
 
 5.  Click **Create web ACL**, fill out the details as below, and click **Next**:
 
@@ -197,8 +197,9 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
 ![](.//media/image25.png)
 
 6.  Go to AWS WAF Console and navigate to Rules-\> HTTPFlood1Rule.  Notice IP addresses that are currently blocked by this rule:
-![](.//media/image26.png)
-These IP addresses configured in JMeter in **CSV Data Set Config** section and originate from the attacker instance.
+
+    ![](.//media/image26.png)
+    These IP addresses configured in JMeter in **CSV Data Set Config** section and originate from the attacker instance.
 
 7.  Repeat ab test as above and notice Non-2xx responses from WAF:
 ![](.//media/image27.png)
