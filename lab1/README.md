@@ -19,13 +19,13 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 *   Login to the **AWS console** and choose the **EC2** service, typing *EC2* in the **Find Services** search is one way to get to the EC2 console.
 *   Be sure to select the appropriate region from the top right drop down box.  This should match where the lab resources are deployed.
 *   From the menu on the left choose **Instances**
-*   Select the **Attacker** instance by selecting the box to the left of the instance name.
+*   Select the **Attacker** instance by selecting the box to the left of the instance name.  This should be the only instance selected.
 *   Near the top of the EC2 console select the **Connect** button
 *   Select the **Get Password** button
 *   Select **Choose File** and supply the keypair pem file
 *   Select **Decrypt Password**
-*   Hover your mouse over just to the right of the password displayed and you should see an icon which when clicked will copy the password.
-*   Select **Download Remote Desktop File** to download and then run the file.
+*   Hover your mouse just over to the right of the password displayed and you should see an icon which when clicked will copy the password.
+*   Select **Download Remote Desktop File** to download and then run it.
 *   You should be prompted for user credentials and the user name should be prefilled with **Administrator** and you can paste in the password copied above.  Once you have supplied the ID/Password click the appropriate button to proceed.
     -   If you have the option to save the password feel free to check that box before connecting.
     -   If you are not prompted for credentials it's likely the security group on your instance is not allowing your source IP address.  Please make sure you have completed all of preperation steps and you can also review your security group rules assigned to the ec2 instance.
@@ -77,7 +77,7 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 
 12. Run Apache JMeter by clicking on the JMeter shortcut on the desktop.
 
-![](.//media/image8.png)
+    ![](.//media/image8.png)
 
 13. Go to **File -\> Open** menu and navigate to **c:\\JmeterScenarios.jmx** file and click Open:
 ![](.//media/image9.png)
@@ -162,7 +162,7 @@ You can have up to 10 filters in each condition (hard limit).
 13. Create Bad Bot rule choosing the String match condition created above:
 ![](.//media/image22.png)
 
-14.  Create HTTP Flood rule changing the Rule type to **Rate-based rule**:
+14. Create HTTP Flood rule changing the Rule type to **Rate-based rule**:
 ![](.//media/image23.png)
 **Note**: No conditions are needed for this rule, but you could add match conditions to the rate-based rule when crafting your own custom signatures.
 
@@ -185,8 +185,9 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
 ![](.//media/image24.png)
 
 3.  In the **Search** field enter the following:
-> *\' and 1=0 union select 1,group\_concat(table\_name) from
-> information\_schema.tables \#*
+```
+' and 1=0 union select 1,group\_concat(table\_name) from information\_schema.tables #
+```
 
 4.  Assure you get HTTP 403 response from WAF:
 ![](.//media/image24.png)
@@ -206,10 +207,11 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 ***
 
 ###Appendix:
-- When opening the AWS WAF & Shield console you maybe prompted with the WAF & Shield splash screen instead WAF specific console.
+*   When opening the AWS WAF & Shield console you maybe prompted with the WAF & Shield splash screen instead WAF specific console.
 ![](.//media/image28.png)
-- Click the **Go to AWS WAF** button
+*   Click the **Go to AWS WAF** button
 ![](.//media/image29.png)
-- Then click **Web ACLs**
-- Update the **Filter** to reflect the appropriate region.  This is defined on the JAM AWS webpage listed under **AWS Account -> AWS Region**.
-- ![](.//media/image34.png)
+*   Then click **Web ACLs**
+*   Update the **Filter** to reflect the appropriate region.  This is defined on the JAM AWS webpage listed under **AWS Account -> AWS Region**.
+
+    ![](.//media/image34.png)
