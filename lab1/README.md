@@ -210,7 +210,8 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 
 ### Appendix:
 *   When opening the AWS WAF & Shield console you maybe prompted with the WAF & Shield splash screen instead WAF specific console.
-![](.//media/image28.png)
+
+    ![](.//media/image28.png)
 *   Click the **Go to AWS WAF** button
 ![](.//media/image29.png)
 *   Then click **Web ACLs**
