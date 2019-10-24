@@ -194,19 +194,15 @@ httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
 21. Note the **Terminating Rule ID** in the **WAF Rules Hit** visualization and check the rule that is blocking these requests. You can check the rule by going to the **WAF & Shield Console**, filter on the appropriate region and select **Rules** from the left side.  This shdould display a list of all the rules and ID of each rule.  The **Terminating Rule ID** should match the rule you recently defined.
 
 >You can also run the following AWS CLI command from a machine which has the AWS CLI installed, credentials with the appropriate permissions, and internet access. Update the region and the rule id as required:
-
->Example:
-
-    ```sh
-    aws waf-regional get-rule --region us-west-2 --rule-id d3458c9b-5bba-4361-a7ce-e28d66a86d27
-    ```
-
->Run the following replacing items in "<>":
 >
-
-   ```sh
-    aws waf-regional get-rule --region <Region> --rule-id <Terminating Rule ID>
-    ```
+>Example:
+>```sh
+>aws waf-regional get-rule --region us-west-2 --rule-id d3458c9b-5bba-4361-a7ce-e28d66a86d27
+>```
+>Run the following replacing items in "<>":
+>```sh
+>aws waf-regional get-rule --region <Region> --rule-id <Terminating Rule ID>
+>```
 
 
 **QUESTION**: Does number of allowed requests to the login page look reasonable after we blocked a **IamABOT** BOT?
