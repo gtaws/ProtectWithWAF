@@ -2,9 +2,9 @@
 Protecting web applications from common web vulnerablities, bots, and scrapers workshop
 
 ## **WARNING** ##
-**In the lab several AWS resources be created and will bill the account the lab is provisioned in.  Please be sure to delete the cloudformation template and remove any resources created when you have completed the excersise to avoid any unwanted costs.**
+**In the lab several AWS resources will be created and bill the account the lab is provisioned in.  Please be sure to delete the cloudformation template and remove any resources created when you have completed the excersise to avoid any unwanted costs.**
 
-The cloudformation template will create EC2 instances, NAT GW's, an ALB, WAF, Lambda's, an API GW, S3 Buckets, Kinesis Firehose, RDS Database, a Glue data catalog, an ElasticSearch cluster.  The items created via the CloudFormation template should be removed when you delete the CloudFormation stack.  Any manual steps you take during the lab, in the AWS console or via the aws cli,  will need to be cleaned up.  At the end of each lab there will be instructions on how to clean up any of the manual steps performed.  If you have perform any additional steps on your own you should be sure to clean them up as well.
+The cloudformation template will create EC2 instances, NAT GW's, an ALB, WAF, Lambda's, an API GW, S3 Buckets, Kinesis Firehose, RDS Database, a Glue data catalog, and an ElasticSearch cluster.  The items created via the CloudFormation template should be removed when you delete the CloudFormation stack.  Any manual steps you take during the lab, in the AWS console or via the aws cli,  will need to be cleaned up.  At the end of each lab there will be instructions on how to clean up any of the manual steps performed.  If you have performed any additional steps on your own you should be sure to clean them up as well.
 
 # Introduction #
 
