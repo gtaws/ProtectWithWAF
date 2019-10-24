@@ -54,35 +54,35 @@ Below you will create indexes and visualizations in your domain.
     *   Click on **DevTools** from the menu on the left -  Then click the button **Get to work** 	-  create an index using the following statement:
 
         ```json
-            PUT _template/awswaf-logs
-            {
-               "index_patterns":[ "awswaf-*"],
-               "settings":{
-                  "number_of_shards":1
-               },
-               "mappings":{
-                  "waflog":{
-                     "properties":{
-                        "httpRequest":{
-                           "properties":{
-                              "clientIp":{
-                                 "type":"keyword",
-                                 "fields":{
-                                    "keyword":{
-                                       "type":"ip"
-                                    }
-                                 }
-                              }
-                           }
-                        },
-                        "timestamp":{
-                           "type":"date",
-                           "format":"epoch_millis"
-                        }
-                     }
-                  }
-               }
-            }
+        PUT _template/awswaf-logs
+        {
+           "index_patterns":[ "awswaf-*"],
+           "settings":{
+                "number_of_shards":1
+           },
+           "mappings":{
+              "waflog":{
+                 "properties":{
+                    "httpRequest":{
+                       "properties":{
+                          "clientIp":{
+                             "type":"keyword",
+                             "fields":{
+                                "keyword":{
+                                   "type":"ip"
+                                }
+                             }
+                          }
+                       }
+                    },
+                    "timestamp":{
+                       "type":"date",
+                       "format":"epoch_millis"
+                    }
+                 }
+              }
+           }
+        }
         ```
 
     *   Paste the statement in Kibana console and click on the green **play** button to execute it:
@@ -90,7 +90,7 @@ Below you will create indexes and visualizations in your domain.
 
 Now you will need to configure Web ACL logging functionality.
 
-3.  In the WAF & Shield AWS console, open **Logging** tab of the **mod-module-1** Web ACL and click **Enable Logging**.
+3.  In the **WAF & Shield** AWS console, open **Logging** tab of the **mod-module-1** Web ACL and click **Enable Logging**.
     **Note**: If you see the splash/informational screen when opening the **WAF & Shield** console please see the [Appendix](#appendix)
 
 4.  Choose Kinesis Data Firehose stream created for the lab **aws-waf-logs-mod-module-1**.
