@@ -30,7 +30,7 @@ Lab 2 -- Automating Protections and Tracking Attacks
     ![](.//media/image24.png)
 
     When you are done it should look similar to this.
-		
+
     ![](.//media/image25.png)
 
 Now your WebCarter Web application is protected with the Web ACL created for this lab.
@@ -197,16 +197,16 @@ httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
 
 >Example:
 
-```sh
+    ```sh
     aws waf-regional get-rule --region us-west-2 --rule-id d3458c9b-5bba-4361-a7ce-e28d66a86d27
-```
+    ```
 
 >Run the following replacing items in "<>":
 >
 
-```sh
-aws waf-regional get-rule --region <Region> --rule-id <Terminating Rule ID>
-```
+   ```sh
+    aws waf-regional get-rule --region <Region> --rule-id <Terminating Rule ID>
+    ```
 
 
 **QUESTION**: Does number of allowed requests to the login page look reasonable after we blocked a **IamABOT** BOT?
