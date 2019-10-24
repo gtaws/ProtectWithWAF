@@ -254,7 +254,7 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 
     ![](.//media/image28.png)
 *   Click the **Go to AWS WAF** button
-![](.//media/image29.png)
+    ![](.//media/image29.png)
 *   Then click **Web ACLs**
 *   Update the **Filter** to reflect the appropriate region where the ALB is deployed.
 
