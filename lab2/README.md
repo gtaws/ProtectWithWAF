@@ -1,5 +1,5 @@
 <!-- TOC -->
-
+Table of Contents:
 -   [Step 1: Associate WebCarter ALB with WAF-Automation Web ACL.](#step-1-associate-webcarter-alb-with-waf-automation-web-acl)
 -   [Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality](#step-2-configure-elasticsearch-with-kibana-and-waf-full-logging-functionality)
 -   [Step 3: Use ElasticSearch Service with Kibana for WAF monitoring and forensics](#step-3-use-elasticsearch-service-with-kibana-for-waf-monitoring-and-forensics)

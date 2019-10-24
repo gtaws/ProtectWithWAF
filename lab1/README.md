@@ -1,5 +1,5 @@
 <!-- TOC -->
-
+Table of Contents
 -   [Introduction:](#introduction)
 -   [Preparation:](#preparation)
 -   [Step 1: Simulate Cross-Site Scripting, SQL Injection, HTTP Flood, and Bad BOT activities](#step-1-simulate-cross-site-scripting-sql-injection-http-flood-and-bad-bot-activities)
