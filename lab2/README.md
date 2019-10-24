@@ -26,8 +26,11 @@ Lab 2 -- Automating Protections and Tracking Attacks
 ![](.//media/image23.png)
 
 4.  Click **Add association**, then choose **Application load balancer** as **Resource type** and choose your WebCarter load balancer. Click **Add**.
+
     ![](.//media/image24.png)
+
     When you are done it should look similar to this.
+		
     ![](.//media/image25.png)
 
 Now your WebCarter Web application is protected with the Web ACL created for this lab.
