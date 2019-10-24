@@ -1,22 +1,21 @@
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<!-- TOC -->
 
-		- [Step 1: Associate WebCarter ALB with WAF-Automation Web ACL.](#step-1-associate-webcarter-alb-with-waf-automation-web-acl)
-		- [Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality](#step-2-configure-elasticsearch-with-kibana-and-waf-full-logging-functionality)
-		- [Step 3: Use ElasticSearch Service with Kibana for WAF monitoring and forensics](#step-3-use-elasticsearch-service-with-kibana-for-waf-monitoring-and-forensics)
-		- [Step 4: Honeypot for bad bots and scrapers.](#step-4-honeypot-for-bad-bots-and-scrapers)
-		- [Step 5: WAF Automation using AWS Lambda and Amazon Athena.](#step-5-waf-automation-using-aws-lambda-and-amazon-athena)
-		- [Appendix:](#appendix)
+-   [Step 1: Associate WebCarter ALB with WAF-Automation Web ACL.](#step-1-associate-webcarter-alb-with-waf-automation-web-acl)
+-   [Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality](#step-2-configure-elasticsearch-with-kibana-and-waf-full-logging-functionality)
+-   [Step 3: Use ElasticSearch Service with Kibana for WAF monitoring and forensics](#step-3-use-elasticsearch-service-with-kibana-for-waf-monitoring-and-forensics)
+-   [Step 4: Honeypot for bad bots and scrapers.](#step-4-honeypot-for-bad-bots-and-scrapers)
+-   [Step 5: WAF Automation using AWS Lambda and Amazon Athena.](#step-5-waf-automation-using-aws-lambda-and-amazon-athena)
+-   [Appendix](#appendix)
 
 <!-- /TOC -->
-
 Lab 2 -- Automating Protections and Tracking Attacks
 ====================================================
 
 ### Step 1: Associate WebCarter ALB with WAF-Automation Web ACL.
 
-**Note** Please see the appendix at the end if you are unable able to see the WAF ACLs in the WAF & Shield console.
+**Note**: Please see the [Appendix](#appendix) at the end if you are unable able to see the **WAF ACLs** in the **WAF & Shield** console.
 
-1.  Go to AWS WAF & Shield console, choose the region you're working at, and open **waf-lab-1** Web ACL and navigate to the **Rules** tab on the right.
+1.  Go to AWS **WAF & Shield** console, choose the region you're working at, and open **waf-lab-1** Web ACL and navigate to the **Rules** tab on the right.
 
     ![](.//media/image22.png)
 
@@ -89,6 +88,7 @@ Below you will create indexes and visualizations in your domain.
 Now you will need to configure Web ACL logging functionality.
 
 3.  In the WAF & Shield AWS console, open **Logging** tab of the **mod-module-1** Web ACL and click **Enable Logging**.
+    **Note**: If you see the splash/informational screen when opening the **WAF & Shield** console please see the [Appendix](#appendix)
 
 4.  Choose Kinesis Data Firehose stream created for the lab **aws-waf-logs-mod-module-1**.
 
@@ -268,10 +268,10 @@ As far we can see, there are malicious requests coming from the same IP address 
 32. Click **Add IP address...** then **Create**.
 
 33. Go to the **Rules** menu and click **Create rule**:
-![](.//media/image11.png)
-![](.//media/image12.png)
+    ![](.//media/image11.png)
+    ![](.//media/image12.png)
 
-**Note** we added two conditions in this rule.
+    **Note** we added two conditions in this rule.
 
 34. Navigate to **Web ACLs** menu and click on **mod-module-1** ACL.
 
@@ -406,6 +406,7 @@ In the above steps we demonstrated manual creation of the WAF rules using inform
 In this scenario we used automated detection of probes and scanners, that are getting 4xx responses from the application and stay undetected by the rate-limiting rules.
 
 ### Appendix:
+
 *   When opening the AWS WAF & Shield console you maybe prompted with the WAF & Shield splash screen instead WAF specific console.
 
     ![](.//media/image28.png)

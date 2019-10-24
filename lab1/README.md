@@ -1,3 +1,18 @@
+<!-- TOC -->
+
+-   [Introduction:](#introduction)
+-   [Preparation:](#preparation)
+-   [Step 1: Simulate Cross-Site Scripting, SQL Injection, HTTP Flood, and Bad BOT activities](#step-1-simulate-cross-site-scripting-sql-injection-http-flood-and-bad-bot-activities)
+    -   [Simulate a cross site scripting attack.](#simulate-a-cross-site-scripting-attack)
+    -   [Simulate a SQL injection attack.](#simulate-a-sql-injection-attack)
+    -   [Simulate a HTTP Flood attack](#simulate-a-http-flood-attack)
+    -   [Simulate a Bad Bot attack](#simulate-a-bad-bot-attack)
+-   [Step 2: Create a WAF and configure protection against the above attacks using WAF native rules.](#step-2-create-a-waf-and-configure-protection-against-the-above-attacks-using-waf-native-rules)
+-   [Step 3: Demonstrate protection against the above attacks using WAF native rules.](#step-3-demonstrate-protection-against-the-above-attacks-using-waf-native-rules)
+-   [Cleanup](#cleanup)
+-   [Appendix:](#appendix)
+
+<!-- /TOC -->
 Lab 1 -- Manually testing attacks and protections
 =================================================
 
@@ -15,7 +30,7 @@ Then you will be creating an AWS WAF to protect against these simulated attacks 
 ### Preparation:
 You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to connect to an EC2 windows instance in AWS.  You will need to have a remote desktop client installed to procceed with the lab.  If you are not formiliar with how to connect to an EC2 instance I would suggest reviewing the full instructions on the AWS website <a href="https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html#rdp-prereqs">Connecting to Your Windows Instance</a>.  Here is a summary of the steps you will need to perform to connect to the Attacker instance throughout the lab.
 
-1.  You will need your EC2 keypair pem file (\<keypair filename\>.pem), which was used to create these instances.
+1.  You will need your EC2 keypair pem file (\<keypair filename>.pem), which was used to create these instances.
 2.  Login to the **AWS console** and choose the **EC2** service, typing *EC2* in the **Find Services** search is one way to get to the EC2 console.
 3.  Be sure to select the appropriate region from the top right drop down box.  This should match where the lab resources are deployed.
 4.  From the menu on the left choose **Instances**
