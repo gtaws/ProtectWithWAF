@@ -147,11 +147,12 @@ In this test we simulated a simple bot that causes excessive load on the server 
 5.  Click **Create web ACL**, fill out the details as below, and click **Next**:
 
     **Note**: Please select the region the ALB is deployed.
-    ![](.//media/image16.png)
+    >![](.//media/image16.png)
 
 6.  Create Cross-site scripting match condition. Click **Add Filter** then **Create**.
 
-    ![](.//media/image17.png)
+    >![](.//media/image17.png)
+
     **Note**: Filters in the conditions are logically disjoined, i.e. **OR**. You can have up to 10 filters in each condition (hard limit).
 
 
@@ -159,14 +160,14 @@ In this test we simulated a simple bot that causes excessive load on the server 
 
 7.  Create SQL injection match condition. Click **Add Filter** then **Create**.
 
-    ![](.//media/image18.png)
+    >![](.//media/image18.png)
 
 
 
 
 8.  Create String and regex match condition. Click **Add Filter** then **Create**.
 
-    ![](.//media/image19.png)
+    >![](.//media/image19.png)
 
 
 
@@ -179,7 +180,8 @@ In this test we simulated a simple bot that causes excessive load on the server 
 
 11. Create a simple Cross-site scripting rule that in our example will contain a single XSS condition created above. Select the condition **XSS1** as below and click **Add Condition**:
 
-    ![](.//media/image20.png)
+    >![](.//media/image20.png)
+
     **Note**: Conditions in the rule are logically joined, i.e. **AND**. You can have up to 100 conditions of each type per account (soft limit).
 
 
@@ -187,21 +189,22 @@ In this test we simulated a simple bot that causes excessive load on the server 
 
 12. Create SQL Injection rule choosing the SQL injection condition created above:
 
-    ![](.//media/image21.png)
+    >![](.//media/image21.png)
 
 
 
 
 13. Create Bad Bot rule choosing the String match condition created above:
 
-    ![](.//media/image22.png)
+    >![](.//media/image22.png)
 
 
 
 
 14. Create HTTP Flood rule changing the Rule type to **Rate-based rule**:
 
-    ![](.//media/image23.png)
+    >![](.//media/image23.png)
+
     **Note**: No conditions are needed for this rule, but you could add match conditions to the rate-based rule when crafting your own custom signatures.
 
 
