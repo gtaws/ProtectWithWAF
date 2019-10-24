@@ -244,6 +244,7 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
 6.  Go to AWS WAF Console and navigate to **Rules-\> HTTPFlood1Rule**.  Notice IP addresses that are currently blocked by this rule:
 
     ![](.//media/image26.png)
+    
     These IP addresses configured in JMeter in **CSV Data Set Config** section and originate from the attacker instance.
 
 7.  Repeat ab test as above and notice Non-2xx responses from WAF:
