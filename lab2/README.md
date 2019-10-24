@@ -39,7 +39,7 @@ Now your WebCarter Web application is protected with the Web ACL created for thi
 
 ### Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality
 
-In this WAF Automation lab we will use a Kinesis Firehose stream that points to ElasticSearch domain. You will configure the Web ACL logging stream of JSON WAF logs to the Kinesis Data Firehose.
+In this WAF Automation lab we will use a Kinesis Firehose stream that points to ElasticSearch domain. We will configure the Web ACL logging stream of JSON WAF logs to the Kinesis Data Firehose.
 
 Kinesis Data Firehose also places a backup copy of the WAF logs to an S3 bucket for Amazon Athena analysis.
 

@@ -1,7 +1,7 @@
 <!-- TOC -->
 Table of Contents
--   [Introduction:](#introduction)
--   [Preparation:](#preparation)
+-   [Introduction](#introduction)
+-   [Preparation](#preparation)
 -   [Step 1: Simulate Cross-Site Scripting, SQL Injection, HTTP Flood, and Bad BOT activities](#step-1-simulate-cross-site-scripting-sql-injection-http-flood-and-bad-bot-activities)
     -   [Simulate a cross site scripting attack.](#simulate-a-cross-site-scripting-attack)
     -   [Simulate a SQL injection attack.](#simulate-a-sql-injection-attack)
@@ -10,7 +10,7 @@ Table of Contents
 -   [Step 2: Create a WAF and configure protection against the above attacks using WAF native rules.](#step-2-create-a-waf-and-configure-protection-against-the-above-attacks-using-waf-native-rules)
 -   [Step 3: Demonstrate protection against the above attacks using WAF native rules.](#step-3-demonstrate-protection-against-the-above-attacks-using-waf-native-rules)
 -   [Cleanup](#cleanup)
--   [Appendix:](#appendix)
+-   [Appendix](#appendix)
 
 <!-- /TOC -->
 Lab 1 -- Manually testing attacks and protections
@@ -61,9 +61,9 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 4.  In Chrome Developer Tools go to **Network** tab.
 
 5.  In the browser window on the WebCarter site type the following in the **Search** text field and click **Search!**:
-```
-<script>alert(document.cookie)</script>
-```
+    ```html
+    <script>alert(document.cookie)</script>
+    ```
 
 6.  In Chrome Developer tools select the **search?id...** request in the Network tab and navigate to Response sub tab on the right. If you do not see **search?id..** then Click on the first green bar field.
 ![](.//media/chromenetwork.png)
@@ -80,13 +80,13 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 #### Simulate a SQL injection attack.
 
 10. In the **Search** field enter the following and click **Search!**:
-```
-' and 1=0 union select 1,group\_concat(table\_name) from information\_schema.tables \#
-```
-![](.//media/image6.png)
+    ```
+    ' and 1=0 union select 1,group_concat(table_name) from information_schema.tables #
+    ```
+    ![](.//media/image6.png)
 
 11. Server returns **Database Error** page displaying the SQL statement been executed. You successfully performed a SQL Injection attack and got a desired output from the server.
-![](.//media/image7.png)
+    ![](.//media/image7.png)
 
 #### Simulate a HTTP Flood attack
 
@@ -95,41 +95,40 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
     ![](.//media/image8.png)
 
 13. Go to **File -\> Open** menu and navigate to **c:\\JmeterScenarios.jmx** file and click Open:
-![](.//media/image9.png)
+    ![](.//media/image9.png)
 
 14. Click the most top **HTTP Requests Defaults** entry in the test plan menu on the left. Update the **Server Name or IP** with the ALB endpoint saved. Enter the server name only without without **"https://"** prefixes or **"/"** suffuxes:
-![](.//media/image10.png)
+    ![](.//media/image10.png)
 
 15. Save changes by navigating to **File-\>Save** menu.
 
 16. Right click on the **DoS** scenario and then click **Start**:
-![](.//media/image11.png)
+    ![](.//media/image11.png)
 
 17. Navigate to **View Results Tree**, select one of the items which has one of the item with a green shield under, and assure you're getting 200 OK responses. Your HTTP Flood attack was successful:
-![](.//media/image12.png)
+    ![](.//media/image12.png)
 
 18. Stop and Clear the results tree for the next tests:
-![](.//media/image13.png)
+    ![](.//media/image13.png)
 
 #### Simulate a Bad Bot attack
 19. Open a cmd window and change directory to **C:\Apache24\bin**.
 
 20. Run Apache Benchmark:
-    -  Copy the abLoadTestCommand from the **Outputs** tab on of the CloudFormation stack.
-![](.//media/image14.png)
-	  -  Run the command in a Command Prompt window
-	  -  Assure that ab run above was successful:
+*   Copy the abLoadTestCommand from the **Outputs** tab on of the CloudFormation stack.
+    ![](.//media/image14.png)
+*   Run the command in a Command Prompt window
+*   Assure that ab run above was successful:
+    >*Concurrency Level: 1*
+    >
+    >*Time taken for tests: x.xxx seconds*
+    >
+    >*Complete requests: 100*
+    >
+    >*Failed requests: 0*
+    >
 
-> *Concurrency Level: 1*
->
-> *Time taken for tests: x.xxx seconds*
->
-> *Complete requests: 100*
->
-> *Failed requests: 0*
->
-
-21. In this test we simulated a simple bot that causes excessive load on the server and can be identified by its *User-Agent.*
+In this test we simulated a simple bot that causes excessive load on the server and can be identified by its *User-Agent.*
 
 ***
 
@@ -142,8 +141,8 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 3.  Go to **Integrated Services** tab and click on **Create Web ACL** button. You'll be directed to the WAF & Shield service console.
 
 4.  Choose the region you're using in the **Filter** field:
-![](.//media/image15.png)
-  **Note**: WAF configuration is separate for each region and Global for CloudFront deployments. You must configure your Web ACL in the same region where you have your ALB deployed.
+    ![](.//media/image15.png)
+    **Note**: WAF configuration is separate for each region and Global for CloudFront deployments. You must configure your Web ACL in the same region where you have your ALB deployed.
 
 5.  Click **Create web ACL**, fill out the details as below, and click **Next**:
 
@@ -151,35 +150,34 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
     ![](.//media/image16.png)
 
 6.  Create Cross-site scripting match condition. Click **Add Filter** then **Create**.
-![](.//media/image17.png)
-    **Note**: Filters in the conditions are logically disjoined, i.e. **OR**.
-You can have up to 10 filters in each condition (hard limit).
+    ![](.//media/image17.png)
+    **Note**: Filters in the conditions are logically disjoined, i.e. **OR**. You can have up to 10 filters in each condition (hard limit).
 
 7.  Create SQL injection match condition. Click **Add Filter** then **Create**.
-![](.//media/image18.png)
+    ![](.//media/image18.png)
 
 8.  Create String and regex match condition. Click **Add Filter** then **Create**.
-![](.//media/image19.png)
+    ![](.//media/image19.png)
 
 9.  Click **Next** on the *Create Conditions* page.
 
 10. Click **Create Rule** button.
 
-**Note:** Be sure to pick the appropriate match condition for each of the rules you are creating.  For example the **XSS1** condition you would want to select the **match at least one of the filters in the cross-site scripting match condition**.  In the screenshots below each rule include the appropriate match condition.
+    **Note:** Be sure to pick the appropriate match condition for each of the rules you are creating.  For example the **XSS1** condition you would want to select the **match at least one of the filters in the cross-site scripting match condition**.  In the screenshots below each rule include the appropriate match condition.
 
 11. Create a simple Cross-site scripting rule that in our example will contain a single XSS condition created above. Select the condition **XSS1** as below and click **Add Condition**:
-![](.//media/image20.png)
+    ![](.//media/image20.png)
     **Note**: Conditions in the rule are logically joined, i.e. **AND**. You can have up to 100 conditions of each type per account (soft limit).
 
 12. Create SQL Injection rule choosing the SQL injection condition created above:
-![](.//media/image21.png)
+    ![](.//media/image21.png)
 
 13. Create Bad Bot rule choosing the String match condition created above:
-![](.//media/image22.png)
+    ![](.//media/image22.png)
 
 14. Create HTTP Flood rule changing the Rule type to **Rate-based rule**:
-![](.//media/image23.png)
-**Note**: No conditions are needed for this rule, but you could add match conditions to the rate-based rule when crafting your own custom signatures.
+    ![](.//media/image23.png)
+    **Note**: No conditions are needed for this rule, but you could add match conditions to the rate-based rule when crafting your own custom signatures.
 
 15. Set default Web ACL action as **Allow all requests that don't match any rules** and click **Review and create**.
 
@@ -194,30 +192,31 @@ You can have up to 10 filters in each condition (hard limit).
 In this step we'll repeat the attacks in Step 1 above and assure they're blocked by the rules we created in Step 2.
 
 1.  In a Chrome browser window navigate to your ALB endpoint and type following in the **Search** string.  Then click **Search!**.
-
-    ```<script>alert(document.cookie)</script>```
+    ```html
+    <script>alert(document.cookie)</script>
+    ```
 
 2.  Assure you get HTTP 403 response from WAF:
-![](.//media/image24.png)
+    ![](.//media/image24.png)
 
 3.  In the **Search** field enter the following:
-```
-' and 1=0 union select 1,group\_concat(table\_name) from information\_schema.tables #
-```
+    ```
+    ' and 1=0 union select 1,group_concat(table_name) from information_schema.tables #
+    ```
 
 4.  Assure you get HTTP 403 response from WAF:
-![](.//media/image24.png)
+    ![](.//media/image24.png)
 
 5.  Start JMeter DoS scenario and navigate to the Results tree. Watch the request till they start failing after reaching 2000 requests / 5 min as configured in your rate-based rule:
-![](.//media/image25.png)
+    ![](.//media/image25.png)
 
-6.  Go to AWS WAF Console and navigate to Rules-\> HTTPFlood1Rule.  Notice IP addresses that are currently blocked by this rule:
+6.  Go to AWS WAF Console and navigate to **Rules-\> HTTPFlood1Rule**.  Notice IP addresses that are currently blocked by this rule:
 
     ![](.//media/image26.png)
     These IP addresses configured in JMeter in **CSV Data Set Config** section and originate from the attacker instance.
 
 7.  Repeat ab test as above and notice Non-2xx responses from WAF:
-![](.//media/image27.png)
+    ![](.//media/image27.png)
 
 In this lab you protected your Web application against Cross-site scripting, SQL Injection, HTTP flood and simple BOTs using AWS WAF native rules.
 
