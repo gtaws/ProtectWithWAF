@@ -153,11 +153,20 @@ In this test we simulated a simple bot that causes excessive load on the server 
     ![](.//media/image17.png)
     **Note**: Filters in the conditions are logically disjoined, i.e. **OR**. You can have up to 10 filters in each condition (hard limit).
 
+
+
+
 7.  Create SQL injection match condition. Click **Add Filter** then **Create**.
     ![](.//media/image18.png)
 
+
+
+
 8.  Create String and regex match condition. Click **Add Filter** then **Create**.
     ![](.//media/image19.png)
+
+
+
 
 9.  Click **Next** on the *Create Conditions* page.
 
@@ -169,15 +178,27 @@ In this test we simulated a simple bot that causes excessive load on the server 
     ![](.//media/image20.png)
     **Note**: Conditions in the rule are logically joined, i.e. **AND**. You can have up to 100 conditions of each type per account (soft limit).
 
+
+
+
 12. Create SQL Injection rule choosing the SQL injection condition created above:
     ![](.//media/image21.png)
+
+
+
 
 13. Create Bad Bot rule choosing the String match condition created above:
     ![](.//media/image22.png)
 
+
+
+
 14. Create HTTP Flood rule changing the Rule type to **Rate-based rule**:
     ![](.//media/image23.png)
     **Note**: No conditions are needed for this rule, but you could add match conditions to the rate-based rule when crafting your own custom signatures.
+
+
+
 
 15. Set default Web ACL action as **Allow all requests that don't match any rules** and click **Review and create**.
 
