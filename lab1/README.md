@@ -56,65 +56,51 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 2.  On the Attacker instance (RDP Session) open Chrome browser and navigate to the ALB endpoint you saved above:
 ![](.//media/image2.png)
 
-3.  Right click on the page and choose **Inspect**. Chrome Developer Tools will open.
-
-4.  In Chrome Developer Tools go to **Network** tab.
-
-5.  In the browser window on the WebCarter site type the following in the **Search** text field and click **Search!**:
+3.  In the browser window on the WebCarter site type the following in the **Search** text field and click **Search!**:
     ```html
     <script>alert(document.cookie)</script>
     ```
-
-6.  In Chrome Developer tools select the **search?id...** request in the Network tab and navigate to Response sub tab on the right. If you do not see **search?id..** then Click on the first green bar field.
-![](.//media/chromenetwork.png)
-
-7.  Use CTRL-F combination to search for **alert** in the response. As far as you can see, server returned your input above without validating it:
-![](.//media/image5.png)
-
-8.  Click on any of the Brands filters (**Apple**, **NBA**). The script will be executed and the session cookie will be printed in the alert. Your Cross-site scripting attack was successful:
+4.  Click on any of the Brands filters (**Apple**, **NBA**). The script will be executed and the session cookie will be printed in the alert. Your Cross-site scripting attack was successful:
 ![](.//media/image4.png)
-
-9.  Click **Clear** button to clear the Developer Tools output:
-![](.//media/image3.png)
 
 #### Simulate a SQL injection attack.
 
-10. In the **Search** field enter the following and click **Search!**:
+5.  In the **Search** field enter the following and click **Search!**:
     ```
     ' and 1=0 union select 1,group_concat(table_name) from information_schema.tables #
     ```
     ![](.//media/image6.png)
 
-11. Server returns **Database Error** page displaying the SQL statement been executed. You successfully performed a SQL Injection attack and got a desired output from the server.
+6.  Server returns **Database Error** page displaying the SQL statement been executed. You successfully performed a SQL Injection attack and got a desired output from the server.
     ![](.//media/image7.png)
 
 #### Simulate a HTTP Flood attack
 
-12. Run Apache JMeter by clicking on the JMeter shortcut on the desktop.
+7.  Run Apache JMeter by clicking on the JMeter shortcut on the desktop.
 
     ![](.//media/image8.png)
 
-13. Go to **File -\> Open** menu and navigate to **c:\\JmeterScenarios.jmx** file and click Open:
+8.  Go to **File -\> Open** menu and navigate to **c:\\JmeterScenarios.jmx** file and click Open:
     ![](.//media/image9.png)
 
-14. Click the most top **HTTP Requests Defaults** entry in the test plan menu on the left. Update the **Server Name or IP** with the ALB endpoint saved. Enter the server name only without without **"https://"** prefixes or **"/"** suffuxes:
+9.  Click the most top **HTTP Requests Defaults** entry in the test plan menu on the left. Update the **Server Name or IP** with the ALB endpoint saved. Enter the server name only without without **"https://"** prefixes or **"/"** suffuxes:
     ![](.//media/image10.png)
 
-15. Save changes by navigating to **File-\>Save** menu.
+10. Save changes by navigating to **File-\>Save** menu.
 
-16. Right click on the **DoS** scenario and then click **Start**:
+11. Right click on the **DoS** scenario and then click **Start**:
     ![](.//media/image11.png)
 
-17. Navigate to **View Results Tree**, select one of the items which has one of the item with a green shield under, and assure you're getting 200 OK responses. Your HTTP Flood attack was successful:
+12. Navigate to **View Results Tree**, select one of the items which has one of the item with a green shield under, and assure you're getting 200 OK responses. Your HTTP Flood attack was successful:
     ![](.//media/image12.png)
 
-18. Stop and Clear the results tree for the next tests:
+13. Stop and Clear the results tree for the next tests:
     ![](.//media/image13.png)
 
 #### Simulate a Bad Bot attack
-19. Open a cmd window and change directory to **C:\Apache24\bin**.
+14. Open a cmd window and change directory to **C:\Apache24\bin**.
 
-20. Run Apache Benchmark:
+15. Run Apache Benchmark:
 *   Copy the abLoadTestCommand from the **Outputs** tab on of the CloudFormation stack.
     ![](.//media/image14.png)
 *   Run the command in a Command Prompt window
@@ -244,7 +230,7 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
 6.  Go to AWS WAF Console and navigate to **Rules-\> HTTPFlood1Rule**.  Notice IP addresses that are currently blocked by this rule:
 
     ![](.//media/image26.png)
-    
+
     These IP addresses configured in JMeter in **CSV Data Set Config** section and originate from the attacker instance.
 
 7.  Repeat ab test as above and notice Non-2xx responses from WAF:
