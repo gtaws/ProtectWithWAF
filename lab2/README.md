@@ -1,7 +1,11 @@
 <!-- TOC -->
-Table of Contents:
+
+-   [Introduction](#introduction)
 -   [Step 1: Associate WebCarter ALB with WAF-Automation Web ACL.](#step-1-associate-webcarter-alb-with-waf-automation-web-acl)
 -   [Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality](#step-2-configure-elasticsearch-with-kibana-and-waf-full-logging-functionality)
+    -   [Configure Elasticsearch to receive the logs](#configure-elasticsearch-to-receive-the-logs)
+    -   [Configure Web ACL logging functionality.](#configure-web-acl-logging-functionality)
+    -   [Upload dashboard and vizualizations to Kibana](#upload-dashboard-and-vizualizations-to-kibana)
 -   [Step 3: Use ElasticSearch Service with Kibana for WAF monitoring and forensics](#step-3-use-elasticsearch-service-with-kibana-for-waf-monitoring-and-forensics)
 -   [Step 4: Honeypot for bad bots and scrapers.](#step-4-honeypot-for-bad-bots-and-scrapers)
 -   [Step 5: WAF Automation using AWS Lambda and Amazon Athena.](#step-5-waf-automation-using-aws-lambda-and-amazon-athena)
@@ -11,8 +15,8 @@ Table of Contents:
 Lab 2 -- Automating Protections and Tracking Attacks
 ====================================================
 
-### introduction
-In this WAF Automation lab we will use a Kinesis Firehose stream and consume it with ElasticSearch. We will configure the Web ACL WAF logs logging to the Kinesis  Firehose stream.  We will use **Kibana** to do more analysis of our web traffic and help find requests which may not be legitimate.
+### Introduction
+In this WAF Automation lab we will use a Kinesis Firehose stream and setup ElasticSearch to consume the stream. We will configure the Web ACL WAF logs logging to the Kinesis Firehose stream.  We will use **Kibana** to do more analysis of our web traffic and help find requests which may not be legitimate.
 
 Kinesis Data Firehose also places a backup copy of the WAF logs to an S3 bucket and we will Amazon Athena for additional analysis.
 
@@ -47,6 +51,8 @@ Now your WebCarter Web application is protected with the Web ACL created for thi
 ### Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality
 
 Below you will create indexes and visualizations in your domain.
+
+#### Configure Elasticsearch to receive the logs
 
 **Note:** Please be sure to perform the steps in the order listed below when configuring Kibana.
 
@@ -418,7 +424,7 @@ In this scenario we used automated detection of probes and scanners, that are ge
 
     ![](.//media/image28.png)
 *   Click the **Go to AWS WAF** button
-![](.//media/image29.png)
+    ![](.//media/image29.png)
 *   Then click **Web ACLs**
 *   Update the **Filter** to reflect the appropriate region where the ALB is deployed.
 
