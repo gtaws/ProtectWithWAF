@@ -1,10 +1,10 @@
 Pre-requisites
 ==============
 
-- A computer with Chrome
-- An RDP Client
-- An AWS EC2 Key Pair
-- Optional - git
+    - A computer with Chrome
+    - An RDP Client
+    - An AWS EC2 Key Pair
+    - Optional - git
 
 Lab Prep -- Launch Cloudformation Stacks Setup
 ==============================================
@@ -19,7 +19,7 @@ Web Carter & Attacker workstation setup
 
 1.  Open the Cloudformation console
 
-![](.//media/image10.png)    
+![](.//media/image10.png)
 
 2.  Create a new stack
 
@@ -85,7 +85,7 @@ and the dashboards.
 
 1.  Open the CloudFormation console
 
-![](.//media/image1.png)    
+![](.//media/image1.png)
 
 2.  Create a new stack
 
@@ -111,7 +111,7 @@ and the dashboards.
 
 7.  Enter your IP + "/32" for the attacker's allowed ingress IP address in the Cloudformation form. Please replace 0.0.0.0/0 in these instructions with your IP address:
 
-![](.//media/image8.png)    
+![](.//media/image8.png)
 
 8.  Scroll to the bottom of the page and hit **Next**.
 
@@ -122,4 +122,3 @@ and the dashboards.
 ![](.//media/image9.png)
 
 11. The stack will eventually turn to CREATE\_COMPLETE.
-

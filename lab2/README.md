@@ -11,6 +11,13 @@ Table of Contents:
 Lab 2 -- Automating Protections and Tracking Attacks
 ====================================================
 
+### introduction
+In this WAF Automation lab we will use a Kinesis Firehose stream and consume it with ElasticSearch. We will configure the Web ACL WAF logs logging to the Kinesis  Firehose stream.  We will use **Kibana** to do more analysis of our web traffic and help find requests which may not be legitimate.
+
+Kinesis Data Firehose also places a backup copy of the WAF logs to an S3 bucket and we will Amazon Athena for additional analysis.
+
+We will use a honeypot to detect bots crawler our websites and automate blocking these types of requests.
+
 ### Step 1: Associate WebCarter ALB with WAF-Automation Web ACL.
 
 **Note**: Please see the [Appendix](#appendix) at the end if you are unable able to see the **WAF ACLs** in the **WAF & Shield** console.
@@ -38,10 +45,6 @@ Now your WebCarter Web application is protected with the Web ACL created for thi
 ***
 
 ### Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality
-
-In this WAF Automation lab we will use a Kinesis Firehose stream that points to ElasticSearch domain. We will configure the Web ACL logging stream of JSON WAF logs to the Kinesis Data Firehose.
-
-Kinesis Data Firehose also places a backup copy of the WAF logs to an S3 bucket for Amazon Athena analysis.
 
 Below you will create indexes and visualizations in your domain.
 
@@ -88,7 +91,7 @@ Below you will create indexes and visualizations in your domain.
     *   Paste the statement in Kibana console and click on the green **play** button to execute it:
     ![](.//media/image2.png)
 
-Now you will need to configure Web ACL logging functionality.
+#### Configure Web ACL logging functionality.
 
 3.  In the **WAF & Shield** AWS console, open **Logging** tab of the **mod-module-1** Web ACL and click **Enable Logging**.
     **Note**: If you see the splash/informational screen when opening the **WAF & Shield** console please see the [Appendix](#appendix)
@@ -97,30 +100,32 @@ Now you will need to configure Web ACL logging functionality.
 
 5.  **Do Not** add **Redacted Fields** and click **Create**.
 
-6.  RDP to the Attacker Windows instance and run **BOT1** Jmeter scenario to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.
+6.  RDP to the Attacker Windows instance and run **BOT1** Jmeter scenario, right click and select start, to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.
 
-7.  Wait for a couple of minutes till WAF logs will get to the ElasticSearch domain, then click on the **Discover** menu and define an index pattern as *awswaf-\** and click **Next step**:
-![](.//media/image3.png)
+7.  Wait for a couple of minutes till WAF logs get to the ElasticSearch domain, then in the **Kibana** dashboard click on the **Discover** menu and define an index pattern as *awswaf-\** and click **Next step**:
+    ![](.//media/image3.png)
 
 8.  Choose timestamp as a Filter and click **Create index pattern**.
-![](.//media/image4.png)
+    ![](.//media/image4.png)
 
-9.  Now you're able to run searches through your logs by going into the Discover tab in Kibana. For example, you can look for specific HTTP headers, query strings, or source IP addresses:
-    >Now upload visualizations and a dashboard. You can always customize
-    >them or create your visualizations as required.
+9.  Now you're able to run searches through your logs by going into the **Discover** tab in **Kibana**. For example, you can look for specific HTTP headers, query strings, or source IP addresses:
+
+#### Upload dashboard and vizualizations to Kibana
+
+>You can always customize them or create new visualizations as required.
 
 10. Go to **Management** menu and click **Advanced**. Search for the the ***defaultindex*** then copy and save the default index id value:
-![](.//media/image5.png)
+    ![](.//media/image5.png)
 
 11. Download and  using the URL in the JAM **Output Properties** webpage or you can right click the kibana-config.json url and select save link as. Open kibana-configruation.json locally and replace the ```_YOUR_ES_INDEX_``` value with the one saved above. Please do it everywhere in the file (approximately 5 times).
-![](.//media/image26.png)
+    ![](.//media/image26.png)
 
 12. Save the file.
 
 13. Go to **Management -> Saved Objects** tab, click **Import** and upload the modified kibana-configruation.json file. Click **Yes** for the overwrite question.
 
 14. You'll see your dashboard and visualizations have been uploaded successfully:
-![](.//media/image6.png)
+    ![](.//media/image6.png)
 
 15. Navigate to the **Dashboard** menu and choose **WAF** dashboard you just uploaded.
 
@@ -128,13 +133,13 @@ Now you will need to configure Web ACL logging functionality.
 
 ### Step 3: Use ElasticSearch Service with Kibana for WAF monitoring and forensics
 
-1.  On the Attacker Windows instance, check if BOT1 Jmeter scenario is still running. Re-start it if needed to generate more data for this exercise.
+1.  On the Attacker Windows instance, check if **BOT1** Jmeter scenario is still running. Re-start it if needed to generate more data for this exercise.
 
-2.  Go to AWS Console and choose ElasticSearch service. Choose your **mod-module-1-awswaf-logs** domain and click on the Kibana link.
+2.  Go to AWS Console and choose **ElasticSearch** service. Choose your **mod-module-1-awswaf-logs** domain and click on the Kibana link.
 
 3.  Navigate to the **Dashboard** menu on the left and explore the dashboard graphs. Check the number of requests per minute per source IP address.
 
-4.  Go to AWS WAF & Shield console, choose **IP addresses**, from the left side menu, check if IP addresses you see in the Kibana charts appear in any of the block lists.
+4.  Go to AWS **WAF & Shield** console, choose **IP addresses**, from the left side menu, check if IP addresses you see in the Kibana charts appear in any of the block lists.
 
 **QUESTION**: *Should the source IP addresses for BOT1 scenario appear in any of the block lists?*
 
@@ -143,16 +148,16 @@ This scenario simulates a mix of legitimate traffic together with under the rada
 5.  Go back to Kibana **Dashboard** GUI and scroll down to **Allow/block URIs**. Note that /login page is one of the top requested URIs.
 
 6.  Go to **Discover** menu and enter the following search filter:
-```
-httpRequest.uri:/user/login
-```
+    ```
+    httpRequest.uri:/user/login
+    ```
 
 7.  Scroll through some of the requests and note that at glance, they're coming from the same source IP address.
 
 8.  Enter the following search filter.
-```
-!httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
-```
+    ```
+    !httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
+    ```
 
 **QUESTION**: *Do these requests look legit? In the real-life scenario why can we see large number of malicious and legitimate requests coming from the same IP address?*
 
@@ -161,23 +166,23 @@ httpRequest.uri:/user/login
 *Can we block all requests to this URI?*
 
 9.  Look at the User-Agent header value for the requests returned by the search below:
-```
-httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
-```
+    ```
+    httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
+    ```
 
-**Note** that large number of requests has User-Agent value **IamaBOT**. We'll create a WAF rule that blocks these requests below.
+    **Note** that large number of requests has User-Agent value **IamaBOT**. We'll create a WAF rule that blocks these requests below.
 
 10. Go to AWS WAF & Shield console and navigate to **String and regex matching**.
 
 11. Click **Create condition** and create BOT10 condition as following:
-![](.//media/image7.png)
+    ![](.//media/image7.png)
 
 12. Click **Add filter** then **Create**.
 
 13. Go to **Rules** menu and click **Create rule**.
 
-14. Create BOT10 rule as following:
-![](.//media/image8.png)
+14. Create **BOT10** rule as following:
+    ![](.//media/image8.png)
 
 15. Click **Create**.
 
@@ -191,49 +196,52 @@ httpRequest.uri:/user/login && httpRequest.clientIp:10.192.30.50
 
 20. Wait for couple for minutes and refresh Kibana dashboard. Check if you see blocked request to the login page.
 
-21. Note the **Terminating Rule ID** in the **WAF Rules Hit** visualization and check the rule that is blocking these requests. You can check the rule by going to the **WAF & Shield Console**, filter on the appropriate region and select **Rules** from the left side.  This shdould display a list of all the rules and ID of each rule.  The **Terminating Rule ID** should match the rule you recently defined.
+    **Note** the **Terminating Rule ID** in the **WAF Rules Hit** visualization and check the rule that is blocking these requests. You can check the rule by going to the **WAF & Shield Console**, filter on the appropriate region and select **Rules** from the left side.  This shdould display a list of all the rules and ID of each rule.  The **Terminating Rule ID** should match the rule you recently defined.
 
->You can also run the following AWS CLI command from a machine which has the AWS CLI installed, credentials with the appropriate permissions, and internet access. Update the region and the rule id as required:
->
->Example:
->```sh
->aws waf-regional get-rule --region us-west-2 --rule-id d3458c9b-5bba-4361-a7ce-e28d66a86d27
->```
->Run the following replacing items in "<>":
->```sh
->aws waf-regional get-rule --region <Region> --rule-id <Terminating Rule ID>
->```
+    >You can also run the following AWS CLI command from a machine which has the AWS CLI installed, credentials with the appropriate permissions, and internet access. Update the region and the rule id as required:
+    >
+    >Example:
+    >```sh
+    >aws waf-regional get-rule --region us-west-2 --rule-id d3458c9b-5bba-4361-a7ce-e28d66a86d27
+    >```
+    >Run the following replacing items in "<>":
+    >```sh
+    >aws waf-regional get-rule --region <Region> --rule-id <Terminating Rule ID>
+    >```
 
 
 **QUESTION**: Does number of allowed requests to the login page look reasonable after we blocked a **IamABOT** BOT?
 
 22. Enter the following filter in the **Kibana console -> Discover** and try to see if there is anything abnormal in the requests returned:
-```
-action:"ALLOW" && httpRequest.uri:"/user/login"
-```
+    ```
+    action:"ALLOW" && httpRequest.uri:"/user/login"
+    ```
 
 **QUESTION**: If we cannot find how to identify malicious requests and we cannot block this source IP entirely, what can be next steps of our investigation?
 
-In the next steps we'll look at ALB access logs using Amazon Athena.
+In the next steps we'll look at ALB access logs using Amazon **Athena**.
 
-23. Go to Amazon Athena AWS console.
+23. Go to Amazon **Athena** AWS console.
 
 24. Go to Query Editor and choose **modmodule1_..** as your
     Database.
+
     **Note:** You will need to supply a s3 bucket location to store the query editor output before you are able to run a query.  You can get the location information from the AWS JAM **Output Properties** page.
-    1a.  Click **setup a query result location in Amazon S3**.
-    ![](.//media/image27.png)
-    2a.  Copy the bucket information from the **Output Properties**: **AthenaEditorOutput**.
-    ![](.//media/image31.png)
-    3a.  Paste the copied bucket location in the **Query result location** and then click **Save**.
-    ![](.//media/image30.png)
+
+    1.  Click **setup a query result location in Amazon S3**.
+        ![](.//media/image27.png)
+
+    2.  Copy the bucket information from the **Output Properties**: **AthenaEditorOutput**.
+        ![](.//media/image31.png)
+    3.  Paste the copied bucket location in the **Query result location** and then click **Save**.
+        ![](.//media/image30.png)
 
 25. Run the following SQL query:
     ```sql
     SELECT * from app_access_logs limit 1;
     ```
 
-    app_access_logs query points to the ALB access logs on the corresponding S3 bucket.
+    **app_access_logs** query points to the ALB access logs on the corresponding S3 bucket.
 
     You can get an additional information about incoming requests from these logs, such as HTTP response code, SSL cypher and protocol, processing time. This information usually helps you to investigate incoming requests to your Web application.
 
@@ -252,17 +260,17 @@ In the next steps we'll look at ALB access logs using Amazon Athena.
     GROUP BY client_ip, request_url, date_trunc('minute', parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z')), target_status_code;
     ```
 
-As far we can see, there are malicious requests coming from the same IP address and targeting our Web application REST API endpoint. We know that REST API shall be open only to our partners, and we decide quickly to block it for the IP address returned above.
+**Note** there are malicious requests coming from the same IP address and targeting our Web application REST API endpoint. We know that REST API shall be open only to our partners, and we decide quickly to block it for the IP address returned above.
 
-28. Go to AWS WAF & Shield console and navigate to **String and regex matching**.
+28. Go to AWS **WAF & Shield** console and navigate to **String and regex matching**.
 
 29. Click **Create condition** and create RESTAPI condition as following:
-![](.//media/image9.png)
+    ![](.//media/image9.png)
 
 30. Click **Add filter** then **Create**.
 
 31. Go to **IP addresses** and click **Create condition**:
-![](.//media/image10.png)
+    ![](.//media/image10.png)
 
 32. Click **Add IP address...** then **Create**.
 
@@ -300,10 +308,10 @@ You can see that requests from that IP address to /api url been blocked by the W
 ### Step 4: Honeypot for bad bots and scrapers.
 
 1.  Copy AddHoneypotSsmCommand from the AWS JAM **Output Properties** webpage.
-![](.//media/RunCommand.png)
+    ![](.//media/RunCommand.png)
 
 2.  Paste into the Command Prompt inside the Attacker Windows instance
-![](media/RunCommand-cmd.png)
+    ![](media/RunCommand-cmd.png)
 
 3.  Wait a few moments
 
@@ -311,28 +319,28 @@ You can see that requests from that IP address to /api url been blocked by the W
 
 5.  Right click on the page and choose **Inspect**.
 
-6.  Verify the honeypot link is present on the page. This link has been inserted into your application by AWS Systems Manager, which was configured by WAF Automation CloudFormation stack.
+6.  Verify the honeypot link is present on the page, right click on the page and select **View Page Source** and search for honeypot. This link has been inserted into your application by AWS **Systems Manager**, which was configured by WAF Automation CloudFormation stack.
     ![](.//media/image13.png)
 
     An API Gateway instance has been preconfigured with a Lambda function that parses the source IP address of the request and adds the source IP address to the black list.
 
-7.  To review / customize the honeypot lambda function, go to AWS Console and choose API Gateway service.
+7.  To review / customize the honeypot lambda function, go to AWS Console and choose **API Gateway** service.
 
 8.  Choose **Security Automation -- WAF..** API and click **ANY**.
 
 9.  Click on the Lambda function on the right if you'd like to customize this function:
-![](.//media/image14.png)
+    ![](.//media/image14.png)
 
-10. Run HTTTRack web copier on your Windows instance.
+10. Run **HTTTRack** web copier on your Windows instance.
 
 11. Select your language and click **Next** on the Welcome page and enter your project name (WebCarter for example), then click **Next**:
-![](.//media/image15.png)
+    ![](.//media/image15.png)
 
 12. Click **Add URL**, enter the ALB endpoint and click **OK**:
-![](.//media/image16.png)
+    ![](.//media/image16.png)
 
 13. Click **Set options** button and go to **Experts Only** tab. Change **Global travel mode** to **Go everywhere...** and click **OK**. Because the honeypot is a different domain, this will allow us to simulate a bad bot hitting the **no-follow** hidden honeypot link above:
-![](.//media/image17.png)
+    ![](.//media/image17.png)
 
 14. Click **Next** then **Finish**.
 
@@ -388,7 +396,7 @@ In the above steps we demonstrated manual creation of the WAF rules using inform
 13. In the CloudWatch window click **Action-\>Edit** on the top right corner.
 
 14. In the JSON input definition scroll right and replace the query id with the one you saved above:
-![](.//media/image20.png)
+    ![](.//media/image20.png)
 
 15. Click **Configure details** and then **Update rule**.
 
