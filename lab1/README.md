@@ -42,6 +42,7 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 10. Hover your mouse just over to the right of the password displayed and you should see an icon which when clicked will copy the password.
 11. Select **Download Remote Desktop File** and then run it.
 12. You should be prompted for user credentials and the user name should be prefilled with **Administrator** and you can paste in the password copied above.  Once you have supplied the ID/Password click the appropriate button to proceed.
+    *   While connecting you will be prompted about a certificate not being verified. This should occur twice, click continue each time.
     *   If you have the option to save the password feel free to check that box before connecting.
     *   If you are not prompted for credentials it's likely the security group on your instance is not allowing your source IP address.  Please make sure you have completed all of preperation steps.  You can also review your security group rules assigned to the ec2 instance.
 
@@ -50,20 +51,23 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
 ### Step 1: Simulate Cross-Site Scripting, SQL Injection, HTTP Flood, and Bad BOT activities
 
 #### Simulate a cross site scripting attack.
-1.  Remote desktop (RDP) to the **Attacker** windows instance, using the Preperation steps above.
+We will simulate a simple cross site scripting attack by placing some HTML code in the search area, which will embed the alert code into the search results page.  It will then create a browser alert when you click on when you click on any of the links on the search results page.
+
+1.  Remote desktop (RDP) to the **Attacker** windows instance, using the [Preparation](#preparation) steps above.
     *   **Note:** Once you login you may be prompted to allow your computer to be discoverable.  You can select **No**, but either will be fine.
 
-2.  On the Attacker instance (RDP Session) open Chrome browser and navigate to the ALB endpoint you saved above:
-![](.//media/image2.png)
+2.  On the Attacker instance (RDP Session) open Chrome browser.  It should open the the webcarter ALB URL by default, but you can also find the url cloudformation output:
+    ![](.//media/image2.png)
 
 3.  In the browser window on the WebCarter site type the following in the **Search** text field and click **Search!**:
     ```html
     <script>alert(document.cookie)</script>
     ```
 4.  Click on any of the Brands filters (**Apple**, **NBA**). The script will be executed and the session cookie will be printed in the alert. Your Cross-site scripting attack was successful:
-![](.//media/image4.png)
+    ![](.//media/image4.png)
 
 #### Simulate a SQL injection attack.
+We will simulate a SQL injection attack by placing a sql query in the the search area.  This will throw a database error on the page when you execute the search.
 
 5.  In the **Search** field enter the following and click **Search!**:
     ```
@@ -75,32 +79,27 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
     ![](.//media/image7.png)
 
 #### Simulate a HTTP Flood attack
+We will simulate a HTTP Flood attack by using JMeter to send lots of traffic to the web page.
 
 7.  Run Apache JMeter by clicking on the JMeter shortcut on the desktop.
 
     ![](.//media/image8.png)
 
-8.  Go to **File -\> Open** menu and navigate to **c:\\JmeterScenarios.jmx** file and click Open:
-    ![](.//media/image9.png)
-
-9.  Click the most top **HTTP Requests Defaults** entry in the test plan menu on the left. Update the **Server Name or IP** with the ALB endpoint saved. Enter the server name only without without **"https://"** prefixes or **"/"** suffuxes:
-    ![](.//media/image10.png)
-
-10. Save changes by navigating to **File-\>Save** menu.
-
-11. Right click on the **DoS** scenario and then click **Start**:
+8.  Right click on the **DoS** scenario and then click **Start**:
     ![](.//media/image11.png)
 
-12. Navigate to **View Results Tree**, select one of the items which has one of the item with a green shield under, and assure you're getting 200 OK responses. Your HTTP Flood attack was successful:
+9.  Navigate to **View Results Tree**, select one of the items which has one of the item with a green shield under, and assure you're getting 200 OK responses. Your HTTP Flood attack was successful:
     ![](.//media/image12.png)
 
-13. Stop and Clear the results tree for the next tests:
+10. Stop and Clear the results tree for the next tests:
     ![](.//media/image13.png)
 
 #### Simulate a Bad Bot attack
-14. Open a cmd window and change directory to **C:\Apache24\bin**.
+We will simulate a bad bot attack by using Apache Benchmark to send 100 http requests using the User-Agent = bad-bot.
 
-15. Run Apache Benchmark:
+11. Open a cmd window and change directory to **C:\Apache24\bin**.
+
+12. Run Apache Benchmark:
 *   Copy the abLoadTestCommand from the **Outputs** tab on of the CloudFormation stack.
     ![](.//media/image14.png)
 *   Run the command in a Command Prompt window
@@ -113,8 +112,6 @@ You will be using Windows Remote Desktop (RDP - Remote Desktop Protocol) to conn
     >
     >*Failed requests: 0*
     >
-
-In this test we simulated a simple bot that causes excessive load on the server and can be identified by its *User-Agent.*
 
 ***
 
@@ -265,6 +262,7 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 
 10. Perform the steps outlined in step 9 above for each of the remaining rules (SQLInjection1Rule & XSS1Rule)
 
+You are only charged for WebACLs and Rules.  You are not charged for each condition.  You are welcome to clean up each of the conditions we created (XSS1, SQLInjection1, BadBot1), but you will not be charged if you leave them
 ***
 
 ### Appendix:

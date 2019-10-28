@@ -820,6 +820,49 @@ Resources:
       AWS::CloudFormation::Init:
         config:
           files:
+            C:\installs\master_preferences:
+              content: !Sub |
+                {
+                  "homepage": "http://${webCarterALB.DNSName}",
+                  "homepage_is_newtabpage": false,
+                  "browser": {
+                    "show_home_button": true
+                  },
+                  "session": {
+                    "restore_on_startup": 4,
+                    "startup_urls": [
+                      "http://${webCarterALB.DNSName}"
+                      ]
+                  },
+                  "bookmark_bar": {
+                    "show_on_all_tabs": true
+                  },
+                  "sync_promo": {
+                    "show_on_first_run_allowed": false,
+                    "user_skipped": true
+                  },
+                  "distribution": {
+                    "import_bookmarks": false,
+                    "import_history": false,
+                    "import_home_page": false,
+                    "import_search_engine": false,
+                    "ping_delay": 60,
+                    "suppress_first_run_bubble": true,
+                    "do_not_create_desktop_shortcut": false,
+                    "do_not_create_quick_launch_shortcut": false,
+                    "do_not_launch_chrome": true,
+                    "do_not_register_for_update_launch": true,
+                    "make_chrome_default": true,
+                    "make_chrome_default_for_user": true,
+                    "suppress_first_run_default_browser_prompt": true,
+                    "skip_first_run_ui": true,
+                    "system_level": true,
+                    "verbose_logging": true
+                  }
+                }
+            c:\Users\Administrator\Desktop\jmeter-waf.bat:
+              content: !Sub |
+                "C:\Program Files\apache-jmeter-5.1.1\bin\jmeter-t.cmd" c:\JmeterScenarios.jmx
             c:\cfn\cfn-hup.conf:
               content: !Sub |
                 [main]
@@ -912,10 +955,10 @@ Resources:
           c:\installs\vc_redist.x64.exe /q
           "c:\Apache24\bin\httpd.exe" -k install -n "Apache HTTP Server"
           net start "Apache HTTP Server"
-          mklink c:\Users\Administrator\Desktop\jmeter.lnk "c:\Program Files\apache-jmeter-5.1.1\bin\jmeter.bat"
           powershell.exe -Command "(gc c:\JmeterScenarios-template.jmx -Encoding UTF8) -replace '<!--ALB-HERE-->', '${webCarterALB.DNSName}' | Out-File c:\JmeterScenarios.jmx" -Encoding UTF8
           reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v MaxUserPort /t REG_DWORD /d 65534 /f
           cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource AttackerInstance --region ${AWS::Region}
+          copy c:\installs\master_preferences c:\progra~2\Google\Chrome\Application\
           </script>
   SetSecIp:
     Type: 'AWS::SSM::Document'
