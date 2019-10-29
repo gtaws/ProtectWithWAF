@@ -957,8 +957,8 @@ Resources:
           net start "Apache HTTP Server"
           powershell.exe -Command "(gc c:\JmeterScenarios-template.jmx -Encoding UTF8) -replace '<!--ALB-HERE-->', '${webCarterALB.DNSName}' | Out-File c:\JmeterScenarios.jmx" -Encoding UTF8
           reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v MaxUserPort /t REG_DWORD /d 65534 /f
-          cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource AttackerInstance --region ${AWS::Region}
           copy c:\installs\master_preferences c:\progra~2\Google\Chrome\Application\
+          cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource AttackerInstance --region ${AWS::Region}
           </script>
   SetSecIp:
     Type: 'AWS::SSM::Document'

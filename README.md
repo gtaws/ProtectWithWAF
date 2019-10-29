@@ -34,5 +34,10 @@ For lab2 you will use additional tools to create automations which will dynamica
 
 Interesting links you may find useful to get additional information about AWS WAF automation.
 
+*   <a href="https://aws.amazon.com/waf/">AWS WAF information page</a>
+*   <a href="https://aws.amazon.com/solutions/aws-waf-security-automations/"> AWS WAF Security Automation Solution</a>
+*   <a href="https://docs.aws.amazon.com/waf/latest/developerguide/tutorials-4xx-blocking.html"> Blocking IP Addresses that Submit Bad Requests</a>
+*   <a href="https://github.com/awslabs/aws-waf-security-automations">Using bad actor IP blacklists to prevent web attacks</a>
+*   <a href="https://aws.amazon.com/firewall-manager/">AWS Firewall Manager information page</a>
 *   <a href="https://aws.amazon.com/blogs/security/how-to-analyze-aws-waf-logs-using-amazon-elasticsearch-service/">How to analyze AWS WAF logs using Amazon Elasticsearch Service</a>
 *   <a href="https://aws.amazon.com/blogs/security/how-to-use-amazon-guardduty-and-aws-web-application-firewall-to-automatically-block-suspicious-hosts/">How to use Amazon GuardDuty and AWS Web Application Firewall to automatically block suspicious hosts</a>

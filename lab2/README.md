@@ -3,7 +3,7 @@
 -   [Introduction](#introduction)
 -   [Step 1: Associate WebCarter ALB with WAF-Automation Web ACL.](#step-1-associate-webcarter-alb-with-waf-automation-web-acl)
 -   [Step 2: Configure ElasticSearch with Kibana and WAF full logging functionality](#step-2-configure-elasticsearch-with-kibana-and-waf-full-logging-functionality)
-    -   [Configure Elasticsearch to receive the logs](#configure-elasticsearch-to-receive-the-logs)
+    -   [Configure Elasticsearch to consume WAF logs](#configure-elasticsearch-to-consume-waf-logs)
     -   [Configure Web ACL logging functionality.](#configure-web-acl-logging-functionality)
     -   [Upload dashboard and vizualizations to Kibana](#upload-dashboard-and-vizualizations-to-kibana)
 -   [Step 3: Use ElasticSearch Service with Kibana for WAF monitoring and forensics](#step-3-use-elasticsearch-service-with-kibana-for-waf-monitoring-and-forensics)
@@ -52,7 +52,7 @@ Now your WebCarter Web application is protected with the Web ACL created for thi
 
 Below you will create indexes and visualizations in your domain.
 
-#### Configure Elasticsearch to receive the logs
+#### Configure Elasticsearch to consume WAF logs
 
 **Note:** Please be sure to perform the steps in the order listed below when configuring Kibana.
 
@@ -202,7 +202,7 @@ This scenario simulates a mix of legitimate traffic together with under the rada
 
 20. Wait for couple for minutes and refresh Kibana dashboard. Check if you see blocked request to the login page.
 
-    **Note** the **Terminating Rule ID** in the **WAF Rules Hit** visualization and check the rule that is blocking these requests. You can check the rule by going to the **WAF & Shield Console**, filter on the appropriate region and select **Rules** from the left side.  This shdould display a list of all the rules and ID of each rule.  The **Terminating Rule ID** should match the rule you recently defined.
+    **Note** the **Terminating Rule ID** in the **WAF Rules Hit** visualization and check the rule that is blocking these requests. You can check the rule by going to the **WAF & Shield Console**, filter on the appropriate region and select **Rules** from the left side.  This should display a list of all the rules and ID of each rule.  The **Terminating Rule ID** should match the rule you recently defined.
 
     >You can also run the following AWS CLI command from a machine which has the AWS CLI installed, credentials with the appropriate permissions, and internet access. Update the region and the rule id as required:
     >
