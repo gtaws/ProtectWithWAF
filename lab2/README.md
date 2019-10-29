@@ -232,7 +232,7 @@ In the next steps we'll look at ALB access logs using Amazon **Athena**.
 24. Go to Query Editor and choose **modmodule1_..** as your
     Database.
 
-    **Note:** You will need to supply a s3 bucket location to store the query editor output before you are able to run a query.  You can get the location information from the AWS JAM **Output Properties** page.
+    **Note:** You will need to supply a s3 bucket location to store the query editor output before you are able to run a query.  You can get the location information from the AWS Cloudformation **Outputs** page.
 
     1.  Click **setup a query result location in Amazon S3**.
         ![](.//media/image27.png)
