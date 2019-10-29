@@ -60,6 +60,7 @@ you initiate this and let it complete in the background.
     ![](.//media/image16.png)
 
 10. The stack will eventually turn to CREATE\_COMPLETE.
+    **Note** If the stack gets an error message related to the creation of the WAF you will need to delete the stack and redeploy the cloudformation stack.  This error is due to a timing issue creating WAF which should be resolved in the future.
 
 11. Go to the stack’s **Output** tab.  You will need some of this information as you proceed through the lab.
 
