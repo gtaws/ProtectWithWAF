@@ -37,13 +37,13 @@ you initiate this and let it complete in the background.
     ![](.//media/image7.png)
 
 
-6.  At the bottom of the Environmental Configurations page enter the following.  
+6.  At the bottom of the Environmental Configurations page enter the following.
 
     a.  **AdminPassword** A password at least 8 characters long and should include at least 3 of the 4 types of characters, lowercase, uppercase, number, and special character.
     **Note** you will likely not need this password for the lab.
 
     b.  **KeyName** An AWS EC2 key pair
-    -   This list is generated from **EC2/keypairs** in the EC2 console.  You must have this pem file or the data from this file to gain access to the windows instance.
+    -   This list is generated from **EC2/keypairs** in the EC2 console for the region you are launching the stack in.  You must have this pem file or the data from this file to gain access to the windows instance.
 
     c.  **MyIP** The IP address or range of IP's and the subnet mask you will be connecting from.
     -   i.e. single ip would be 192.168.10.5/32, class C range would be 192.168.10.0/24.  These examples are private IP's you would need to use the ip returned from the checkip url.
@@ -61,53 +61,6 @@ you initiate this and let it complete in the background.
 
 10. The stack will eventually turn to CREATE\_COMPLETE.
 
-11. Go to the stack’s **Output** and copy value of the webCarterALBAccessLogBucket. It will be used as a parameter in the next CloudFormation stack:
+11. Go to the stack’s **Output**.
 
     ![](.//media/image17.png)
-
-
-WAF Automation And Dashboard Setup
-----------------------------------
-
-This Cloudformation stack will stand up the automation for managing WAF
-and the dashboards.
-
-1.  Open the CloudFormation console
-
-![](.//media/image1.png)
-
-2.  Create a new stack
-
-![](.//media/image2.png)
-
-3.  Upload the template
-
-`template/aws-waf-security-automations-template.yaml`
-
-![](.//media/image3.png)
-
-4.  Enter a new stack name in **all lowercase** -- e.g. waf-lab
-
-![](.//media/image4.png)
-
-5.  Update Scanner & Probe Protection to "yes -- Amazon Athena log parser":
-
-![](.//media/image5.png)
-
-6.  Enter the S3 bucket name saved in the Web Carter and Attaker stack's output (webCarterALBAccessLogBucket):
-
-![](.//media/image6.png)
-
-7.  Enter your IP + "/32" for the attacker's allowed ingress IP address in the Cloudformation form. Please replace 0.0.0.0/0 in these instructions with your IP address:
-
-![](.//media/image8.png)
-
-8.  Scroll to the bottom of the page and hit **Next**.
-
-9. Hit **Next** on "Configure stack options"
-
-10. Scroll to the bottom of the page. Check **I acknowledge that AWS CloudFormation might create IAM resources with custom names.** and **I acknowledge that AWS Cloudformation might require the following capability: CAPABILITY\_AUTO\_EXPAND**, then click "Create"
-
-![](.//media/image9.png)
-
-11. The stack will eventually turn to CREATE\_COMPLETE.
