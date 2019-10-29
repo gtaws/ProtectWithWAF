@@ -15,7 +15,6 @@ Table of Contents
 <!-- /TOC -->
 Lab 1 -- Manually testing attacks and protections
 =================================================
-
 ### Introduction:
 You will be using this Windows instance to simulate web application attacks using the following tools, which have been pre-installed on the Windows Attacker instance, which you will be using throughout lab.
 *   Chrome Browser
@@ -262,7 +261,11 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 
 10. Perform the steps outlined in step 9 above for each of the remaining rules (SQLInjection1Rule & XSS1Rule)
 
-You are only charged for WebACLs and Rules.  You are not charged for each condition.  You are welcome to clean up each of the conditions we created (XSS1, SQLInjection1, BadBot1), but you will not be charged if you leave them
+You are only charged for WebACLs and Rules.  You are not charged for each condition.  You are welcome to clean up each of the conditions we created (XSS1, SQLInjection1, BadBot1), but you will not be charged if you leave them.
+    1.   To remove click each of the conditions, select each specific condition (list below) and delete each filter.
+    - Cross-Site Scripting - XSS1
+    - SQL Injection - SQLInjection1
+    - String and regex matching - BadBot1    
 ***
 
 ### Appendix:
