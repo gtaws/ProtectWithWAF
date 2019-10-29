@@ -66,7 +66,11 @@ Parameters:
       Type: AWS::EC2::KeyPair::KeyName
       Description: Name of an existing EC2 KeyPair to enable SSH and RDP access to the instances.
     AdminPassword:
+      NoEcho: true
       Type: String
+      MinLength: 8
+      MaxLength: 20
+      AllowedPattern: ^[a-zA-Z0-9]*$
       Description: The admin password for the RDS MySQL instance and the test user. This will be reuired only for troubleshooting your enviroment.
 
     ActivateSqlInjectionProtectionParam:
