@@ -55,7 +55,7 @@ We will simulate a simple cross site scripting attack by placing some HTML code 
 1.  Remote desktop (RDP) to the **Attacker** windows instance, using the [Preparation](#preparation) steps above.
     *   **Note:** Once you login you may be prompted to allow your computer to be discoverable.  You can select **No**, but either will be fine.
 
-2.  On the Attacker instance (RDP Session) open Chrome browser.  It should open the the webcarter ALB URL by default, but you can also find the url cloudformation output:
+2.  On the Attacker instance (RDP Session) open Chrome browser.  It should open the the webcarter ALB URL by default.  Might be in another tab.  Clicking the **Home** button should get you there as well, but you can also find the url cloudformation output:
     ![](.//media/image2.png)
 
 3.  In the browser window on the WebCarter site type the following in the **Search** text field and click **Search!**:
@@ -80,7 +80,7 @@ We will simulate a SQL injection attack by placing a sql query in the the search
 #### Simulate a HTTP Flood attack
 We will simulate a HTTP Flood attack by using JMeter to send lots of traffic to the web page.
 
-7.  Run Apache JMeter by clicking on the JMeter shortcut on the desktop.
+7.  Run Apache JMeter by clicking on the jmeter-waf shortcut on the desktop.
 
     ![](.//media/image8.png)
 
@@ -103,14 +103,7 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
     ![](.//media/image14.png)
 *   Run the command in a Command Prompt window
 *   Assure that ab run above was successful:
-    >*Concurrency Level: 1*
-    >
-    >*Time taken for tests: x.xxx seconds*
-    >
-    >*Complete requests: 100*
-    >
-    >*Failed requests: 0*
-    >
+    ![](.//media/image35.png)
 
 ***
 
@@ -265,7 +258,7 @@ You are only charged for WebACLs and Rules.  You are not charged for each condit
     1.   To remove click each of the conditions, select each specific condition (list below) and delete each filter.
     - Cross-Site Scripting - XSS1
     - SQL Injection - SQLInjection1
-    - String and regex matching - BadBot1    
+    - String and regex matching - BadBot1
 ***
 
 ### Appendix:
