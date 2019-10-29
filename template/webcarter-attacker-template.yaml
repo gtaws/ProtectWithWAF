@@ -740,6 +740,14 @@ Resources:
       GroupId: !Ref 'AttackerSecurityGroup'
       CidrIp: 10.192.0.0/16
       IpProtocol: "-1"
+  AttackerSecurityGroupInbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'AttackerSecurityGroup'
+      IpProtocol: tcp
+      FromPort: '3389'
+      ToPort: '3389'
+      CidrIp: !Sub ${MyIP}
   AttackerSecurityGroupS3Outboubd:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
