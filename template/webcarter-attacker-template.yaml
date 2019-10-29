@@ -268,7 +268,7 @@ Mappings:
   SourceCode:
     General:
       S3Bucket: 'wafworkshops'
-      S3Prefix: "WAF-BOTs-Scrapers-Workshop"  
+      S3Prefix: "WAF-BOTs-Scrapers-Workshop"
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -390,7 +390,7 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnet1
           - !Ref PublicSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   PrivateCFNEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -401,7 +401,7 @@ Resources:
         SubnetIds:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   AttackerCFNEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -411,7 +411,7 @@ Resources:
         VpcEndpointType: "Interface"
         SubnetIds:
           - !Ref AttackerPublicSubnet1
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   DatabaseCFNEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -422,7 +422,7 @@ Resources:
         SubnetIds:
           - !Ref DatabaseSubnet1
           - !Ref DatabaseSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   PublicSSMEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -434,7 +434,7 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnet1
           - !Ref PublicSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   PrivateSSMEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -445,7 +445,7 @@ Resources:
         SubnetIds:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   AttackerSSMEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -455,7 +455,7 @@ Resources:
         VpcEndpointType: "Interface"
         SubnetIds:
           - !Ref AttackerPublicSubnet1
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   DatabaseSSMEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -466,7 +466,7 @@ Resources:
         SubnetIds:
           - !Ref DatabaseSubnet1
           - !Ref DatabaseSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   PublicEC2MEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -478,7 +478,7 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnet1
           - !Ref PublicSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   PrivateEC2MEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -489,7 +489,7 @@ Resources:
         SubnetIds:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   AttackerEC2MEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -499,7 +499,7 @@ Resources:
         VpcEndpointType: "Interface"
         SubnetIds:
           - !Ref AttackerPublicSubnet1
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   AttackerAthenaEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -509,7 +509,7 @@ Resources:
         VpcEndpointType: "Interface"
         SubnetIds:
           - !Ref AttackerPublicSubnet1
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   DatabaseEC2MEndpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -520,7 +520,7 @@ Resources:
         SubnetIds:
           - !Ref DatabaseSubnet1
           - !Ref DatabaseSubnet2
-        SecurityGroupIds: 
+        SecurityGroupIds:
           - !Ref CFNSecurityGroup
   CFNSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -992,7 +992,7 @@ Resources:
       - Key: "Name"
         Value: "WAFLABDBInit"
       UserData:
-        Fn::Base64: !Sub 
+        Fn::Base64: !Sub
           - |
             #!/bin/bash -xe
             yum -y update
@@ -1026,79 +1026,122 @@ Resources:
       AWS::CloudFormation::Init:
         config:
           files:
+            C:\installs\master_preferences:
+              content: !Sub |
+                {
+                  "homepage": "http://${webCarterALB.DNSName}",
+                  "homepage_is_newtabpage": false,
+                  "browser": {
+                    "show_home_button": true
+                  },
+                  "session": {
+                    "restore_on_startup": 4,
+                    "startup_urls": [
+                      "http://${webCarterALB.DNSName}"
+                      ]
+                  },
+                  "bookmark_bar": {
+                    "show_on_all_tabs": true
+                  },
+                  "sync_promo": {
+                    "show_on_first_run_allowed": false,
+                    "user_skipped": true
+                  },
+                  "distribution": {
+                    "import_bookmarks": false,
+                    "import_history": false,
+                    "import_home_page": false,
+                    "import_search_engine": false,
+                    "ping_delay": 60,
+                    "suppress_first_run_bubble": true,
+                    "do_not_create_desktop_shortcut": false,
+                    "do_not_create_quick_launch_shortcut": false,
+                    "do_not_launch_chrome": true,
+                    "do_not_register_for_update_launch": true,
+                    "make_chrome_default": true,
+                    "make_chrome_default_for_user": true,
+                    "suppress_first_run_default_browser_prompt": true,
+                    "skip_first_run_ui": true,
+                    "system_level": true,
+                    "verbose_logging": true
+                  }
+                }
+            c:\Users\Administrator\Desktop\jmeter-waf.bat:
+              content: !Sub |
+                "C:\Program Files\apache-jmeter-5.1.1\bin\jmeter-t.cmd" c:\JmeterScenarios.jmx
             c:\cfn\cfn-hup.conf:
               content: !Sub |
                 [main]
                 stack=${AWS::StackId}
                 region=${AWS::Region}
             c:\installs\amazon-corretto-11.0.3.7.1-1-windows-x64.msi:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/amazon-corretto-11.0.3.7.1-1-windows-x64.msi"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\httrack_x64-3.49.2.exe:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/httrack_x64-3.49.2.exe"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\apache-jmeter-5.1.1.zip:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/apache-jmeter-5.1.1.zip"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\AWSCLI64PY3.msi:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/AWSCLI64PY3.msi"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\httpd-2.4.39-o102s-x64-vc14.zip:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/httpd-2.4.39-o102s-x64-vc14.zip"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\vc_redist.x64.exe:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/vc_redist.x64.exe"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\ChromeStandaloneSetup64.exe:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/ChromeStandaloneSetup64.exe"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\JmeterScenarios-template.jmx:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/JmeterScenarios.jmx"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\kibana-config.json:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/kibana-config.json"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\passwds.csv:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/passwds.csv"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\paths.csv:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/paths.csv"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\users.csv:
-              source: !Sub 
+              source: !Sub
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/users.csv"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
@@ -1164,9 +1207,9 @@ Resources:
           c:\installs\vc_redist.x64.exe /q
           "c:\Apache24\bin\httpd.exe" -k install -n "Apache HTTP Server"
           net start "Apache HTTP Server"
-          mklink c:\Users\Administrator\Desktop\jmeter.lnk "c:\Program Files\apache-jmeter-5.1.1\bin\jmeter.bat"
           powershell.exe -Command "(gc c:\JmeterScenarios-template.jmx -Encoding UTF8) -replace '<!--ALB-HERE-->', '${webCarterALB.DNSName}' | Out-File c:\JmeterScenarios.jmx" -Encoding UTF8
           reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v MaxUserPort /t REG_DWORD /d 65534 /f
+          copy c:\installs\master_preferences c:\progra~2\Google\Chrome\Application\
           cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource AttackerInstance --region ${AWS::Region}
           </script>
   SetSecIp:
@@ -1186,7 +1229,7 @@ Resources:
             - "netsh interface ipv4 add dns $interface 10.192.0.2"
             - "FOR ($i=51; $i -lt 60; $i++) { netsh interface ipv4 add address $interface 10.192.30.$i 255.255.255.0}"
             - "shutdown /r"
-            
+
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
@@ -1284,7 +1327,7 @@ Resources:
       IamInstanceProfile: !Ref 'EC2SSMInstanceProfile'
       KeyName: !Ref 'KeyName'
       UserData:
-        Fn::Base64: !Sub 
+        Fn::Base64: !Sub
           - |
             #!/bin/bash -xe
             export DEBIAN_FRONTEND=noninteractive
@@ -1350,6 +1393,6 @@ Outputs:
     webCarterALBAccessLogBucket:
         Description: The ALB access log bucket
         Value: !Ref webCarterALBAccessLogBucket
-    AttackerSecurityGroup: 
+    AttackerSecurityGroup:
         Description: Attacker security group
         Value: !Sub ${AttackerSecurityGroup}
