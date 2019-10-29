@@ -13,7 +13,7 @@ Lab Prep -- Launch Cloudformation Stacks Setup
 Lab preparation will take some time to complete, so we recommend that
 you initiate this and let it complete in the background.
 
-### Web Carter & Attacker workstation setup
+### Lab setup
 
 
 1.  Open the Cloudformation console
@@ -61,6 +61,6 @@ you initiate this and let it complete in the background.
 
 10. The stack will eventually turn to CREATE\_COMPLETE.
 
-11. Go to the stack’s **Output**.
+11. Go to the stack’s **Output** tab.  You will need some of this information as you proceed through the lab.
 
     ![](.//media/image17.png)
