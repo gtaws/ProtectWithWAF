@@ -65,6 +65,9 @@ Parameters:
     KeyName:
       Type: AWS::EC2::KeyPair::KeyName
       Description: Name of an existing EC2 KeyPair to enable SSH and RDP access to the instances.
+    AdminPassword:
+      Type: String
+      Description: The admin password for the RDS MySQL instance and the test user. This will be reuired only for troubleshooting your enviroment.
 
     ActivateSqlInjectionProtectionParam:
       Type: String
@@ -235,12 +238,12 @@ Resources:
           AttackerInstanceType: 't3.xlarge'
           DBInstanceType: 'db.m5.4xlarge'
           DBAdmin: 'WebCarter'
-          DBPassword: 'jamSecret!1'
+          DBPassword: !Ref AdminPassword
           RdsAdminUsername: 'master'
-          RdsAdminPassword: 'jamSecret!1'
+          RdsAdminPassword: !Ref AdminPassword
           webCarterTestUsername: 'WebCarterTest'
-          webCarterTestPassword: 'jamSecret!1'
-          webCarterInstallerPassword: 'jamSecret!1'
+          webCarterTestPassword: !Ref AdminPassword
+          webCarterInstallerPassword: !Ref AdminPassword
     LambdaRoleHelper:
       Type: 'AWS::IAM::Role'
       Properties:
