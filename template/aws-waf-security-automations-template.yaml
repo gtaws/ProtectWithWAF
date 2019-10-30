@@ -228,7 +228,7 @@ Resources:
       Type: 'AWS::CloudFormation::Stack'
       Properties:
         TemplateURL: !Sub 
-          - 'https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/webcarter-attacker-template.yaml'
+          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/webcarter-attacker-template.yaml'
           -
             S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
             S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
@@ -631,6 +631,23 @@ Resources:
         Description: >-
           API created by AWS WAF Security Automations CloudFormation template. This endpoint will be
           used to capture bad bots.
+        Policy:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Deny
+              Principal: "*"
+              Action: 'execute-api:Invoke'
+              Resource: '*'
+              Condition:
+                StringNotEquals:
+                  'aws:sourceVpc': !GetAtt WebCarterStack.Outputs.VPC
+            - Effect: Allow
+              Principal: "*"
+              Action: 'execute-api:Invoke'
+              Resource: '*'
+        EndpointConfiguration:
+          Types:
+            - 'PRIVATE'
 
     ApiGatewayBadBotResource:
       Type: 'AWS::ApiGateway::Resource'
@@ -1138,6 +1155,71 @@ Resources:
         MemorySize: 128
         Timeout: 300
 
+    APIGWUpdate:
+      Type: 'Custom::APIGWUpdate'
+      DependsOn: ApiGatewayBadBotStage
+      Properties:
+        ServiceToken: !GetAtt APIGWUpdateLambdaFunction.Arn
+        ApiGatewayBadBot: !Ref ApiGatewayBadBot
+        VPCEndpoint: !GetAtt WebCarterStack.Outputs.AttackerAPIGWEndpoint
+
+    APIGWUpdateLambdaFunction:
+      Type: "AWS::Lambda::Function"
+      DependsOn: ApiGatewayBadBotStage
+      Properties:
+        Description: >-
+          Update API GW with private endpoint
+        Handler: "APIGWUpdate.lambda_handler"
+        Role: !GetAtt "LambdaRoleAPIGWUpdate.Arn"
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'APIGWUpdate.zip']]
+        Environment:
+          Variables:
+            LOG_LEVEL: "DEBUG"
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 500
+
+    LambdaRoleAPIGWUpdate:
+      Type: "AWS::IAM::Role"
+      DependsOn: ApiGatewayBadBotStage
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: "/"
+        Policies:
+          - PolicyName: APIGW
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "apigateway:PATCH"
+                  Resource:
+                    - !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGatewayBadBot}"
+          - PolicyName: LogsAccess
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "logs:CreateLogGroup"
+                    - "logs:CreateLogStream"
+                    - "logs:PutLogEvents"
+                  Resource:
+                    - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+          - PolicyName: CloudWatchAccess
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action: "cloudwatch:GetMetricStatistics"
+                  Resource:
+                    - "*"
 
 Outputs:
     

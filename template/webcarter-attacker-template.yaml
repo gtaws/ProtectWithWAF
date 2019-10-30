@@ -413,6 +413,17 @@ Resources:
           - !Ref AttackerPublicSubnet1
         SecurityGroupIds:
           - !Ref CFNSecurityGroup
+  AttackerAPIGWEndpoint:
+      Type: AWS::EC2::VPCEndpoint
+      Properties:
+        VpcId: !Ref VPC
+        ServiceName: !Sub "com.amazonaws.${AWS::Region}.execute-api"
+        VpcEndpointType: "Interface"
+        PrivateDnsEnabled: true
+        SubnetIds:
+          - !Ref AttackerPublicSubnet1
+        SecurityGroupIds:
+          - !Ref CFNSecurityGroup
   DatabaseCFNEndpoint:
       Type: AWS::EC2::VPCEndpoint
       Properties:
@@ -507,6 +518,7 @@ Resources:
         VpcId: !Ref VPC
         ServiceName: !Sub "com.amazonaws.${AWS::Region}.athena"
         VpcEndpointType: "Interface"
+        PrivateDnsEnabled: true
         SubnetIds:
           - !Ref AttackerPublicSubnet1
         SecurityGroupIds:
@@ -1066,9 +1078,15 @@ Resources:
                     "verbose_logging": true
                   }
                 }
-            c:\Users\Administrator\Desktop\jmeter-waf.bat:
+            c:\Users\Administrator\Desktop\jmeter-waf-DOS.bat:
               content: !Sub |
-                "C:\Program Files\apache-jmeter-5.1.1\bin\jmeter-t.cmd" c:\JmeterScenarios.jmx
+                "C:\Program Files\apache-jmeter-5.1.1\bin\jmeter-t.cmd" c:\JmeterScenariosDOS.jmx
+            c:\Users\Administrator\Desktop\jmeter-waf-BOT1.bat:
+              content: !Sub |
+                "C:\Program Files\apache-jmeter-5.1.1\bin\jmeter-t.cmd" c:\JmeterScenariosBOT1.jmx
+            c:\Users\Administrator\Desktop\jmeter-waf-BotsScrappers.bat:
+              content: !Sub |
+                "C:\Program Files\apache-jmeter-5.1.1\bin\jmeter-t.cmd" c:\JmeterScenariosBotsScrappers.jmx
             c:\cfn\cfn-hup.conf:
               content: !Sub |
                 [main]
@@ -1116,9 +1134,21 @@ Resources:
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
-            c:\JmeterScenarios-template.jmx:
+            c:\JmeterScenariosDOS-template.jmx:
               source: !Sub
-                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/JmeterScenarios.jmx"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosDOS.jmx"
+                -
+                  S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+                  S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
+            c:\JmeterScenariosBOT1-template.jmx:
+              source: !Sub
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBOT1.jmx"
+                -
+                  S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+                  S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
+            c:\JmeterScenariosBotsScrappers-template.jmx:
+              source: !Sub
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBotsScrappers.jmx"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
@@ -1207,7 +1237,9 @@ Resources:
           c:\installs\vc_redist.x64.exe /q
           "c:\Apache24\bin\httpd.exe" -k install -n "Apache HTTP Server"
           net start "Apache HTTP Server"
-          powershell.exe -Command "(gc c:\JmeterScenarios-template.jmx -Encoding UTF8) -replace '<!--ALB-HERE-->', '${webCarterALB.DNSName}' | Out-File c:\JmeterScenarios.jmx" -Encoding UTF8
+          powershell.exe -Command "(gc c:\JmeterScenariosDOS-template.jmx -Encoding UTF8) -replace '<!--ALB-HERE-->', '${webCarterALB.DNSName}' | Out-File c:\JmeterScenariosDOS.jmx" -Encoding UTF8
+          powershell.exe -Command "(gc c:\JmeterScenariosBOT1-template.jmx -Encoding UTF8) -replace '<!--ALB-HERE-->', '${webCarterALB.DNSName}' | Out-File c:\JmeterScenariosBOT1.jmx" -Encoding UTF8
+          powershell.exe -Command "(gc c:\JmeterScenariosBotsScrappers-template.jmx -Encoding UTF8) -replace '<!--ALB-HERE-->', '${webCarterALB.DNSName}' | Out-File c:\JmeterScenariosBotsScrappers.jmx" -Encoding UTF8
           reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v MaxUserPort /t REG_DWORD /d 65534 /f
           copy c:\installs\master_preferences c:\progra~2\Google\Chrome\Application\
           cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource AttackerInstance --region ${AWS::Region}
@@ -1396,3 +1428,7 @@ Outputs:
     AttackerSecurityGroup:
         Description: Attacker security group
         Value: !Sub ${AttackerSecurityGroup}
+    AttackerAPIGWEndpoint:
+        Description: Attacker APIGW Endpoint
+        Value: !Ref AttackerAPIGWEndpoint
+
