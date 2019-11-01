@@ -1150,7 +1150,7 @@ Resources:
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\JmeterScenariosBotsScrappers-template.jmx:
               source: !Sub
-                - "https://${S3Bucket}-.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBotsScrappers.jmx"
+                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBotsScrappers.jmx"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
