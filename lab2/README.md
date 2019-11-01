@@ -106,7 +106,7 @@ Below you will create indexes and visualizations in your domain.
 
 5.  **Do Not** add **Redacted Fields** and click **Create**.
 
-6.  RDP to the Attacker Windows instance and run **BOT1** Jmeter scenario, right click and select start, to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.
+6.  RDP to the Attacker Windows instance and run **BOT1** Jmeter scenario using the BOT1 shortcut on the desktop. Click the green play button in the top menu ribbon to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.
 
 7.  Wait for a couple of minutes till WAF logs get to the ElasticSearch domain, then in the **Kibana** dashboard click on the **Discover** menu and define an index pattern as *awswaf-\** and click **Next step**:
     ![](.//media/image3.png)
@@ -123,7 +123,7 @@ Below you will create indexes and visualizations in your domain.
 10. Go to **Management** menu and click **Advanced**. Search for the the ***defaultindex*** then copy and save the default index id value:
     ![](.//media/image5.png)
 
-11. Download and using the URL in the AWS CloudFormation **Outputs** webpage or you can right click the *kibana-config.json* url and select save link as. Open kibana-configruation.json locally and replace the ```_YOUR_ES_INDEX_``` value with the one saved above. Please do it everywhere in the file (approximately 5 times).
+11. Download and using the URL in the AWS CloudFormation **Outputs** webpage or you can right click the *kibana-config.json* url and select save link as. Open kibana-configruation.json locally with a text editor and replace the ```_YOUR_ES_INDEX_``` value with the one saved above. Please do it everywhere in the file (approximately 5 times).
     ![](.//media/image26.png)
 
 12. Save the file.
@@ -322,7 +322,7 @@ You can see that requests from that IP address to /api url been blocked by the W
 1.  Copy **AddHoneypotSsmCommand** from the AWS CloudFormation **Outputs** webpage.
     ![](.//media/RunCommand.png)
 
-2.  Paste into the Command Prompt inside the Attacker Windows instance
+2.  Paste into the Command Prompt inside the Attacker Windows instance.  You can open a command prompt by using the **CMD** shortcut on the desktop.
     ![](media/RunCommand-cmd.png)
 
 3.  Wait a few moments
@@ -414,7 +414,7 @@ In the above steps we demonstrated manual creation of the WAF rules using inform
 
 15. Click **Configure details** and then **Update rule**.
 
-16. Run **Scanners and Probes** scenario on JMeter.
+16. Run **BotsScrappers** scenario on JMeter using the **BotsScrapp..** shortcut on the desktop and click the green play button in the top menu ribbon.
 
 17. Go to the results tree in JMeter and verify that application returns 404 **Not found** response.
 
