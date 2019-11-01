@@ -384,7 +384,7 @@ In the above steps we demonstrated manual creation of the WAF rules using inform
     ```sql
     DATE_ADD('minute', -5, NOW())
     ```
-    Now this modified query will be looking for any IP address that got \>=50 of the 4xx responses from the application within last 5 minutes.
+    This modified query will be looking for any IP address that got \>=50 of the 4xx responses from the application within last 5 minutes.
 
 6.  Click **Save as** and save the modified function with the new name **ScannersProbesLogParser5min**.
 
