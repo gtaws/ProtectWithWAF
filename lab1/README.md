@@ -55,7 +55,7 @@ We will simulate a simple cross site scripting attack by placing some HTML code 
 1.  Remote desktop (RDP) to the **Attacker** windows instance, using the [Preparation](#preparation) steps above.
     *   **Note:** Once you login you may be prompted to allow your computer to be discoverable.  You can select **No**, but either will be fine.
 
-2.  On the Attacker instance (RDP Session) open Chrome browser.  It should open the the webcarter ALB URL by default.  Might be in another tab.  Clicking the **Home** button should get you there as well, but you can also find the url cloudformation output:
+2.  On the Attacker instance (RDP Session) open Chrome browser.  It should open the the webcarter ALB URL by default.  Might be in another tab.  Clicking the **Home** button should get you there as well, but you can also find the url cloudformation output tab:
     ![](.//media/image2.png)
 
 3.  In the browser window on the WebCarter site type the following in the **Search** text field and click **Search!**:
@@ -80,7 +80,7 @@ We will simulate a SQL injection attack by placing a sql query in the the search
 #### Simulate a HTTP Flood attack
 We will simulate a HTTP Flood attack by using JMeter to send lots of traffic to the web page.
 
-7.  Run Apache JMeter by clicking on the jmeter-waf shortcut on the desktop.
+7.  Run the DOS Scenario Apache JMeter by clicking on the DOS shortcut on the desktop.
 
     ![](.//media/image8.png)
 
@@ -96,10 +96,11 @@ We will simulate a HTTP Flood attack by using JMeter to send lots of traffic to 
 #### Simulate a Bad Bot attack
 We will simulate a bad bot attack by using Apache Benchmark to send 100 http requests using the User-Agent = bad-bot.
 
-11. Open a cmd window and change directory to **C:\Apache24\bin**.
+11. Open a Command window using the CMD shortcut on the desktop and change directory to **C:\Apache24\bin**.
+    ![](.//media/image36.png)
 
 12. Run Apache Benchmark:
-*   Copy the abLoadTestCommand from the **Outputs** tab on of the CloudFormation stack.
+*   Copy the abLoadTestCommand from the **Outputs** tab on of the CloudFormation stack.  Right click and copy.
     ![](.//media/image14.png)
 *   Run the command in a Command Prompt window
 *   Assure that ab run above was successful:
@@ -213,7 +214,7 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
 4.  Assure you get HTTP 403 response from WAF:
     ![](.//media/image24.png)
 
-5.  Start JMeter DoS scenario and navigate to the Results tree. Watch the request till they start failing after reaching 2000 requests / 5 min as configured in your rate-based rule:
+5.  Start JMeter DOS scenario again, clicking the green play arrow in the menu ribbon, and navigate to the Results tree. Watch the request till they start failing after reaching 2000 requests / 5 min as configured in your rate-based rule:
     ![](.//media/image25.png)
 
 6.  Go to AWS WAF Console and navigate to **Rules-\> HTTPFlood1Rule**.  Notice IP addresses that are currently blocked by this rule:
@@ -255,10 +256,12 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 10. Perform the steps outlined in step 9 above for each of the remaining rules (SQLInjection1Rule & XSS1Rule)
 
 You are only charged for WebACLs and Rules.  You are not charged for each condition.  You are welcome to clean up each of the conditions we created (XSS1, SQLInjection1, BadBot1), but you will not be charged if you leave them.
-    1.   To remove click each of the conditions, select each specific condition (list below) and delete each filter.
-    - Cross-Site Scripting - XSS1
-    - SQL Injection - SQLInjection1
-    - String and regex matching - BadBot1
+
+1.  To remove click each of the conditions, select each specific condition (list below) and delete each filter.
+
+    -   Cross-Site Scripting - XSS1
+    -   SQL Injection - SQLInjection1
+    -   String and regex matching - BadBot1
 ***
 
 ### Appendix:

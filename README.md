@@ -7,7 +7,6 @@ Protecting web applications from common web vulnerablities, bots, and scrapers w
 The cloudformation template will create EC2 instances, NAT GW's, an ALB, WAF, Lambda's, an API GW, S3 Buckets, Kinesis Firehose, RDS Database, a Glue data catalog, and an ElasticSearch cluster.  The items created via the CloudFormation template should be removed when you delete the CloudFormation stack.  Any manual steps you take during the lab, in the AWS console or via the aws cli,  will need to be cleaned up.  At the end of each lab there will be instructions on how to clean up any of the manual steps performed.  If you have performed any additional steps on your own you should be sure to clean them up as well.
 
 # Introduction #
-
 In the labs you will get familar with AWS WAF and how you can use it protect a web application.
 
 For lab1 you will perform some common web application attacks and then you will implement an AWS WAF to protect your application from these exposures without the need to update any web application code.
