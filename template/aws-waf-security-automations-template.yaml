@@ -65,14 +65,15 @@ Parameters:
     KeyName:
       Type: AWS::EC2::KeyPair::KeyName
       Description: Name of an existing EC2 KeyPair to enable SSH and RDP access to the instances.
+      Default: 'WAF-BOTs-Scrapers'
     AdminPassword:
       NoEcho: true
       Type: String
       MinLength: 8
       MaxLength: 20
+      Default: 'MyAdminPassword'
       AllowedPattern: ^[a-zA-Z0-9]*$
       Description: The admin password for the RDS MySQL instance and the test user. This will be reuired only for troubleshooting your enviroment.
-
     ActivateSqlInjectionProtectionParam:
       Type: String
       Default: 'yes'
@@ -205,7 +206,9 @@ Conditions:
 Mappings:
       SourceCode:
           General:
-              S3Bucket: 'wafworkshops'
+              #S3Bucket: 'wafworkshops'
+              #S3Prefix: "WAF-BOTs-Scrapers-Workshop"
+              S3Bucket: 'aws-jam-challenge-resources'
               S3Prefix: "WAF-BOTs-Scrapers-Workshop"
       Solution:
           Data:
@@ -228,14 +231,14 @@ Resources:
       Type: 'AWS::CloudFormation::Stack'
       Properties:
         TemplateURL: !Sub 
-          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/webcarter-attacker-template.yaml'
+          - 'https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/webcarter-attacker-template.yaml'
           -
             S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
             S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
         Parameters:
           EnvironmentName: 'DEV'
-          KeyName: !Ref KeyName
-          MyIP: !Ref MyIP
+          KeyName: 'WAF-BOTs-Scrapers'
+          MyIP: '69.254.0.1/32'
           InstanceType: 'c5.large'
           DesiredCapacity: '1'
           MaxSize: '1'
@@ -293,7 +296,7 @@ Resources:
         Handler: 'helper.lambda_handler'
         Role: !GetAtt LambdaRoleHelper.Arn
         Code:
-          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'helper.zip']]
         Environment:
           Variables:
@@ -344,6 +347,7 @@ Resources:
       Type: 'AWS::S3::Bucket'
       Condition: HttpFloodProtectionLogParserActivated
       DependsOn: CheckRequirements
+      DeletionPolicy: Retain
       Properties:
         AccessControl: Private
         PublicAccessBlockConfiguration:
@@ -439,7 +443,7 @@ Resources:
         Handler: 'log-parser.lambda_handler'
         Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleLogParserArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleLogParserArn]
         Code:
-          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'log-parser.zip']]
         Environment:
           Variables:
@@ -535,7 +539,7 @@ Resources:
         Handler: 'reputation-lists-parser.handler'
         Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleReputationListsParserArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleReputationListsParserArn]
         Code:
-          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'reputation-lists-parser.zip']]
         Runtime: nodejs8.10
         MemorySize: 256
@@ -595,7 +599,7 @@ Resources:
         Handler: 'access-handler.lambda_handler'
         Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleBadBotArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleBadBotArn]
         Code:
-          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'access-handler.zip']]
         Environment:
           Variables:
@@ -783,7 +787,8 @@ Resources:
               Action: 'es:*'
               Condition:
                 IpAddress:
-                  aws:SourceIp: !Ref MyIP
+                  aws:SourceIp: 
+                  - "10.192.0.0/16"
               Resource: !Sub 'arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${AWS::StackName}-awswaf-logs/*'
         ElasticsearchVersion: 6.3
         DomainName: !Sub ${AWS::StackName}-awswaf-logs
@@ -825,7 +830,7 @@ Resources:
         Handler: 'custom-resource.lambda_handler'
         Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleCustomResourceArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleCustomResourceArn]
         Code:
-          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'custom-resource.zip']]
         Environment:
           Variables:
@@ -995,7 +1000,205 @@ Resources:
                 WAFWebACLMetricName: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACLMetricName, !GetAtt CloudFrontStack.Outputs.WAFWebACLMetricName]
                 RegionMetric: !If [AlbEndpoint, !Sub ', "Region", "${AWS::Region}"', '']
                 RegionProperties: !If [AlbEndpoint, !Sub '${AWS::Region}', 'us-east-1']
+    LambdaRoleEditSG:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: '/'
+        Policies:
+            - PolicyName: SGEdit
+              PolicyDocument:
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - 'ec2:DescribeSecurityGroups'
+                      - 'es:UpdateElasticsearchDomainConfig'
+                    Resource:
+                      - '*'
+                  - Effect: Allow
+                    Action:
+                      - 'ec2:AuthorizeSecurityGroupIngress'
+                      - 'ec2:RevokeSecurityGroupIngress'
+                    Resource:
+                      - !Sub  "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:security-group/${WebCarterStack.Outputs.AttackerSecurityGroup}"
+            - PolicyName: LogsAccess
+              PolicyDocument:
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - 'logs:CreateLogGroup'
+                      - 'logs:CreateLogStream'
+                      - 'logs:PutLogEvents'
+                    Resource:
+                      - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*'
+            - PolicyName: CloudWatchAccess
+              PolicyDocument:
+                Statement:
+                  - Effect: Allow
+                    Action: 'cloudwatch:GetMetricStatistics'
+                    Resource:
+                      - '*'
+    apiGateway:
+        Type: 'AWS::ApiGateway::RestApi'
+        Properties:
+            Name: "EditSGCodeAPI"
+            Description: "Val"
+    apiGatewayRootMethod:
+      Type: 'AWS::ApiGateway::Method'
+      Properties:
+        AuthorizationType: "NONE"
+        HttpMethod: "ANY"
+        Integration:
+          IntegrationHttpMethod: "POST"
+          Type: "AWS_PROXY"
+          Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EditSGLambdaFunction.Arn}/invocations"
+        ResourceId: !GetAtt "apiGateway.RootResourceId"
+        RestApiId: !Ref "apiGateway"
+    apiGatewayDeployment:
+      Type: 'AWS::ApiGateway::Deployment'
+      DependsOn:
+        - "apiGatewayRootMethod"
+      Properties:
+        RestApiId: !Ref "apiGateway"
+        StageName: "default"
+    lambdaApiGatewayInvoke:
+        Type: 'AWS::Lambda::Permission'
+        Properties:
+          Action: "lambda:InvokeFunction"
+          FunctionName: !GetAtt "EditSGLambdaFunction.Arn"
+          Principal: "apigateway.amazonaws.com"
+          SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${apiGateway}/*/*/"
+    EditSGLambdaFunction:
+      Type: 'AWS::Lambda::Function'
+      Properties:
+        Description: >-
+          editSG
+        Handler: 'index.lambda_handler'
+        Role: !GetAtt "LambdaRoleEditSG.Arn"
+        Code:
+          ZipFile: !Sub |
+            import boto3
+            import botocore
+            from botocore.exceptions import ClientError
+            import json
+            import logging
+            from ipaddress import ip_address
 
+            def lambda_handler(event, context):
+                logger = logging.getLogger()
+                logger.setLevel(logging.INFO)
+                GroupId='${WebCarterStack.Outputs.AttackerSecurityGroup}'
+                ec2 = boto3.client('ec2')
+                source_ip = event['headers']['X-Forwarded-For'].split(',')[0].strip()
+                source_ip = source_ip + '/32'
+                logger.info(source_ip)
+                REQUIRED_PERMISSIONS=[
+                                    {'IpProtocol': 'tcp',
+                                     'FromPort': 3389,
+                                     'ToPort': 3389,
+                                     'UserIdGroupPairs' : [],
+                                     'IpRanges': [{'CidrIp': source_ip}],
+                                     'PrefixListIds' : [],
+                                     'Ipv6Ranges' : []
+                                    }
+                        ]
+                      
+                try:
+                    response = ec2.describe_security_groups(GroupIds=[GroupId])
+                except botocore.exceptions.ClientError as e:
+                    return {
+                            'statusCode': 500,
+                            "body" : "describe_security_group_ingress failure on group " + GroupId
+                        }
+                ip_permissions = response["SecurityGroups"][0]["IpPermissions"]
+                authorize_permissions = [item for item in REQUIRED_PERMISSIONS if item not in ip_permissions]
+                revoke_permissions = [item for item in ip_permissions if item not in REQUIRED_PERMISSIONS]
+                logger.info(ip_permissions)
+                logger.info(authorize_permissions)
+                logger.info(revoke_permissions)
+                if revoke_permissions:
+                    try:
+                        ec2.revoke_security_group_ingress(GroupId=GroupId, IpPermissions=revoke_permissions)
+                    except botocore.exceptions.ClientError as e:
+                        return {
+                                'statusCode': 500,
+                                "body" : "revoke_security_group_ingress failure on group " + GroupId + ' for CidrIp ' + source_ip
+                            }
+                if authorize_permissions:
+                    try:
+                        ec2.authorize_security_group_ingress(GroupId=GroupId, IpPermissions=authorize_permissions)
+                    except botocore.exceptions.ClientError as e:
+                        return {
+                                'statusCode': 500,
+                                "body" : "authorize_security_group_ingress failure on group " + GroupId + ' for CidrIp ' + source_ip
+                            }
+                access_policy =  {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "AWS": "*"
+                      },
+                      "Action": "es:*",
+                      "Resource": "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${WAFElasticSearch}/*",
+                      "Condition": {
+                        "IpAddress": {
+                          "aws:SourceIp": source_ip
+                        }
+                      }
+                    }
+                  ]
+                }          
+                es = boto3.client('es')
+                try:
+                    response = es.update_elasticsearch_domain_config(
+                        DomainName='${WAFElasticSearch}',
+                        AccessPolicies=json.dumps(access_policy)
+                    )
+                except botocore.exceptions.ClientError as e:
+                        logger.info("Unexpected error: %s" % e)
+                        return {
+                                'statusCode': 500,
+                                "body" : "update_elasticsearch_domain_config failure" + ' for CidrIp ' + source_ip
+                            }
+                return {
+                                'statusCode': 200,
+                                "body" : "Successfully set required permissions on " + GroupId + ' for CidrIp ' + source_ip
+                            }
+
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 500
+        
+    LambdaRoleWAFCleaner:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: '/'
+        Policies:
+            - PolicyName: WAFClean
+              PolicyDocument:
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - 'waf:*'
+                    Resource:
+                      - !Sub 'arn:aws:waf*:${AWS::Region}:${AWS::AccountId}:*/*'
     LambdaWAFCleanupFunction:
       Type: 'AWS::Lambda::Function'
       Properties:
@@ -1219,6 +1422,7 @@ Resources:
                   Resource:
                     - "*"
 
+
 Outputs:
     
     webCarterALB:
@@ -1239,9 +1443,9 @@ Outputs:
       Value: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACL, !GetAtt CloudFrontStack.Outputs.WAFWebACL]
 
     WafLogBucket:
-      Condition: HttpFloodProtectionLogParserActivated
       Description: WAF Log Bucket
       Value: !Ref WafLogBucket
+      Condition: HttpFloodProtectionLogParserActivated
 
     AppAccessLogBucket:
       Description: ALB Access Log Bucket
@@ -1270,3 +1474,7 @@ Outputs:
     AttackerInstance:
           Description: Your attack simulation instance
           Value: !GetAtt WebCarterStack.Outputs.AttackerInstance
+
+    UpdateAttackerSecurityGroup:
+      Description: Click here to get access to the Attacker instance
+      Value: !Sub "https://${apiGateway}.execute-api.${AWS::Region}.amazonaws.com/default"
