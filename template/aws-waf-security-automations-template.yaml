@@ -239,11 +239,10 @@ Resources:
           EnvironmentName: 'DEV'
           KeyName: 'WAF-BOTs-Scrapers'
           MyIP: '69.254.0.1/32'
-          InstanceType: 'c5.large'
+          InstanceType: 't3.medium'
           DesiredCapacity: '1'
           MaxSize: '1'
-          AttackerInstanceType: 't3.xlarge'
-          DBInstanceType: 'db.m5.4xlarge'
+          AttackerInstanceType: 't3.large'
           DBAdmin: 'WebCarter'
           DBPassword: !Ref AdminPassword
           RdsAdminUsername: 'master'

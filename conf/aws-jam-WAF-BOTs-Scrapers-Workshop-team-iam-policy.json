@@ -1,0 +1,267 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:Describe*",
+                "ssm:List*",
+                "ssm:Get*",
+                "ec2:Get*",
+                "s3:DeleteObject",
+                "s3:Get*",
+                "s3:PutObject",
+                "s3:PutBucketNotification",
+                "s3:ListBucket",
+                "s3:AbortMultipartUpload",
+                "s3:ListAllMyBuckets",
+                "elasticloadbalancing:SetWebAcl",
+                "ec2:SearchTransitGatewayRoutes",
+                "s3:HeadBucket",
+                "elasticloadbalancing:Describe*",
+                "ec2:Describe*",
+                "glue:CreateDatabase",
+                "glue:GetDatabase",
+                "glue:GetDatabases",
+                "glue:UpdateDatabase",
+                "glue:CreateTable",
+                "glue:DeleteTable",
+                "glue:BatchDeleteTable",
+                "glue:UpdateTable",
+                "glue:GetTable",
+                "glue:GetTables",
+                "glue:BatchCreatePartition",
+                "glue:CreatePartition",
+                "glue:DeletePartition",
+                "glue:BatchDeletePartition",
+                "glue:UpdatePartition",
+                "glue:GetPartition",
+                "glue:GetPartitions",
+                "glue:BatchGetPartition",
+                "glue:DeleteDatabase",
+                "athena:*",
+                "ssm:SendCommand"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts",
+                "s3:AbortMultipartUpload",
+                "s3:CreateBucket",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::aws-athena-query-results-*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:PutMetricAlarm",
+                "cloudwatch:DescribeAlarms",
+                "cloudwatch:DeleteAlarms"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Deny",
+            "Action": [
+                "es:Create*",
+                "es:Purchase*",
+                "es:UpgradeElasticsearchDomain",
+                "es:UpdateElasticsearchDomainConfig",
+                "es:Delete*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Action": [
+                "logs:Describe*",
+                "logs:Get*",
+                "logs:List*",
+                "logs:StartQuery",
+                "logs:StopQuery",
+                "logs:TestMetricFilter",
+                "logs:FilterLogEvents"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "apigateway:*"
+            ],
+            "Resource": "arn:aws:apigateway:*::/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStackResources",
+                "cloudformation:DescribeStacks",
+                "cloudformation:GetTemplate",
+                "cloudformation:ListStackResources",
+                "cloudwatch:Describe*",
+                "cloudwatch:Get*",
+                "cloudwatch:List*",
+                "cognito-identity:ListIdentityPools",
+                "cognito-sync:GetCognitoEvents",
+                "dynamodb:BatchGetItem",
+                "dynamodb:DescribeStream",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:ListStreams",
+                "dynamodb:ListTables",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVpcs",
+                "events:Describe*",
+                "events:List*",
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:GetRole",
+                "iam:GetRolePolicy",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListRolePolicies",
+                "iam:ListRoles",
+                "iot:DescribeEndpoint",
+                "iot:GetTopicRule",
+                "iot:ListPolicies",
+                "iot:ListThings",
+                "iot:ListTopicRules",
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams",
+                "kms:ListAliases",
+                "lambda:Get*",
+                "lambda:List*",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:DescribeMetricFilters",
+                "logs:GetLogEvents",
+                "s3:Get*",
+                "s3:List*",
+                "sns:ListSubscriptions",
+                "sns:ListSubscriptionsByTopic",
+                "sns:ListTopics",
+                "sqs:ListQueues",
+                "tag:GetResources",
+                "ec2:StartInstances",
+                "ec2:StopInstances"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Action": [
+                "es:*"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Action": [
+                "waf:*",
+                "waf-regional:*",
+                "elasticloadbalancing:SetWebACL"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Action": [
+                "firehose:*"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Action": [
+                "autoscaling:Describe*",
+                "cloudwatch:Describe*",
+                "cloudwatch:Get*",
+                "cloudwatch:List*",
+                "logs:Get*",
+                "logs:List*",
+                "logs:Describe*",
+                "logs:TestMetricFilter",
+                "logs:FilterLogEvents",
+                "sns:Get*",
+                "sns:List*"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "events:*",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": "arn:aws:iam::*:role/*",
+            "Condition": {
+                "StringLike": {
+                    "iam:PassedToService": "events.amazonaws.com"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lambda:UpdateFunctionCode",
+                "lambda:PublishVersion",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:UpdateEventSourceMapping",
+                "lambda:DeleteAlias",
+                "lambda:InvokeFunction",
+                "lambda:UpdateAlias",
+                "lambda:CreateAlias",
+                "lambda:PublishLayerVersion",
+                "lambda:CreateEventSourceMapping",
+                "lambda:PutFunctionConcurrency",
+                "lambda:DeleteLayerVersion",
+                "lambda:DeleteFunctionConcurrency"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "lambda:UpdateFunctionCode",
+                "lambda:PublishVersion",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:UpdateEventSourceMapping",
+                "lambda:DeleteAlias",
+                "lambda:InvokeFunction",
+                "lambda:UpdateAlias",
+                "lambda:CreateAlias",
+                "lambda:PublishLayerVersion",
+                "lambda:CreateEventSourceMapping",
+                "lambda:PutFunctionConcurrency",
+                "lambda:DeleteLayerVersion",
+                "lambda:DeleteFunctionConcurrency"
+            ],
+            "Resource": "arn:aws:lambda:*:*:function:jam2-EditSGLambdaFunction*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lambda:AddPermission"
+            ],
+            "Resource": "arn:aws:lambda:*:*:function:*LambdaLogParserFunction*"
+        }
+    ]
+}
