@@ -70,7 +70,7 @@ We will simulate a simple cross site scripting attack by placing some HTML code 
 1.  Remote desktop (RDP) to the **Attacker** windows instance, using the [Preparation](#preparation) steps above.
     *   **Note:** Once you login you may be prompted to allow your computer to be discoverable.  You can select **No**, but either will be fine.
 
-2.  On the Attacker instance (RDP Session) open Chrome browser.  It should open the the webcarter ALB URL by default.  Might be in another tab.  Clicking the **Home** button should get you there as well, but you can also find the url cloudformation output tab:
+2.  On the Attacker instance (RDP Session) open Chrome browser.  It should open the the webcarter ALB URL by default.  Might be in another tab.  Clicking the **Home** button should get you there as well, but you can also find the url JAM **Output Properties** page:
     ![](.//media/image2.png)
 
 3.  In the browser window on the WebCarter site type the following in the **Search** text field and click **Search!**:
@@ -115,7 +115,7 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
     ![](.//media/image36.png)
 
 12. Run Apache Benchmark:
-    *   Copy the abLoadTestCommand from the **Output Properties** tab on of the CloudFormation stack.  Right click and copy.
+    *   Copy the abLoadTestCommand from the **Output Properties** tab on the JAM webpage.  Right click and copy.
 
         <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/jam7.png" width="700" />
     *   Run the command in a Command Prompt window
@@ -128,7 +128,7 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
 
 1.  Login to AWS console and choose EC2 service.
 
-2.  Choose **Load Balancers** in the left menu and then choose your load balancer created by CloudFormation stack.
+2.  Choose **Load Balancers** in the left menu and then choose your load balancer created by the lab.
 
 3.  Go to **Integrated Services** tab and click on **Create Web ACL** button. You'll be directed to the **WAF & Shield** service console.
 
