@@ -80,11 +80,11 @@ We will simulate a SQL injection attack by placing a sql query in the the search
 #### Simulate a HTTP Flood attack
 We will simulate a HTTP Flood attack by using JMeter to send lots of traffic to the web page.
 
-7.  Run the DOS Scenario Apache JMeter by clicking on the DOS shortcut on the desktop.
+7.  Run the DOS scenario Apache JMeter by clicking on the DOS shortcut on the desktop.
 
     ![](.//media/image8.png)
 
-8.  Right click on the **DoS** scenario and then click **Start**:
+8.  Click the green play arrow in the top menu ribbon to start the scenario:
     ![](.//media/image11.png)
 
 9.  Navigate to **View Results Tree**, select one of the items which has one of the item with a green shield under, and assure you're getting 200 OK responses. Your HTTP Flood attack was successful:
