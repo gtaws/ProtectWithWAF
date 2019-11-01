@@ -14,7 +14,7 @@ Then you will be creating an AWS WAF to protect against these simulated attacks 
 
 ### JAM preperation:
 
-1.  It's recommended to open a new tab in your browser to the <https://jam.awsevents.com> page to be able to get information from the **AWS Account** page and the **Output Properties** page as you proceed in the lab.
+1.  It's recommended to open an additional tab in your browser to the <https://jam.awsevents.com> page to be able to get information from the **AWS Account** page and the **Output Properties** page as you proceed in the lab.
 
 2.  Download the SSH Key Pair by selecting **AWS account** on the left side and select the SSH Key Pair **Download** button.
 <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/jam3.png" width="700" />
@@ -102,7 +102,7 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
 
 12. Run Apache Benchmark:
 *   Copy the abLoadTestCommand from the **Output Properties** tab on of the CloudFormation stack.  Right click and copy.
-    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/jam7.png" width="700" />  
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/jam7.png" width="700" />
 *   Run the command in a Command Prompt window
 *   Assure that ab run above was successful:
     ![](.//media/image35.png)
