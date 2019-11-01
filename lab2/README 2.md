@@ -327,7 +327,7 @@ You can see that requests from that IP address to /api url been blocked by the W
 
 2.  Paste into the Command Prompt inside the Attacker Windows instance.  You can open a command prompt by using the **CMD** shortcut on the desktop.
 
-    ![](media/RunCommand-cmd.png" />
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/RunCommand-cmd.png" />
 
 3.  Wait a few moments
 
