@@ -101,12 +101,12 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
     ![](.//media/image36.png)
 
 12. Run Apache Benchmark:
-*   Copy the abLoadTestCommand from the **Output Properties** tab on of the CloudFormation stack.  Right click and copy.
+    *   Copy the abLoadTestCommand from the **Output Properties** tab on of the CloudFormation stack.  Right click and copy.
 
-    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/jam7.png" width="700" />
-*   Run the command in a Command Prompt window
-*   Assure that ab run above was successful:
-    ![](.//media/image35.png)
+        <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/jam7.png" width="700" />
+    *   Run the command in a Command Prompt window
+    *   Assure that ab run above was successful:
+        ![](.//media/image35.png)
 
 ***
 
