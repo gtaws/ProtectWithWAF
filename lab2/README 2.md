@@ -44,7 +44,7 @@ We will use a honeypot to detect bots crawler our websites and automate blocking
 
     When you are done it should look similar to this.
 
-    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image25.png" />  
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image25.png" />
 
 Now your WebCarter Web application is protected with the Web ACL created for this lab.
 
@@ -101,10 +101,10 @@ Below you will create indexes and visualizations in your domain.
 
 #### Configure Web ACL logging functionality.
 
-3.  In the **WAF & Shield** AWS console, open **Logging** tab of the **waflab** Web ACL and click **Enable Logging**.
+3.  In the **WAF & Shield** AWS console, open **Logging** tab of the **mod-module-1** Web ACL and click **Enable Logging**.
     **Note**: If you see the splash/informational screen when opening the **WAF & Shield** console please see the [Appendix](#appendix)
 
-4.  Choose Kinesis Data Firehose stream created for the lab **aws-waf-logs-waflab**.
+4.  Choose Kinesis Data Firehose stream created for the lab **aws-waf-mod_module-1**.
 
 5.  **Do Not** add **Redacted Fields** and click **Create**.
 
@@ -125,7 +125,7 @@ Below you will create indexes and visualizations in your domain.
 10. Go to **Management** menu and click **Advanced**. Search for the the ***defaultindex*** then copy and save the default index id value:
     ![](.//media/image5.png)
 
-11. Download and using the URL in the AWS CloudFormation **Outputs** webpage or you can right click the *kibana-config.json* url and select save link as. Open kibana-configruation.json locally with a text editor and replace the ```_YOUR_ES_INDEX_``` value with the one saved above. Please do it everywhere in the file (approximately 5 times).
+11. Download and using the URL in the JAM **Output Properties** webpage or you can right click the *kibana-config.json* url and select save link as. Open kibana-configruation.json locally with a text editor and replace the ```_YOUR_ES_INDEX_``` value with the one saved above. Please do it everywhere in the file (approximately 5 times).
     ![](.//media/image26.png)
 
 12. Save the file.
@@ -143,7 +143,7 @@ Below you will create indexes and visualizations in your domain.
 
 1.  On the Attacker Windows instance, check if **BOT1** Jmeter scenario is still running. Re-start it if needed to generate more data for this exercise.
 
-2.  Go to AWS Console and choose **ElasticSearch** service. Choose your **waflab-awswaf-logs** domain and click on the Kibana link.
+2.  Go to AWS Console and choose **ElasticSearch** service. Choose your **mod-module-1-awswaf-logs** domain and click on the Kibana link.
 
 3.  Navigate to the **Dashboard** menu on the left and explore the dashboard graphs. Check the number of requests per minute per source IP address.
 
@@ -194,7 +194,7 @@ This scenario simulates a mix of legitimate traffic together with under the rada
 
 15. Click **Create**.
 
-16. Navigate to **Web ACLs** menu and click on **waflab** ACL.
+16. Navigate to **Web ACLs** menu and click on **mod-module-1** ACL.
 
 17. Click **Rules** tab then **Edit Web ACL** button.
 
@@ -231,15 +231,15 @@ In the next steps we'll look at ALB access logs using Amazon **Athena**.
 
 23. Go to Amazon **Athena** AWS console.
 
-24. Go to Query Editor and choose **waflab_..** as your
+24. Go to Query Editor and choose **mod-module-1_..** as your
     Database.
 
-    **Note:** You will need to supply a s3 bucket location to store the query editor output before you are able to run a query.  You can get the location information from the AWS Cloudformation **Outputs** page.
+    **Note:** You will need to supply a s3 bucket location to store the query editor output before you are able to run a query.  You can get the location information from the JAM **Output Properties** webpage.
 
     1.  Click **setup a query result location in Amazon S3**.
         ![](.//media/image27.png)
 
-    2.  Copy the bucket information from the **Outputs**: **AthenaEditorOutput**.
+    2.  Copy the bucket information from the **Output Properties**: **AthenaEditorOutput**.
         ![](.//media/image31.png)
     3.  Paste the copied bucket location in the **Query result location** and then click **Save**.
         ![](.//media/image30.png)
@@ -290,7 +290,7 @@ You should see there are malicious requests coming from the same IP address and 
 
     **Note** we added two conditions in this rule.
 
-34. Navigate to **Web ACLs** menu and click on **waflab** ACL.
+34. Navigate to **Web ACLs** menu and click on **mod-module-1** ACL.
 
 35. Click **Rules** tab then **Edit Web ACL** button.
 
@@ -321,10 +321,12 @@ You can see that requests from that IP address to /api url been blocked by the W
 
 ### Step 4: Honeypot for bad bots and scrapers.
 
-1.  Copy **AddHoneypotSsmCommand** from the AWS CloudFormation **Outputs** webpage.
+1.  Copy **AddHoneypotSsmCommand** from the JAM **Output Properties** webpage.
+
     ![](.//media/RunCommand.png)
 
 2.  Paste into the Command Prompt inside the Attacker Windows instance.  You can open a command prompt by using the **CMD** shortcut on the desktop.
+
     ![](media/RunCommand-cmd.png)
 
 3.  Wait a few moments
