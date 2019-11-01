@@ -59,7 +59,7 @@ Below you will create indexes and visualizations in your domain.
 **Note:** Please be sure to perform the steps in the order listed below when configuring Kibana.
 
 1.  Go to ElasticSearch console, choose the domain created by waf-automation template, and click on the Kibana link:
-![](.//media/image1.png)
+<img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image1.png" />
 
 2.  In the Kibana console
     *   Click on **DevTools** from the menu on the left -  Then click the button **Get to work** 	-  create an index using the following statement:
@@ -97,7 +97,7 @@ Below you will create indexes and visualizations in your domain.
         ```
 
     *   Paste the statement in Kibana console and click on the green **play** button to execute it:
-    ![](.//media/image2.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image2.png" />
 
 #### Configure Web ACL logging functionality.
 
@@ -111,10 +111,10 @@ Below you will create indexes and visualizations in your domain.
 6.  RDP to the Attacker Windows instance and run **BOT1** Jmeter scenario using the BOT1 shortcut on the desktop. Click the green play button in the top menu ribbon to generate data flowing to Kinesis Data Firehose and then to ElasticSearch domain.
 
 7.  Wait for a couple of minutes till WAF logs get to the ElasticSearch domain, then in the **Kibana** dashboard click on the **Discover** menu and define an index pattern as *awswaf-\** and click **Next step**:
-    ![](.//media/image3.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image3.png" />
 
 8.  Choose timestamp as a Filter and click **Create index pattern**.
-    ![](.//media/image4.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image4.png" />
 
 9.  Now you're able to run searches through your logs by going into the **Discover** tab in **Kibana**. For example, you can look for specific HTTP headers, query strings, or source IP addresses:
 
@@ -123,17 +123,17 @@ Below you will create indexes and visualizations in your domain.
 >You can always customize them or create new visualizations as required.
 
 10. Go to **Management** menu and click **Advanced**. Search for the the ***defaultindex*** then copy and save the default index id value:
-    ![](.//media/image5.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image5.png" />
 
 11. Download and using the URL in the JAM **Output Properties** webpage or you can right click the *kibana-config.json* url and select save link as. Open kibana-configruation.json locally with a text editor and replace the ```_YOUR_ES_INDEX_``` value with the one saved above. Please do it everywhere in the file (approximately 5 times).
-    ![](.//media/image26.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image26.png" />
 
 12. Save the file.
 
 13. Go to **Management -> Saved Objects** tab, click **Import** and upload the modified kibana-configruation.json file. Click **Yes** for the overwrite question.
 
 14. You'll see your dashboard and visualizations have been uploaded successfully:
-    ![](.//media/image6.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image6.png" />
 
 15. Navigate to the **Dashboard** menu and choose **WAF** dashboard you just uploaded.
 
@@ -183,14 +183,14 @@ This scenario simulates a mix of legitimate traffic together with under the rada
 10. Go to AWS WAF & Shield console and navigate to **String and regex matching**.
 
 11. Click **Create condition** and create BOT10 condition as following:
-    ![](.//media/image7.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image7.png" />
 
 12. Click **Add filter** then **Create**.
 
 13. Go to **Rules** menu and click **Create rule**.
 
 14. Create **BOT10** rule as following:
-    ![](.//media/image8.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image8.png" />
 
 15. Click **Create**.
 
@@ -237,12 +237,12 @@ In the next steps we'll look at ALB access logs using Amazon **Athena**.
     **Note:** You will need to supply a s3 bucket location to store the query editor output before you are able to run a query.  You can get the location information from the JAM **Output Properties** webpage.
 
     1.  Click **setup a query result location in Amazon S3**.
-        ![](.//media/image27.png)
+        <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image27.png" />
 
     2.  Copy the bucket information from the **Output Properties**: **AthenaEditorOutput**.
-        ![](.//media/image31.png)
+        <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image31.png" />
     3.  Paste the copied bucket location in the **Query result location** and then click **Save**.
-        ![](.//media/image30.png)
+        <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image30.png" />
 
 25. Run the following SQL query:
     ```sql
@@ -275,18 +275,18 @@ You should see there are malicious requests coming from the same IP address and 
 28. Go to AWS **WAF & Shield** console and navigate to **String and regex matching**.
 
 29. Click **Create condition** and create RESTAPI condition as following:
-    ![](.//media/image9.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image9.png" />
 
 30. Click **Add filter** then **Create**.
 
 31. Go to **IP addresses** and click **Create condition**:
-    ![](.//media/image10.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image10.png" />
 
 32. Click **Add IP address...** then **Create**.
 
 33. Go to the **Rules** menu and click **Create rule**:
-    ![](.//media/image11.png)
-    ![](.//media/image12.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image11.png" />
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image12.png" />
 
     **Note** we added two conditions in this rule.
 
@@ -323,11 +323,11 @@ You can see that requests from that IP address to /api url been blocked by the W
 
 1.  Copy **AddHoneypotSsmCommand** from the JAM **Output Properties** webpage.
 
-    ![](.//media/RunCommand.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/RunCommand.png" />
 
 2.  Paste into the Command Prompt inside the Attacker Windows instance.  You can open a command prompt by using the **CMD** shortcut on the desktop.
 
-    ![](media/RunCommand-cmd.png)
+    ![](media/RunCommand-cmd.png" />
 
 3.  Wait a few moments
 
@@ -336,7 +336,7 @@ You can see that requests from that IP address to /api url been blocked by the W
 5.  Right click on the page and choose **Inspect**.
 
 6.  Verify the honeypot link is present on the page, right click on the page and select **View Page Source** and search for honeypot. This link has been inserted into your application by AWS **Systems Manager**, which was configured by JAM event.
-    ![](.//media/image13.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image13.png" />
 
     An API Gateway instance has been preconfigured with a Lambda function that parses the source IP address of the request and adds the source IP address to the black list.
 
@@ -345,18 +345,18 @@ You can see that requests from that IP address to /api url been blocked by the W
 8.  Choose **Security Automation -- WAF..** API and click **ANY**.
 
 9.  Click on the Lambda function on the right if you'd like to customize this function:
-    ![](.//media/image14.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image14.png" />
 
 10. Run **HTTTRack** web copier on your Windows instance from the shortcut on the desktop.
 
 11. Select your language and click **Next** on the Welcome page and enter your project name (WebCarter for example), then click **Next**:
-    ![](.//media/image15.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image15.png" />
 
 12. Click **Add URL**, enter the ALB endpoint and click **OK**:
-    ![](.//media/image16.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image16.png" />
 
 13. Click **Set options** button and go to **Experts Only** tab. Change **Global travel mode** to **Go everywhere...** and click **OK**. Because the honeypot is a different domain, this will allow us to simulate a bad bot hitting the **no-follow** hidden honeypot link above:
-    ![](.//media/image17.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image17.png" />
 
 14. Click **Next** then **Finish**.
 
@@ -392,14 +392,14 @@ In the above steps we demonstrated manual creation of the WAF rules using inform
     ```sh
     aws athena list-named-queries --region us-west-2
     ```
-    ![](.//media/image18.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image18.png" />
 
 
 8.  Copy the id of the first query in the list and run the following command with that query id:
     ```sh
     aws athena get-named-query --region us-west-2 --named-query-id 2ff43345-277d-4614-8020-b76f56e02757
     ```
-    ![](.//media/image19.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image19.png" />
 
 9.  Check the query name and assure this is the query we just saved on the console.
 
@@ -414,7 +414,7 @@ In the above steps we demonstrated manual creation of the WAF rules using inform
 13. In the CloudWatch window click **Action-\>Edit** on the top right corner.
 
 14. In the JSON input definition scroll right and replace the query id with the one you saved above:
-    ![](.//media/image20.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image20.png" />
 
 15. Click **Configure details** and then **Update rule**.
 
@@ -436,10 +436,10 @@ In this scenario we used automated detection of probes and scanners, that are ge
 
 *   When opening the AWS WAF & Shield console you maybe prompted with the WAF & Shield splash screen instead WAF specific console.
 
-    ![](.//media/image28.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image28.png" />
 *   Click the **Go to AWS WAF** button
-    ![](.//media/image29.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image29.png" />
 *   Then click **Web ACLs**
 *   Update the **Filter** to reflect the appropriate region where the ALB is deployed.
 
-    ![](.//media/image34.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab2/media/image34.png" />
