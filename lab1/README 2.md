@@ -111,11 +111,11 @@ We will simulate a HTTP Flood attack by using JMeter to send lots of traffic to 
 #### Simulate a Bad Bot attack
 We will simulate a bad bot attack by using Apache Benchmark to send 100 http requests using the User-Agent = bad-bot.
 
-11. Open a Command window using the CMD shortcut on the desktop and change directory to **C:\Apache24\bin**.
+11. Open a Command window using the **CMD** shortcut on the desktop and change directory to **C:\Apache24\bin**.
     ![](.//media/image36.png)
 
 12. Run Apache Benchmark:
-    *   Copy the abLoadTestCommand from the **Output Properties** tab on the JAM webpage.  Right click and copy.
+    *   Copy the abLoadTestCommand from the **Output Properties** tab on the JAM webpage.  Right click and copy or select the copy icon to the right of the command.
 
         <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/jam7.png" width="700" />
     *   Run the command in a Command Prompt window
