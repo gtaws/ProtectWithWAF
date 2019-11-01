@@ -1,4 +1,18 @@
+<!-- TOC -->
 
+-   [Introduction](#introduction)
+-   [JAM preperation](#jam-preperation)
+-   [Connecting to the Windows Instance](#connecting-to-the-windows-instance)
+-   [Step 1: Simulate Cross-Site Scripting, SQL Injection, HTTP Flood, and Bad BOT activities](#step-1-simulate-cross-site-scripting-sql-injection-http-flood-and-bad-bot-activities)
+    -   [Simulate a cross site scripting attack.](#simulate-a-cross-site-scripting-attack)
+    -   [Simulate a SQL injection attack.](#simulate-a-sql-injection-attack)
+    -   [Simulate a HTTP Flood attack](#simulate-a-http-flood-attack)
+    -   [Simulate a Bad Bot attack](#simulate-a-bad-bot-attack)
+-   [Step 2: Create a WAF and configure protection against the above attacks using WAF native rules.](#step-2-create-a-waf-and-configure-protection-against-the-above-attacks-using-waf-native-rules)
+-   [Step 3: Demonstrate protection against the above attacks using WAF native rules.](#step-3-demonstrate-protection-against-the-above-attacks-using-waf-native-rules)
+-   [Appendix](#appendix)
+
+<!-- /TOC -->
 Lab 1 -- Manually testing attacks and protections
 =================================================
 ### Introduction:
@@ -116,9 +130,9 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
 
 2.  Choose **Load Balancers** in the left menu and then choose your load balancer created by CloudFormation stack.
 
-3.  Go to **Integrated Services** tab and click on **Create Web ACL** button. You'll be directed to the WAF & Shield service console.
+3.  Go to **Integrated Services** tab and click on **Create Web ACL** button. You'll be directed to the **WAF & Shield** service console.
 
-4.  Choose the region you're using in the **Filter** field:
+4.  Choose the region you're using in the **Filter** field.  This is defined in the JAM **AWS Account** page, but should be **us-west-2** or **US West (Oregon)**:
     ![](.//media/image15.png)
     **Note**: WAF configuration is separate for each region and Global for CloudFront deployments. You must configure your Web ACL in the same region where you have your ALB deployed.
 
@@ -230,40 +244,6 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
 
 In this lab you protected your Web application against Cross-site scripting, SQL Injection, HTTP flood and simple BOTs using AWS WAF native rules.
 
-***
-
-### Cleanup
-1.  Login to AWS console and choose **WAF & Shield** service.
-
-2.  In the **Filter** section select the appropriate region you created the WAF in.
-
-3.  In the **Web ACLs** section.  Click on the WAF name you created and select the **Rules** tab. If you followed name listed in the lab the name will be **waf-lab-1**.
-
-4.  Under **AWS resources using web ACL** (bottom) click the **X** icon to remove the ACL from the Application load balancer.
-
-5.  Select the **Edit web ACL** button (top right of the **Rules** tab).  On the **Edit web ACL \<waf name\>** click the **X** icons for each of the rules attached to the web ACL until there are no rules remaining.  Then select **Update**.
-
-6.  You should be back at the **Web ACLs** page.  Make sure the WAF you created is selected still and click the delete button.
-
-7.  Click Rules from the left hand side.  You should see the 4 rules BadBot1Rule, HTTPFlood1Rule, SQLInjection1Rule, and XSS1Rule if you followed the naming in the lab.
-
-8.  Select HTTPFlood1Rule and select the **Delete** button.  You will be prompted with a warning, Click the **Delete** button.
-
-9.  For the remaining rules you will need to click on the rule name, example select BadBot1Rule, in the right pane
-    1.  Click **Edit rule**.
-    2.  Select the **X** in the top right of the defined condition filter.
-    3.  Select update.  You should get the message **All conditions for this rule will be removed** in a yellow box.
-    4.  Once you have removed all matched conditions for the the rule you can then delete the rule by selecting the radio button and then clicking the **Delete** button.  You will get a warning again, click the **Delete** button.
-
-10. Perform the steps outlined in step 9 above for each of the remaining rules (SQLInjection1Rule & XSS1Rule)
-
-You are only charged for WebACLs and Rules.  You are not charged for each condition.  You are welcome to clean up each of the conditions we created (XSS1, SQLInjection1, BadBot1), but you will not be charged if you leave them.
-
-1.  To remove click each of the conditions, select each specific condition (list below) and delete each filter.
-
-    -   Cross-Site Scripting - XSS1
-    -   SQL Injection - SQLInjection1
-    -   String and regex matching - BadBot1
 ***
 
 ### Appendix:
