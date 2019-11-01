@@ -71,14 +71,14 @@ We will simulate a simple cross site scripting attack by placing some HTML code 
     *   **Note:** Once you login you may be prompted to allow your computer to be discoverable.  You can select **No**, but either will be fine.
 
 2.  On the Attacker instance (RDP Session) open Chrome browser.  It should open the the webcarter ALB URL by default.  Might be in another tab.  Clicking the **Home** button should get you there as well, but you can also find the url JAM **Output Properties** page:
-    ![](.//media/image2.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image2.png" />
 
 3.  In the browser window on the WebCarter site type the following in the **Search** text field and click **Search!**:
     ```html
     <script>alert(document.cookie)</script>
     ```
 4.  Click on any of the Brands filters (**Apple**, **NBA**). The script will be executed and the session cookie will be printed in the alert. Your Cross-site scripting attack was successful:
-    ![](.//media/image4.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image4.png" />
 
 #### Simulate a SQL injection attack.
 We will simulate a SQL injection attack by placing a sql query in the the search area.  This will throw a database error on the page when you execute the search.
@@ -87,32 +87,32 @@ We will simulate a SQL injection attack by placing a sql query in the the search
     ```
     ' and 1=0 union select 1,group_concat(table_name) from information_schema.tables #
     ```
-    ![](.//media/image6.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image6.png" />
 
 6.  Server returns **Database Error** page displaying the SQL statement been executed. You successfully performed a SQL Injection attack and got a desired output from the server.
-    ![](.//media/image7.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image7.png" />
 
 #### Simulate a HTTP Flood attack
 We will simulate a HTTP Flood attack by using JMeter to send lots of traffic to the web page.
 
 7.  Run the DOS scenario Apache JMeter by clicking on the DOS shortcut on the desktop.
 
-    ![](.//media/image8.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image8.png" />
 
 8.  Click the green play arrow in the top menu ribbon to start the scenario:
-    ![](.//media/image11.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image11.png" />
 
 9.  Navigate to **View Results Tree**, select one of the items which has one of the item with a green shield under, and assure you're getting 200 OK responses. Your HTTP Flood attack was successful:
-    ![](.//media/image12.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image12.png" />
 
 10. Stop and Clear the results tree for the next tests:
-    ![](.//media/image13.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image13.png" />
 
 #### Simulate a Bad Bot attack
 We will simulate a bad bot attack by using Apache Benchmark to send 100 http requests using the User-Agent = bad-bot.
 
 11. Open a Command window using the **CMD** shortcut on the desktop and change directory to **C:\Apache24\bin**.
-    ![](.//media/image36.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image36.png" />
 
 12. Run Apache Benchmark:
     *   Copy the abLoadTestCommand from the **Output Properties** tab on the JAM webpage.  Right click and copy or select the copy icon to the right of the command.
@@ -120,7 +120,7 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
         <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/jam7.png" width="700" />
     *   Run the command in a Command Prompt window
     *   Assure that ab run above was successful:
-        ![](.//media/image35.png)
+        <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image35.png" />
 
 ***
 
@@ -133,17 +133,17 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
 3.  Go to **Integrated Services** tab and click on **Create Web ACL** button. You'll be directed to the **WAF & Shield** service console.
 
 4.  Choose the region you're using in the **Filter** field.  This is defined in the JAM **AWS Account** page, but should be **us-west-2** or **US West (Oregon)**:
-    ![](.//media/image15.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image15.png" />
     **Note**: WAF configuration is separate for each region and Global for CloudFront deployments. You must configure your Web ACL in the same region where you have your ALB deployed.
 
 5.  Click **Create web ACL**, fill out the details as below, and click **Next**:
 
     **Note**: Please select the region the ALB is deployed.
-    >![](.//media/image16.png)
+    ><img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image16.png" />
 
 6.  Create Cross-site scripting match condition. Click **Add Filter** then **Create**.
 
-    >![](.//media/image17.png)
+    ><img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image17.png" />
 
     **Note**: Filters in the conditions are logically disjoined, i.e. **OR**. You can have up to 10 filters in each condition (hard limit).
 
@@ -152,14 +152,14 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
 
 7.  Create SQL injection match condition. Click **Add Filter** then **Create**.
 
-    >![](.//media/image18.png)
+    ><img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image18.png" />
 
 
 
 
 8.  Create String and regex match condition. Click **Add Filter** then **Create**.
 
-    >![](.//media/image19.png)
+    ><img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image19.png" />
 
 
 
@@ -172,7 +172,7 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
 
 11. Create a simple Cross-site scripting rule that in our example will contain a single XSS condition created above. Select the condition **XSS1** as below and click **Add Condition**:
 
-    >![](.//media/image20.png)
+    ><img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image20.png" />
 
     **Note**: Conditions in the rule are logically joined, i.e. **AND**. You can have up to 100 conditions of each type per account (soft limit).
 
@@ -181,21 +181,21 @@ We will simulate a bad bot attack by using Apache Benchmark to send 100 http req
 
 12. Create SQL Injection rule choosing the SQL injection condition created above:
 
-    >![](.//media/image21.png)
+    ><img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image21.png" />
 
 
 
 
 13. Create Bad Bot rule choosing the String match condition created above:
 
-    >![](.//media/image22.png)
+    ><img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image22.png" />
 
 
 
 
 14. Create HTTP Flood rule changing the Rule type to **Rate-based rule**:
 
-    >![](.//media/image23.png)
+    ><img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image23.png" />
 
     **Note**: No conditions are needed for this rule, but you could add match conditions to the rate-based rule when crafting your own custom signatures.
 
@@ -220,7 +220,7 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
     ```
 
 2.  Assure you get HTTP 403 response from WAF:
-    ![](.//media/image24.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image24.png" />
 
 3.  In the **Search** field enter the following:
     ```
@@ -228,19 +228,19 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
     ```
 
 4.  Assure you get HTTP 403 response from WAF:
-    ![](.//media/image24.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image24.png" />
 
 5.  Start JMeter DOS scenario again, clicking the green play arrow in the menu ribbon, and navigate to the Results tree. Watch the request till they start failing after reaching 2000 requests / 5 min as configured in your rate-based rule:
-    ![](.//media/image25.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image25.png" />
 
 6.  Go to AWS WAF Console and navigate to **Rules-\> HTTPFlood1Rule**.  Notice IP addresses that are currently blocked by this rule:
 
-    ![](.//media/image26.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image26.png" />
 
     These IP addresses configured in JMeter in **CSV Data Set Config** section and originate from the attacker instance.
 
 7.  Repeat ab test as above and notice Non-2xx responses from WAF:
-    ![](.//media/image27.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image27.png" />
 
 In this lab you protected your Web application against Cross-site scripting, SQL Injection, HTTP flood and simple BOTs using AWS WAF native rules.
 
@@ -249,10 +249,10 @@ In this lab you protected your Web application against Cross-site scripting, SQL
 ### Appendix:
 *   When opening the AWS WAF & Shield console you maybe prompted with the WAF & Shield splash screen instead WAF specific console.
 
-    ![](.//media/image28.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image28.png" />
 *   Click the **Go to AWS WAF** button
-    ![](.//media/image29.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image29.png" />
 *   Then click **Web ACLs**
 *   Update the **Filter** to reflect the appropriate region where the ALB is deployed.
 
-    ![](.//media/image34.png)
+    <img src="https://aws-jam-challenge-resources.s3.amazonaws.com/WAF-BOTs-Scrapers-Workshop/lab1/media/image34.png" />
