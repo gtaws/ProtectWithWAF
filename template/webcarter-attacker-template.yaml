@@ -898,7 +898,6 @@ Resources:
         WillReplace: 'true'
   webCarterALBAccessLogBucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
   webCarterALBAccessLogBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -1078,6 +1077,9 @@ Resources:
                     "verbose_logging": true
                   }
                 }
+            c:\Users\Administrator\Desktop\CMD.bat:
+              content: !Sub |
+                C:\Windows\System32\cmd.exe
             c:\Users\Administrator\Desktop\DOS.bat:
               content: !Sub |
                 "C:\Program Files\apache-jmeter-5.1.1\bin\jmeter-t.cmd" c:\JmeterScenariosDOS.jmx

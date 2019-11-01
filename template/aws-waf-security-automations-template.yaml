@@ -344,7 +344,6 @@ Resources:
       Type: 'AWS::S3::Bucket'
       Condition: HttpFloodProtectionLogParserActivated
       DependsOn: CheckRequirements
-      DeletionPolicy: Retain
       Properties:
         AccessControl: Private
         PublicAccessBlockConfiguration:
@@ -740,7 +739,6 @@ Resources:
           - !Ref deliveryRole
     firehoseBackupBucket:
       Type: AWS::S3::Bucket
-      DeletionPolicy: Retain
       Properties:
         VersioningConfiguration:
           Status: Enabled
