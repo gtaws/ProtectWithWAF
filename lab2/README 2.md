@@ -9,7 +9,7 @@
 -   [Step 3: Use ElasticSearch Service with Kibana for WAF monitoring and forensics](#step-3-use-elasticsearch-service-with-kibana-for-waf-monitoring-and-forensics)
 -   [Step 4: Honeypot for bad bots and scrapers.](#step-4-honeypot-for-bad-bots-and-scrapers)
 -   [Step 5: WAF Automation using AWS Lambda and Amazon Athena.](#step-5-waf-automation-using-aws-lambda-and-amazon-athena)
--   [Appendix](#appendix)
+-   [Appendix:](#appendix)
 
 <!-- /TOC -->
 Lab 2 -- Automating Protections and Tracking Attacks
@@ -335,7 +335,7 @@ You can see that requests from that IP address to /api url been blocked by the W
 
 5.  Right click on the page and choose **Inspect**.
 
-6.  Verify the honeypot link is present on the page, right click on the page and select **View Page Source** and search for honeypot. This link has been inserted into your application by AWS **Systems Manager**, which was configured by WAF Automation CloudFormation stack.
+6.  Verify the honeypot link is present on the page, right click on the page and select **View Page Source** and search for honeypot. This link has been inserted into your application by AWS **Systems Manager**, which was configured by JAM event.
     ![](.//media/image13.png)
 
     An API Gateway instance has been preconfigured with a Lambda function that parses the source IP address of the request and adds the source IP address to the black list.
