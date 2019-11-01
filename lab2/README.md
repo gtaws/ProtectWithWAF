@@ -229,7 +229,7 @@ In the next steps we'll look at ALB access logs using Amazon **Athena**.
 
 23. Go to Amazon **Athena** AWS console.
 
-24. Go to Query Editor and choose **modmodule1_..** as your
+24. Go to Query Editor and choose **waflab_..** as your
     Database.
 
     **Note:** You will need to supply a s3 bucket location to store the query editor output before you are able to run a query.  You can get the location information from the AWS Cloudformation **Outputs** page.
@@ -263,10 +263,12 @@ In the next steps we'll look at ALB access logs using Amazon **Athena**.
     FROM app_access_logs
     WHERE parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z') > DATE_ADD('minute', -5, NOW())
 		    	AND target_status_code = ANY (VALUES '400', '401', '403', '404', '405', '500')
-    GROUP BY client_ip, request_url, date_trunc('minute', parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z')), target_status_code;
+    GROUP BY client_ip, request_url, date_trunc('minute',
+      parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z')),
+      target_status_code;
     ```
 
-**Note** there are malicious requests coming from the same IP address and targeting our Web application REST API endpoint. We know that REST API shall be open only to our partners, and we decide quickly to block it for the IP address returned above.
+You should see there are malicious requests coming from the same IP address and targeting our Web application REST API endpoint. We know that REST API shall be open only to our partners, and we decide quickly to block it for the IP address returned above.
 
 28. Go to AWS **WAF & Shield** console and navigate to **String and regex matching**.
 
@@ -296,7 +298,7 @@ In the next steps we'll look at ALB access logs using Amazon **Athena**.
 
 38. Wait for couple for minutes and refresh your Kibana dashboard. Check if you see blocked request to the api endpoint.
 
-39. Go to Athena console and run the following query:
+39. Go to AWS **Athena** console and run the following query:
 
     ```sql
     SELECT client_ip,
@@ -306,14 +308,18 @@ In the next steps we'll look at ALB access logs using Amazon **Athena**.
     FROM app_access_logs
     WHERE parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z') > DATE_ADD('minute', -5, NOW())
     			AND elb_status_code = '403'
-    GROUP BY client_ip, request_url, date_trunc('minute', parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z')), target_status_code
+    GROUP BY client_ip, request_url, date_trunc('minute',
+       parse_datetime(time, 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z')),
+       target_status_code;
     ```
 
 You can see that requests from that IP address to /api url been blocked by the WAF rule.
 
+***
+
 ### Step 4: Honeypot for bad bots and scrapers.
 
-1.  Copy AddHoneypotSsmCommand from the AWS CloudFormation **Outputs** webpage.
+1.  Copy **AddHoneypotSsmCommand** from the AWS CloudFormation **Outputs** webpage.
     ![](.//media/RunCommand.png)
 
 2.  Paste into the Command Prompt inside the Attacker Windows instance
@@ -337,7 +343,7 @@ You can see that requests from that IP address to /api url been blocked by the W
 9.  Click on the Lambda function on the right if you'd like to customize this function:
     ![](.//media/image14.png)
 
-10. Run **HTTTRack** web copier on your Windows instance.
+10. Run **HTTTRack** web copier on your Windows instance from the shortcut on the desktop.
 
 11. Select your language and click **Next** on the Welcome page and enter your project name (WebCarter for example), then click **Next**:
     ![](.//media/image15.png)
@@ -355,6 +361,8 @@ You can see that requests from that IP address to /api url been blocked by the W
 16. Navigate to WAF& Shield AWS Console, **IP Addresses** and choose **..Bad Bot Set**. Assure you see your external IP address in the list.
 
 In this simulation HTTTrack is accessing an ALB using 10.x.x.x IP address, while accessing API GW honeypot endpoint using public IP address. Due to this simulation network topology, we can see our public source IP address has been added to the block list by the Lambda function, although traffic from HTTTrack is not been blocked. In the real-life scenario scraper will be blocked based on its public IP address.
+
+***
 
 ### Step 5: WAF Automation using AWS Lambda and Amazon Athena.
 
@@ -417,6 +425,8 @@ In the above steps we demonstrated manual creation of the WAF rules using inform
 20. Stop JMeter test and check that in about 5 minutes your source IP address will disappear from the **...Scanners & Probes Set** IP list.
 
 In this scenario we used automated detection of probes and scanners, that are getting 4xx responses from the application and stay undetected by the rate-limiting rules.
+
+***
 
 ### Appendix:
 
