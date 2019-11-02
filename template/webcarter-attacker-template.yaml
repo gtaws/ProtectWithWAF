@@ -25,7 +25,6 @@ Metadata:
           - DesiredCapacity
           - MaxSize
           - AttackerInstanceType
-          - DBInstanceType
       -
         Label:
           default: Credentials
@@ -549,21 +548,11 @@ Resources:
     DependsOn: InternetGatewayAttachment
     Properties:
       Domain: vpc
-  NatGateway2EIP:
-    Type: AWS::EC2::EIP
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Domain: vpc
   NatGateway1:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt NatGateway1EIP.AllocationId
       SubnetId: !Ref PublicSubnet1
-  NatGateway2:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGateway2EIP.AllocationId
-      SubnetId: !Ref PublicSubnet2
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -691,13 +680,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Private Routes (AZ2)
-  DefaultPrivateRoute2:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable2
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway2
-  PrivateSubnet2RouteTableAssociation:
+   PrivateSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PrivateRouteTable2
@@ -872,7 +855,7 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn: [PrivateSubnet1RouteTableAssociation, PrivateSubnet2RouteTableAssociation, InitInstance]
     Properties:
-      VPCZoneIdentifier: [!Ref 'PrivateSubnet1', !Ref 'PrivateSubnet2']
+      VPCZoneIdentifier: [!Ref 'PrivateSubnet1']
       HealthCheckGracePeriod: 300
       LaunchConfigurationName: !Ref 'ContainerInstances'
       MinSize: '1'
@@ -1143,11 +1126,7 @@ Resources:
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\JmeterScenariosBotsScrappers-template.jmx:
               source: !Sub
-<<<<<<< HEAD
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBotsScrappers.jmx"
-=======
                 - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBotsScrappers.jmx"
->>>>>>> parent of b52cd17... updated regions
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]

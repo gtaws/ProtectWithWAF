@@ -236,11 +236,10 @@ Resources:
           EnvironmentName: 'DEV'
           KeyName: !Ref KeyName
           MyIP: !Ref MyIP
-          InstanceType: 'c5.large'
+          InstanceType: 't3.medium'
           DesiredCapacity: '1'
           MaxSize: '1'
-          AttackerInstanceType: 't3.xlarge'
-          DBInstanceType: 'db.m5.4xlarge'
+          AttackerInstanceType: 't3.large'
           DBAdmin: 'WebCarter'
           DBPassword: !Ref AdminPassword
           RdsAdminUsername: 'master'
@@ -358,7 +357,7 @@ Resources:
       DependsOn: CheckRequirements
       Properties:
         TemplateURL: !Sub
-          - 'https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-firehose-athena.template'
+          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-firehose-athena.template'
           -
             S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
             S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
@@ -382,7 +381,7 @@ Resources:
       DependsOn: CheckRequirements
       Properties:
         TemplateURL: !Sub
-          - 'https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-alb.template'
+          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-alb.template'
           -
             S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
             S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
@@ -408,7 +407,7 @@ Resources:
       DependsOn: CheckRequirements
       Properties:
         TemplateURL: !Sub
-          - 'https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-cloudfront.template'
+          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-cloudfront.template'
           -
             S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
             S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
@@ -1244,9 +1243,9 @@ Outputs:
       Value: !Ref WafLogBucket
 
     AppAccessLogBucket:
+      Condition: ScannersProbesProtectionActivated
       Description: ALB Access Log Bucket
       Value: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
-      Condition: ScannersProbesProtectionActivated
 
     AlbLoadTestCommand:
           Description: Command to flood test ALB endpoint
