@@ -260,7 +260,7 @@ Mappings:
       s3: pl-68a54001
   SourceCode:
     General:
-      S3Bucket: 'aws-jam-challenge-resources'
+      S3Bucket: 'wafworkshops'
       S3Prefix: "WAF-BOTs-Scrapers-Workshop"
 Resources:
   VPC:
