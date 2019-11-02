@@ -1207,7 +1207,7 @@ Resources:
         Handler:  'wafcleanup.handler'
         Role: !GetAtt LambdaRoleWAFCleaner.Arn
         Code:
-          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'wafcleanup.zip']]
         Runtime: python3.7
         MemorySize: 128
@@ -1278,7 +1278,7 @@ Resources:
         Handler:  's3cleanup.handler'
         Role: !GetAtt LambdaRoleS3Cleanup.Arn
         Code:
-          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 's3cleanup.zip']]
         Runtime: python3.7
         MemorySize: 128
@@ -1350,7 +1350,7 @@ Resources:
         Handler:  's3cleanup.handler'
         Role: !GetAtt LambdaRoleS3Cleanup.Arn
         Code:
-          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 's3cleanup.zip']]
         Runtime: python3.7
         MemorySize: 128
@@ -1373,7 +1373,7 @@ Resources:
         Handler: "APIGWUpdate.lambda_handler"
         Role: !GetAtt "LambdaRoleAPIGWUpdate.Arn"
         Code:
-          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
           S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'APIGWUpdate.zip']]
         Environment:
           Variables:

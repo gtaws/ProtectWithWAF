@@ -1003,7 +1003,7 @@ Resources:
             yum -y install mysql
             trap '/opt/aws/bin/cfn-signal --exit-code 1 --resource InitInstance --region ${AWS::Region} --stack ${AWS::StackName}' ERR
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource InitInstance --region ${AWS::Region}
-            curl -o hackazon.zip https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/hackazon.zip
+            curl -o hackazon.zip https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/hackazon.zip
             unzip -qq hackazon.zip
             mysql --defaults-extra-file=/tmp/mysql-master.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} < /tmp/init-db.mysql
             mysql --defaults-extra-file=/tmp/mysql-webCarter.cnf --host ${MyDB.Endpoint.Address} --port ${MyDB.Endpoint.Port} --database webCarter < hackazon/database/db.sql
@@ -1089,85 +1089,89 @@ Resources:
                 region=${AWS::Region}
             c:\installs\amazon-corretto-11.0.3.7.1-1-windows-x64.msi:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/amazon-corretto-11.0.3.7.1-1-windows-x64.msi"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/amazon-corretto-11.0.3.7.1-1-windows-x64.msi"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\httrack_x64-3.49.2.exe:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/httrack_x64-3.49.2.exe"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/httrack_x64-3.49.2.exe"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\apache-jmeter-5.1.1.zip:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/apache-jmeter-5.1.1.zip"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/apache-jmeter-5.1.1.zip"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\AWSCLI64PY3.msi:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/AWSCLI64PY3.msi"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/AWSCLI64PY3.msi"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\httpd-2.4.39-o102s-x64-vc14.zip:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/httpd-2.4.39-o102s-x64-vc14.zip"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/httpd-2.4.39-o102s-x64-vc14.zip"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\vc_redist.x64.exe:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/vc_redist.x64.exe"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/vc_redist.x64.exe"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\installs\ChromeStandaloneSetup64.exe:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/ChromeStandaloneSetup64.exe"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/ChromeStandaloneSetup64.exe"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\JmeterScenariosDOS-template.jmx:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosDOS.jmx"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosDOS.jmx"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\JmeterScenariosBOT1-template.jmx:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBOT1.jmx"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBOT1.jmx"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\JmeterScenariosBotsScrappers-template.jmx:
               source: !Sub
+<<<<<<< HEAD
                 - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBotsScrappers.jmx"
+=======
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/JmeterScenariosBotsScrappers.jmx"
+>>>>>>> parent of b52cd17... updated regions
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\kibana-config.json:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/kibana-config.json"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/kibana-config.json"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\passwds.csv:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/passwds.csv"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/passwds.csv"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\paths.csv:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/paths.csv"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/paths.csv"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
             c:\users.csv:
               source: !Sub
-                - "https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/users.csv"
+                - "https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/users.csv"
                 -
                   S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
                   S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
@@ -1380,8 +1384,8 @@ Resources:
 
             ## install webCarter
             cd /var/www
-            curl -o hackazon.zip https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/hackazon.zip
-            curl -o hackazon-config.zip https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/hackazon-configs-20190609.zip
+            curl -o hackazon.zip https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/hackazon.zip
+            curl -o hackazon-config.zip https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/hackazon-configs-20190609.zip
             unzip -qq hackazon.zip
             unzip -qq -u hackazon-config.zip
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource ContainerInstances --region ${AWS::Region}
@@ -1392,7 +1396,7 @@ Resources:
             apt-get -qq -y install php5.6-gd php5.6-mysql
             apt-get -qq -y install php5.6-bcmath
             apt-get -qq -y install php5.6-mbstring
-            curl -o /etc/apache2/sites-available/hackazon.lc.conf https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/hackazon.lc.conf
+            curl -o /etc/apache2/sites-available/hackazon.lc.conf https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/hackazon.lc.conf
             a2ensite hackazon.lc.conf
             a2dissite 000-default
             a2enmod rewrite
