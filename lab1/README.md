@@ -228,6 +228,8 @@ In this step we'll repeat the attacks in Step 1 above and assure they're blocked
 
 In this lab you protected your Web application against Cross-site scripting, SQL Injection, HTTP flood and simple BOTs using AWS WAF native rules.
 
+Once lab1 has been completed you can proceed to [Lab 2](../lab2/README.md) for the next steps.  You can perform the cleanup tasks now or you can perform them below when you are done with the entire lab.
+
 ***
 
 ### Cleanup
