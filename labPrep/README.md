@@ -65,3 +65,5 @@ you initiate this and let it complete in the background.
 11. Go to the stack’s **Output** tab.  You will need some of this information as you proceed through the lab.
 
     ![](.//media/image17.png)
+
+Once the stack is completed go to [Lab 1](../lab1/README.md) for the next steps
