@@ -1,9 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  (SO0006) - AWS WAF Security Automations v2.3.0: This AWS CloudFormation template helps
-  you provision the AWS WAF Security Automations stack without worrying about creating and
-  configuring the underlying AWS infrastructure.
-
+Description: 
+  (ProtectWithWAF-webCarter) - Modifyed version of (SO0006) - AWS WAF Security Automations v2.3.0. This AWS CloudFormation template helps
+  you provision the AWS WAF Security Automations stack without worrying about creating and configuring the underlying AWS infrastructure.
   **WARNING** This template creates an AWS Lambda function, an AWS WAF Web ACL, an Amazon S3 bucket,
   and an Amazon CloudWatch custom metric. You will be billed for the AWS resources used if you
   create a stack from this template.
@@ -14,997 +12,1260 @@ Description: >-
   accompanying this file. This file is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR
   CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing
   permissions and limitations under the License.
-
-
+  
 Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: Protection List
-        Parameters:
-          - ActivateSqlInjectionProtectionParam
-          - ActivateCrossSiteScriptingProtectionParam
-          - ActivateHttpFloodProtectionParam
-          - ActivateScannersProbesProtectionParam
-          - ActivateReputationListsProtectionParam
-          - ActivateBadBotProtectionParam
-
-      - Label:
-          default: Settings
-        Parameters:
-          - EndpointType
-          - AppAccessLogBucket
-
-      - Label:
-          default: Advanced Settings
-        Parameters:
-          - RequestThreshold
-          - ErrorThreshold
-          - WAFBlockPeriod
-
-    ParameterLabels:
-      ActivateSqlInjectionProtectionParam:
-        default: Activate SQL Injection Protection
-
-      ActivateCrossSiteScriptingProtectionParam:
-        default: Activate Cross-site Scripting Protection
-
-      ActivateHttpFloodProtectionParam:
-        default: Activate HTTP Flood Protection
-
-      ActivateScannersProbesProtectionParam:
-        default: Activate Scanner & Probe Protection
-
-      ActivateReputationListsProtectionParam:
-        default: Activate Reputation List Protection
-
-      ActivateBadBotProtectionParam:
-        default: Activate Bad Bot Protection
-
-      EndpointType:
-        default: Endpoint Type
-
-      AppAccessLogBucket:
-        default: Application Access Log Bucket Name
-
-      RequestThreshold:
-        default: Request Threshold
-
-      ErrorThreshold:
-        default: Error Threshold
-
-      WAFBlockPeriod:
-        default: WAF Block Period
-
-
+    AWS::CloudFormation::Interface:
+      ParameterGroups:
+        - Label:
+            default: Protection List
+          Parameters:
+            - ActivateSqlInjectionProtectionParam
+            - ActivateCrossSiteScriptingProtectionParam
+            - ActivateHttpFloodProtectionParam
+            - ActivateScannersProbesProtectionParam
+            - ActivateReputationListsProtectionParam
+            - ActivateBadBotProtectionParam
+        - Label:
+            default: Settings
+          Parameters:
+            - EndpointType
+        - Label:
+            default: Advanced Settings
+          Parameters:
+            - RequestThreshold
+            - ErrorThreshold
+            - WAFBlockPeriod
+      ParameterLabels:
+        ActivateSqlInjectionProtectionParam:
+          default: Activate SQL Injection Protection
+        ActivateCrossSiteScriptingProtectionParam:
+          default: Activate Cross-site Scripting Protection
+        ActivateHttpFloodProtectionParam:
+          default: Activate HTTP Flood Protection
+        ActivateScannersProbesProtectionParam:
+          default: Activate Scanner & Probe Protection
+        ActivateReputationListsProtectionParam:
+          default: Activate Reputation List Protection
+        ActivateBadBotProtectionParam:
+          default: Activate Bad Bot Protection
+        EndpointType:
+          default: Endpoint Type
+        RequestThreshold:
+          default: Request Threshold
+        ErrorThreshold:
+          default: Error Threshold
+        WAFBlockPeriod:
+          default: WAF Block Period
 Parameters:
-  MyIP:
-    Type: String
-    Description: Your IPv4 Address to lock down the Elasticsearch domain
-    Default: '0.0.0.0/0'
-    AllowedPattern: "^(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])/([0-9]|1[0-9]|2[0-9]|3[0-2])$"
+    MyIP:
+      Type: String
+      Description: Your IPv4 Address to lock down your Windows Attacker instance and Elasticsearch domain. Please don't put 0.0.0.0/0 here.
+      Default: '169.254.0.1/32'
+      AllowedPattern: "^(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])\\.(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[0-9][0-9]|[0-9][0-9]|[0-9])/([0-9]|1[0-9]|2[0-9]|3[0-2])$"
+    KeyName:
+      Type: AWS::EC2::KeyPair::KeyName
+      Description: Name of an existing EC2 KeyPair to enable SSH and RDP access to the instances.
+    AdminPassword:
+      NoEcho: true
+      Type: String
+      MinLength: 8
+      MaxLength: 20
+      AllowedPattern: ^[a-zA-Z0-9]*$
+      Description: The admin password for the RDS MySQL instance and the test user. This will be reuired only for troubleshooting your enviroment.
 
-  ActivateSqlInjectionProtectionParam:
-    Type: String
-    Default: 'yes'
-    AllowedValues:
-      - 'yes'
-      - 'no'
-    Description: Choose yes to enable the component designed to block common SQL injection attacks.
-
-  ActivateCrossSiteScriptingProtectionParam:
-    Type: String
-    Default: 'yes'
-    AllowedValues:
-      - 'yes'
-      - 'no'
-    Description: Choose yes to enable the component designed to block common XSS attacks.
-
-  ActivateHttpFloodProtectionParam:
-    Type: String
-    Default: 'yes - AWS WAF rate based rule'
-    AllowedValues:
-      - 'yes - AWS WAF rate based rule'
-      - 'yes - AWS Lambda log parser'
-      - 'yes - Amazon Athena log parser'
-      - 'no'
-    Description: Choose yes to enable the component designed to block HTTP flood attacks.
-
-  ActivateScannersProbesProtectionParam:
-    Type: String
-    Default: 'yes - Amazon Athena log parser'
-    AllowedValues:
-      - 'yes - AWS Lambda log parser'
-      - 'yes - Amazon Athena log parser'
-      - 'no'
-    Description: Choose yes to enable the component designed to block scanners and probes.
-
-  ActivateReputationListsProtectionParam:
-    Type: String
-    Default: 'yes'
-    AllowedValues:
-      - 'yes'
-      - 'no'
-    Description: >-
-      Choose yes to block requests from IP addresses on third-party reputation lists (supported
-      lists: spamhaus, torproject, and emergingthreats).
-
-  ActivateBadBotProtectionParam:
-    Type: String
-    Default: 'yes'
-    AllowedValues:
-      - 'yes'
-      - 'no'
-    Description: Choose yes to enable the component designed to block bad bots and content scrapers.
-
-  EndpointType:
-    Type: String
-    Default: 'ALB'
-    AllowedValues:
-      - 'ALB'
-    Description: Select the type of resource being used.
-
-  AppAccessLogBucket:
-    Type: String
-    Default: ''
-    AllowedPattern: '(^$|^([a-z]|(\d(?!\d{0,2}\.\d{1,3}\.\d{1,3}\.\d{1,3})))([a-z\d]|(\.(?!(\.|-)))|(-(?!\.))){1,61}[a-z\d]$)'
-    Description: >-
-      If you chose yes for the Activate Scanners & Probes Protection parameter, enter a name for the 
-      Amazon S3 bucket where you want to store access logs for your CloudFront distribution or Application 
-      Load Balancer. More about bucket name restriction here: http://amzn.to/1p1YlU5. 
-      If you chose to deactivate this protection, ignore this parameter. 
-
-  RequestThreshold:
-    Type: Number
-    Default: 2000
-    MinValue: 0
-    Description:  >-
-      If you chose yes for the Activate HTTP Flood Protection parameter, enter the maximum
-      acceptable requests per FIVE-minute period per IP address. Please note that AWS WAF rate
-      based rule requires values greather than 2,000 (if you chose Lambda/Athena log parser options,
-      you can use any value greather than zero). If you chose to deactivate this protection, ignore
-      this parameter.
-
-  ErrorThreshold:
-    Type: Number
-    Default: 50
-    MinValue: 0
-    Description:  >-
-      If you chose yes for the Activate Scanners & Probes Protection parameter, enter the maximum
-      acceptable bad requests per minute per IP. If you chose to deactivate this protection
-      protection, ignore this parameter.
-
-  WAFBlockPeriod:
-    Type: Number
-    Default: 240
-    MinValue: 0
-    Description: >-
-      If you chose yes for the Activate Scanners & Probes Protection or HTTP Flood Lambda/Athena log
-      parser parameters, enter the period (in minutes) to block applicable IP addresses. If you
-      chose to deactivate log parsing, ignore this parameter.
-
+    ActivateSqlInjectionProtectionParam:
+      Type: String
+      Default: 'yes'
+      AllowedValues:
+        - 'yes'
+        - 'no'
+      Description: Choose yes to enable the component designed to block common SQL injection attacks.
+    ActivateCrossSiteScriptingProtectionParam:
+      Type: String
+      Default: 'yes'
+      AllowedValues:
+        - 'yes'
+        - 'no'
+      Description: Choose yes to enable the component designed to block common XSS attacks.
+    ActivateHttpFloodProtectionParam:
+      Type: String
+      Default: 'yes - AWS WAF rate based rule'
+      AllowedValues:
+        - 'yes - AWS WAF rate based rule'
+        - 'yes - AWS Lambda log parser'
+        - 'yes - Amazon Athena log parser'
+        - 'no'
+      Description: Choose yes to enable the component designed to block HTTP flood attacks.
+    ActivateScannersProbesProtectionParam:
+      Type: String
+      Default: 'yes - Amazon Athena log parser'
+      AllowedValues:
+        - 'yes - AWS Lambda log parser'
+        - 'yes - Amazon Athena log parser'
+        - 'no'
+      Description: Choose yes to enable the component designed to block scanners and probes.
+    ActivateReputationListsProtectionParam:
+      Type: String
+      Default: 'no'
+      AllowedValues:
+        - 'yes'
+        - 'no'
+      Description: >-
+        Choose yes to block requests from IP addresses on third-party reputation lists (supported
+        lists: spamhaus, torproject, and emergingthreats).
+    ActivateBadBotProtectionParam:
+      Type: String
+      Default: 'yes'
+      AllowedValues:
+        - 'yes'
+        - 'no'
+      Description: Choose yes to enable the component designed to block bad bots and content scrapers.
+    EndpointType:
+      Type: String
+      Default: 'ALB'
+      AllowedValues:
+        - 'ALB'
+        - 'CloudFront'
+      Description: Select the type of resource being used.
+    RequestThreshold:
+      Type: Number
+      Default: 2000
+      MinValue: 0
+      Description:  >-
+        If you chose yes for the Activate HTTP Flood Protection parameter, enter the maximum
+        acceptable requests per FIVE-minute period per IP address. Please note that AWS WAF rate
+        based rule requires values greather than 2,000 (if you chose Lambda/Athena log parser options,
+        you can use any value greather than zero). If you chose to deactivate this protection, ignore
+        this parameter.
+    ErrorThreshold:
+      Type: Number
+      Default: 50
+      MinValue: 0
+      Description:  >-
+        If you chose yes for the Activate Scanners & Probes Protection parameter, enter the maximum
+        acceptable bad requests per minute per IP. If you chose to deactivate this protection
+        protection, ignore this parameter.
+    WAFBlockPeriod:
+      Type: Number
+      Default: 240
+      MinValue: 0
+      Description: >-
+        If you chose yes for the Activate Scanners & Probes Protection or HTTP Flood Lambda/Athena log
+        parser parameters, enter the period (in minutes) to block applicable IP addresses. If you
+        chose to deactivate log parsing, ignore this parameter.
 Conditions:
-  SqlInjectionProtectionActivated: !Equals
-    - !Ref ActivateSqlInjectionProtectionParam
-    - 'yes'
-
-  CrossSiteScriptingProtectionActivated: !Equals
-    - !Ref ActivateCrossSiteScriptingProtectionParam
-    - 'yes'
-
-  HttpFloodProtectionRateBasedRuleActivated: !Equals
-    - !Ref ActivateHttpFloodProtectionParam
-    - 'yes - AWS WAF rate based rule'
-
-  HttpFloodLambdaLogParser: !Equals
-    - !Ref ActivateHttpFloodProtectionParam
-    - 'yes - AWS Lambda log parser'
-
-  HttpFloodAthenaLogParser: !Equals
-    - !Ref ActivateHttpFloodProtectionParam
-    - 'yes - Amazon Athena log parser'
-
-  HttpFloodProtectionLogParserActivated: !Or
-    - Condition: HttpFloodLambdaLogParser
-    - Condition: HttpFloodAthenaLogParser
-
-  ScannersProbesLambdaLogParser: !Equals
-    - !Ref ActivateScannersProbesProtectionParam
-    - 'yes - AWS Lambda log parser'
-
-  ScannersProbesAthenaLogParser: !Equals
-    - !Ref ActivateScannersProbesProtectionParam
-    - 'yes - Amazon Athena log parser'
-
-  ScannersProbesProtectionActivated: !Or
-    - Condition: ScannersProbesLambdaLogParser
-    - Condition: ScannersProbesAthenaLogParser
-
-  AthenaLogParser: !Or
-    - Condition: HttpFloodAthenaLogParser
-    - Condition: ScannersProbesAthenaLogParser
-
-  LogParser: !Or
-    - Condition: HttpFloodProtectionLogParserActivated
-    - Condition: ScannersProbesProtectionActivated
-
-  CreateFirehoseAthenaStack: !Or
-    - Condition: HttpFloodProtectionLogParserActivated
-    - Condition: AthenaLogParser
-
-  ReputationListsProtectionActivated: !Equals
-    - !Ref ActivateReputationListsProtectionParam
-    - 'yes'
-
-  BadBotProtectionActivated: !Equals
-    - !Ref ActivateBadBotProtectionParam
-    - 'yes'
-
-  AlbEndpoint: !Equals
-    - !Ref EndpointType
-    - 'ALB'
-
-  CloudFrontEndpoint: !Equals
-    - !Ref EndpointType
-    - 'CloudFront'
-
+    SqlInjectionProtectionActivated: !Equals
+      - !Ref ActivateSqlInjectionProtectionParam
+      - 'yes'
+    CrossSiteScriptingProtectionActivated: !Equals
+      - !Ref ActivateCrossSiteScriptingProtectionParam
+      - 'yes'
+    HttpFloodProtectionRateBasedRuleActivated: !Equals
+      - !Ref ActivateHttpFloodProtectionParam
+      - 'yes - AWS WAF rate based rule'
+    HttpFloodLambdaLogParser: !Equals
+      - !Ref ActivateHttpFloodProtectionParam
+      - 'yes - AWS Lambda log parser'
+    HttpFloodAthenaLogParser: !Equals
+      - !Ref ActivateHttpFloodProtectionParam
+      - 'yes - Amazon Athena log parser'
+    HttpFloodProtectionLogParserActivated: !Or
+      - Condition: HttpFloodLambdaLogParser
+      - Condition: HttpFloodAthenaLogParser
+    ScannersProbesLambdaLogParser: !Equals
+      - !Ref ActivateScannersProbesProtectionParam
+      - 'yes - AWS Lambda log parser'
+    ScannersProbesAthenaLogParser: !Equals
+      - !Ref ActivateScannersProbesProtectionParam
+      - 'yes - Amazon Athena log parser'
+    ScannersProbesProtectionActivated: !Or
+      - Condition: ScannersProbesLambdaLogParser
+      - Condition: ScannersProbesAthenaLogParser
+    AthenaLogParser: !Or
+      - Condition: HttpFloodAthenaLogParser
+      - Condition: ScannersProbesAthenaLogParser
+    LogParser: !Or
+      - Condition: HttpFloodProtectionLogParserActivated
+      - Condition: ScannersProbesProtectionActivated
+    CreateFirehoseAthenaStack: !Or
+      - Condition: HttpFloodProtectionLogParserActivated
+      - Condition: AthenaLogParser
+    ReputationListsProtectionActivated: !Equals
+      - !Ref ActivateReputationListsProtectionParam
+      - 'yes'
+    BadBotProtectionActivated: !Equals
+      - !Ref ActivateBadBotProtectionParam
+      - 'yes'
+    AlbEndpoint: !Equals
+      - !Ref EndpointType
+      - 'ALB'
+    CloudFrontEndpoint: !Equals
+      - !Ref EndpointType
+      - 'CloudFront'
 Mappings:
-    SourceCode:
-        General:
-            S3Bucket: 'solutions'
-            KeyPrefix: "aws-waf-security-automations/v2.3.0"
-    Solution:
-        Data:
-            SendAnonymousUsageData: 'Yes'
-            LogLevel: 'INFO'
-        Action:
-            WAFWhitelistRule: 'ALLOW'
-            WAFBlacklistRule: 'BLOCK'
-            WAFSqlInjectionRule: 'BLOCK'
-            WAFXssRule: 'BLOCK'
-            WAFHttpFloodRateBasedRule: 'BLOCK'
-            WAFHttpFloodRegularRule: 'BLOCK'
-            WAFScannersProbesRule: 'BLOCK'
-            WAFIPReputationListsRule: 'BLOCK'
-            WAFBadBotRule: 'BLOCK'
+      SourceCode:
+          General:
+              S3Bucket: 'wafworkshops'
+              S3Prefix: "WAF-BOTs-Scrapers-Workshop"
+      Solution:
+          Data:
+              SendAnonymousUsageData: 'Yes'
+              LogLevel: 'INFO'
+          Action:
+              WAFWhitelistRule: 'ALLOW'
+              WAFBlacklistRule: 'BLOCK'
+              WAFSqlInjectionRule: 'BLOCK'
+              WAFXssRule: 'BLOCK'
+              WAFHttpFloodRateBasedRule: 'BLOCK'
+              WAFHttpFloodRegularRule: 'BLOCK'
+              WAFScannersProbesRule: 'BLOCK'
+              WAFIPReputationListsRule: 'BLOCK'
+              WAFBadBotRule: 'BLOCK'
 
 Resources:
-  LambdaRoleHelper:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Path: /
-      Policies:
-        - PolicyName: S3Access
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 's3:GetBucketLocation'
-                  - 's3:GetObject'
-                  - 's3:ListBucket'
-                Resource:
-                  - !Sub 'arn:aws:s3:::${AppAccessLogBucket}'
-        - PolicyName: LogsAccess
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                Resource:
-                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*'
+    
+    WebCarterStack:
+      Type: 'AWS::CloudFormation::Stack'
+      Properties:
+        TemplateURL: !Sub 
+          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/webcarter-attacker-template.yaml'
+          -
+            S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+            S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
+        Parameters:
+          EnvironmentName: 'DEV'
+          KeyName: !Ref KeyName
+          MyIP: !Ref MyIP
+          InstanceType: 't3.medium'
+          DesiredCapacity: '1'
+          MaxSize: '1'
+          AttackerInstanceType: 't3.large'
+          DBAdmin: 'WebCarter'
+          DBPassword: !Ref AdminPassword
+          RdsAdminUsername: 'master'
+          RdsAdminPassword: !Ref AdminPassword
+          webCarterTestUsername: 'WebCarterTest'
+          webCarterTestPassword: !Ref AdminPassword
+          webCarterInstallerPassword: !Ref AdminPassword
+    LambdaRoleHelper:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Path: /
+        Policies:
+          - PolicyName: S3Access
+            PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 's3:GetBucketLocation'
+                    - 's3:GetObject'
+                    - 's3:ListBucket'
+                  Resource:
+                    - !Sub 'arn:aws:s3:::${WebCarterStack.Outputs.webCarterALBAccessLogBucket}'
+          - PolicyName: LogsAccess
+            PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 'logs:CreateLogGroup'
+                    - 'logs:CreateLogStream'
+                    - 'logs:PutLogEvents'
+                  Resource:
+                    - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*'
 
-  LambdaWAFHelperFunction:
-    Type: 'AWS::Lambda::Function'
-    Properties:
-      Description: >-
-        This lambda function verifies the main project's dependencies, requirements and implement auxiliary functions.
-      Handler: 'helper.lambda_handler'
-      Role: !GetAtt LambdaRoleHelper.Arn
-      Code:
-        S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
-        S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "KeyPrefix"], 'helper.zip']]
-      Environment:
-        Variables:
-          API_TYPE: !If [AlbEndpoint, 'waf-regional', 'waf']
-          LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
-      Runtime: python3.7
-      MemorySize: 128
-      Timeout: 300
-
-  CheckRequirements:
-    Type: 'Custom::CheckRequirements'
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFHelperFunction.Arn
-      AthenaLogParser: !If [AthenaLogParser, 'yes', 'no']
-      HttpFloodProtectionRateBasedRuleActivated: !If [HttpFloodProtectionRateBasedRuleActivated, 'yes', 'no']
-      HttpFloodProtectionLogParserActivated: !If [HttpFloodProtectionLogParserActivated, 'yes', 'no']
-      ProtectionActivatedScannersProbes: !If [ScannersProbesProtectionActivated, 'yes', 'no']
-      AppAccessLogBucket: !Ref AppAccessLogBucket
-      Region: !Ref 'AWS::Region'
-      EndpointType: !Ref EndpointType
-      RequestThreshold: !Ref RequestThreshold
-
-  CreateUniqueID:
-    Type: 'Custom::CreateUUID'
-    DependsOn: CheckRequirements
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFHelperFunction.Arn
-
-  CreateDeliveryStreamName:
-    Type: 'Custom::CreateDeliveryStreamName'
-    Condition: HttpFloodProtectionLogParserActivated
-    DependsOn: CheckRequirements
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFHelperFunction.Arn
-      StackName: !Ref 'AWS::StackName'
-
-  CreateGlueDatabaseName:
-    Type: 'Custom::CreateGlueDatabaseName'
-    Condition: AthenaLogParser
-    DependsOn: CheckRequirements
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFHelperFunction.Arn
-      StackName: !Ref 'AWS::StackName'
-
-  WafLogBucket:
-    Type: 'AWS::S3::Bucket'
-    Condition: HttpFloodProtectionLogParserActivated
-    DependsOn: CheckRequirements
-    DeletionPolicy: Retain
-    Properties:
-      AccessControl: Private
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-
-  FirehoseAthenaStack:
-    Type: 'AWS::CloudFormation::Stack'
-    Condition: CreateFirehoseAthenaStack
-    DependsOn: CheckRequirements
-    Properties:
-      TemplateURL: !Sub
-        - 'https://s3.amazonaws.com/${S3Bucket}-${AWS::Region}/${KeyPrefix}/aws-waf-security-automations-firehose-athena.template'
-        -
-          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
-          KeyPrefix: !FindInMap ["SourceCode", "General", "KeyPrefix"]
-      Parameters:
-        ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
-        ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
+    LambdaWAFHelperFunction:
+      Type: 'AWS::Lambda::Function'
+      Properties:
+        Description: >-
+          This lambda function verifies the main project's dependencies, requirements and implement auxiliary functions.
+        Handler: 'helper.lambda_handler'
+        Role: !GetAtt LambdaRoleHelper.Arn
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'helper.zip']]
+        Environment:
+          Variables:
+            API_TYPE: !If [AlbEndpoint, 'waf-regional', 'waf']
+            LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 300
+        Tags: 
+          - Key: Type
+            Value: Automation
+    CheckRequirements:
+      Type: 'Custom::CheckRequirements'
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFHelperFunction.Arn
+        AthenaLogParser: !If [AthenaLogParser, 'yes', 'no']
+        HttpFloodProtectionRateBasedRuleActivated: !If [HttpFloodProtectionRateBasedRuleActivated, 'yes', 'no']
+        HttpFloodProtectionLogParserActivated: !If [HttpFloodProtectionLogParserActivated, 'yes', 'no']
+        ProtectionActivatedScannersProbes: !If [ScannersProbesProtectionActivated, 'yes', 'no']
+        AppAccessLogBucket: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
+        Region: !Ref 'AWS::Region'
         EndpointType: !Ref EndpointType
-        AppAccessLogBucket: !Ref AppAccessLogBucket
-        ParentStackName: !Ref 'AWS::StackName'
-        WafLogBucket: !If [HttpFloodProtectionLogParserActivated, !Ref WafLogBucket, '']
-        WafLogBucketArn: !If [HttpFloodProtectionLogParserActivated, !GetAtt WafLogBucket.Arn, '']
         RequestThreshold: !Ref RequestThreshold
-        ErrorThreshold: !Ref ErrorThreshold
-        WAFBlockPeriod: !Ref WAFBlockPeriod
-        GlueDatabaseName: !If [AthenaLogParser, !GetAtt CreateGlueDatabaseName.DatabaseName, '']
-        DeliveryStreamName: !If [HttpFloodProtectionLogParserActivated, !GetAtt CreateDeliveryStreamName.DeliveryStreamName, '']
 
-  AlbStack:
-    Type: 'AWS::CloudFormation::Stack'
-    Condition: AlbEndpoint
-    DependsOn: CheckRequirements
-    Properties:
-      TemplateURL: !Sub
-        - 'https://s3.amazonaws.com/${S3Bucket}-${AWS::Region}/${KeyPrefix}/aws-waf-security-automations-alb.template'
-        -
-          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
-          KeyPrefix: !FindInMap ["SourceCode", "General", "KeyPrefix"]
-      Parameters:
-        ActivateSqlInjectionProtectionParam: !Ref ActivateSqlInjectionProtectionParam
-        ActivateCrossSiteScriptingProtectionParam: !Ref ActivateCrossSiteScriptingProtectionParam
-        ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
-        ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
-        ActivateReputationListsProtectionParam: !Ref ActivateReputationListsProtectionParam
-        ActivateBadBotProtectionParam: !Ref ActivateBadBotProtectionParam
-        AppAccessLogBucket: !Ref AppAccessLogBucket
-        WafApiType: 'waf-regional'
-        WafArnPrefix: !Sub 'arn:aws:waf-regional:${AWS::Region}:'
-        ParentStackName: !Ref 'AWS::StackName'
-        WafLogBucket: !If [HttpFloodProtectionLogParserActivated, !Ref WafLogBucket, '']
-        GlueAccessLogsDatabase: !If [AthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.GlueAccessLogsDatabase, '']
-        GlueAppAccessLogsTable: !If [ScannersProbesAthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.ALBGlueAppAccessLogsTable, '']
-        GlueWafAccessLogsTable: !If [HttpFloodAthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.GlueWafAccessLogsTable, '']
+    CreateUniqueID:
+      Type: 'Custom::CreateUUID'
+      DependsOn: CheckRequirements
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFHelperFunction.Arn
 
-  CloudFrontStack:
-    Type: 'AWS::CloudFormation::Stack'
-    Condition: CloudFrontEndpoint
-    DependsOn: CheckRequirements
-    Properties:
-      TemplateURL: !Sub
-        - 'https://s3.amazonaws.com/${S3Bucket}-${AWS::Region}/${KeyPrefix}/aws-waf-security-automations-cloudfront.template'
-        -
-          S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
-          KeyPrefix: !FindInMap ["SourceCode", "General", "KeyPrefix"]
-      Parameters:
-        ActivateSqlInjectionProtectionParam: !Ref ActivateSqlInjectionProtectionParam
-        ActivateCrossSiteScriptingProtectionParam: !Ref ActivateCrossSiteScriptingProtectionParam
-        ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
-        ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
-        ActivateReputationListsProtectionParam: !Ref ActivateReputationListsProtectionParam
-        ActivateBadBotProtectionParam: !Ref ActivateBadBotProtectionParam
-        AppAccessLogBucket: !Ref AppAccessLogBucket
-        WafApiType: 'waf'
-        WafArnPrefix: 'arn:aws:waf::'
-        ParentStackName: !Ref 'AWS::StackName'
-        WafLogBucket: !If [HttpFloodProtectionLogParserActivated, !Ref WafLogBucket, '']
-        GlueAccessLogsDatabase: !If [AthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.GlueAccessLogsDatabase, '']
-        GlueAppAccessLogsTable: !If [ScannersProbesAthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.CloudFrontGlueAppAccessLogsTable, '']
-        GlueWafAccessLogsTable: !If [HttpFloodAthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.GlueWafAccessLogsTable, '']
+    CreateDeliveryStreamName:
+      Type: 'Custom::CreateDeliveryStreamName'
+      Condition: HttpFloodProtectionLogParserActivated
+      DependsOn: CheckRequirements
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFHelperFunction.Arn
+        StackName: !Ref 'AWS::StackName'
 
-  LambdaLogParserFunction:
-    Type: 'AWS::Lambda::Function'
-    Condition: LogParser
-    Properties:
-      Description: !Sub >
-            This function parses access logs to identify suspicious behavior, such as an abnormal amount of errors.
-            It then blocks those IP addresses for a customer-defined period of time.
-            Parameters: ${RequestThreshold}, ${ErrorThreshold} and ${WAFBlockPeriod}.
-      Handler: 'log-parser.lambda_handler'
-      Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleLogParserArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleLogParserArn]
-      Code:
-        S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
-        S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "KeyPrefix"], 'log-parser.zip']]
-      Environment:
-        Variables:
-          APP_ACCESS_LOG_BUCKET: !If [ScannersProbesProtectionActivated, !Ref AppAccessLogBucket, !Ref 'AWS::NoValue']
-          WAF_ACCESS_LOG_BUCKET: !If [HttpFloodProtectionLogParserActivated, !Ref WafLogBucket, !Ref 'AWS::NoValue']
-          SEND_ANONYMOUS_USAGE_DATA: !FindInMap ["Solution", "Data", "SendAnonymousUsageData"]
-          UUID: !GetAtt CreateUniqueID.UUID
-          LIMIT_IP_ADDRESS_RANGES_PER_IP_MATCH_CONDITION: '10000'
-          MAX_AGE_TO_UPDATE: '30'
-          REGION: !Ref 'AWS::Region'
-          LOG_TYPE: !If [AlbEndpoint, 'alb', 'cloudfront']
-          METRIC_NAME_PREFIX: !Join ['', !Split ['-', !Ref 'AWS::StackName']]
-          LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
-          STACK_NAME: !Ref 'AWS::StackName'
-          IP_SET_ID_HTTP_FLOOD: !If [HttpFloodProtectionLogParserActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFHttpFloodSet, !GetAtt CloudFrontStack.Outputs.WAFHttpFloodSet], !Ref 'AWS::NoValue']
-          IP_SET_ID_SCANNERS_PROBES: !If [ScannersProbesProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFScannersProbesSet, !GetAtt CloudFrontStack.Outputs.WAFScannersProbesSet], !Ref 'AWS::NoValue']
-      Runtime: python3.7
-      MemorySize: 512
-      Timeout: 300
+    CreateGlueDatabaseName:
+      Type: 'Custom::CreateGlueDatabaseName'
+      Condition: AthenaLogParser
+      DependsOn: CheckRequirements
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFHelperFunction.Arn
+        StackName: !Ref 'AWS::StackName'
 
-  LambdaInvokePermissionAppLogParserS3:
-    Type: 'AWS::Lambda::Permission'
-    Condition: LogParser
-    Properties:
-      FunctionName: !GetAtt LambdaLogParserFunction.Arn
-      Action: 'lambda:*'
-      Principal: s3.amazonaws.com
-      SourceAccount: !Ref 'AWS::AccountId'
+    WafLogBucket:
+      Type: 'AWS::S3::Bucket'
+      Condition: HttpFloodProtectionLogParserActivated
+      DependsOn: CheckRequirements
+      Properties:
+        AccessControl: Private
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
 
-  LambdaAthenaWAFLogParser:
-    Type: 'AWS::Events::Rule'
-    Condition: HttpFloodAthenaLogParser
-    Properties:
-      Description: Security Automations - WAF Logs Athena parser
-      ScheduleExpression: rate(5 minutes)
-      Targets:
-        - Arn: !GetAtt LambdaLogParserFunction.Arn
-          Id: LambdaLogParserFunction
-          Input: !Sub >
-            {
-              "resourceType": "LambdaAthenaWAFLogParser",
-              "glueAccessLogsDatabase": "${FirehoseAthenaStack.Outputs.GlueAccessLogsDatabase}",
-              "accessLogBucket": "${WafLogBucket}",
-              "logParserQuery": "${FirehoseAthenaStack.Outputs.AthenaWafLogParserQuery}"
-            }
+    FirehoseAthenaStack:
+      Type: 'AWS::CloudFormation::Stack'
+      Condition: CreateFirehoseAthenaStack
+      DependsOn: CheckRequirements
+      Properties:
+        TemplateURL: !Sub
+          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-firehose-athena.template'
+          -
+            S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+            S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
+        Parameters:
+          ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
+          ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
+          EndpointType: !Ref EndpointType
+          AppAccessLogBucket: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
+          ParentStackName: !Ref 'AWS::StackName'
+          WafLogBucket: !If [HttpFloodProtectionLogParserActivated, !Ref WafLogBucket, '']
+          WafLogBucketArn: !If [HttpFloodProtectionLogParserActivated, !GetAtt WafLogBucket.Arn, '']
+          RequestThreshold: !Ref RequestThreshold
+          ErrorThreshold: !Ref ErrorThreshold
+          WAFBlockPeriod: !Ref WAFBlockPeriod
+          GlueDatabaseName: !If [AthenaLogParser, !GetAtt CreateGlueDatabaseName.DatabaseName, '']
+          DeliveryStreamName: !If [HttpFloodProtectionLogParserActivated, !GetAtt CreateDeliveryStreamName.DeliveryStreamName, '']
 
-  LambdaInvokePermissionWafLogParserCloudWatch:
-    Type: 'AWS::Lambda::Permission'
-    Condition: HttpFloodAthenaLogParser
-    Properties:
-      FunctionName: !Ref LambdaLogParserFunction
-      Action: 'lambda:InvokeFunction'
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt LambdaAthenaWAFLogParser.Arn
+    AlbStack:
+      Type: 'AWS::CloudFormation::Stack'
+      Condition: AlbEndpoint
+      DependsOn: CheckRequirements
+      Properties:
+        TemplateURL: !Sub
+          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-alb.template'
+          -
+            S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+            S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
+        Parameters:
+          ActivateSqlInjectionProtectionParam: !Ref ActivateSqlInjectionProtectionParam
+          ActivateCrossSiteScriptingProtectionParam: !Ref ActivateCrossSiteScriptingProtectionParam
+          ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
+          ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
+          ActivateReputationListsProtectionParam: !Ref ActivateReputationListsProtectionParam
+          ActivateBadBotProtectionParam: !Ref ActivateBadBotProtectionParam
+          AppAccessLogBucket: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
+          WafApiType: 'waf-regional'
+          WafArnPrefix: !Sub 'arn:aws:waf-regional:${AWS::Region}:'
+          ParentStackName: !Ref 'AWS::StackName'
+          WafLogBucket: !If [HttpFloodProtectionLogParserActivated, !Ref WafLogBucket, '']
+          GlueAccessLogsDatabase: !If [AthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.GlueAccessLogsDatabase, '']
+          GlueAppAccessLogsTable: !If [ScannersProbesAthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.ALBGlueAppAccessLogsTable, '']
+          GlueWafAccessLogsTable: !If [HttpFloodAthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.GlueWafAccessLogsTable, '']
 
-  LambdaAthenaAppLogParser:
-    Type: 'AWS::Events::Rule'
-    Condition: ScannersProbesAthenaLogParser
-    Properties:
-      Description: Security Automations - App Logs Athena parser
-      ScheduleExpression: rate(5 minutes)
-      Targets:
-        - Arn: !GetAtt LambdaLogParserFunction.Arn
-          Id: LambdaLogParserFunction
-          Input: !Sub >
-            {
-              "resourceType": "LambdaAthenaAppLogParser",
-              "glueAccessLogsDatabase": "${FirehoseAthenaStack.Outputs.GlueAccessLogsDatabase}",
-              "accessLogBucket": "${AppAccessLogBucket}",
-              "logParserQuery": "${FirehoseAthenaStack.Outputs.AthenaAppLogParserQuery}"
-            }
+    CloudFrontStack:
+      Type: 'AWS::CloudFormation::Stack'
+      Condition: CloudFrontEndpoint
+      DependsOn: CheckRequirements
+      Properties:
+        TemplateURL: !Sub
+          - 'https://${S3Bucket}-${AWS::Region}.s3.amazonaws.com/${S3Prefix}/aws-waf-security-automations-cloudfront.template'
+          -
+            S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+            S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
+        Parameters:
+          ActivateSqlInjectionProtectionParam: !Ref ActivateSqlInjectionProtectionParam
+          ActivateCrossSiteScriptingProtectionParam: !Ref ActivateCrossSiteScriptingProtectionParam
+          ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
+          ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
+          ActivateReputationListsProtectionParam: !Ref ActivateReputationListsProtectionParam
+          ActivateBadBotProtectionParam: !Ref ActivateBadBotProtectionParam
+          AppAccessLogBucket: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
+          WafApiType: 'waf'
+          WafArnPrefix: 'arn:aws:waf::'
+          ParentStackName: !Ref 'AWS::StackName'
+          WafLogBucket: !If [HttpFloodProtectionLogParserActivated, !Ref WafLogBucket, '']
+          GlueAccessLogsDatabase: !If [AthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.GlueAccessLogsDatabase, '']
+          GlueAppAccessLogsTable: !If [ScannersProbesAthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.CloudFrontGlueAppAccessLogsTable, '']
+          GlueWafAccessLogsTable: !If [HttpFloodAthenaLogParser, !GetAtt FirehoseAthenaStack.Outputs.GlueWafAccessLogsTable, '']
 
-  LambdaInvokePermissionAppLogParserCloudWatch:
-    Type: 'AWS::Lambda::Permission'
-    Condition: ScannersProbesAthenaLogParser
-    Properties:
-      FunctionName: !Ref LambdaLogParserFunction
-      Action: 'lambda:InvokeFunction'
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt LambdaAthenaAppLogParser.Arn
+    LambdaLogParserFunction:
+      Type: 'AWS::Lambda::Function'
+      Condition: LogParser
+      Properties:
+        Description: !Sub >
+              This function parses access logs to identify suspicious behavior, such as an abnormal amount of errors.
+              It then blocks those IP addresses for a customer-defined period of time.
+              Parameters: ${RequestThreshold}, ${ErrorThreshold} and ${WAFBlockPeriod}.
+        Handler: 'log-parser.lambda_handler'
+        Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleLogParserArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleLogParserArn]
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'log-parser.zip']]
+        Environment:
+          Variables:
+            APP_ACCESS_LOG_BUCKET: !If [ScannersProbesProtectionActivated, !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket, !Ref 'AWS::NoValue']
+            WAF_ACCESS_LOG_BUCKET: !If [HttpFloodProtectionLogParserActivated, !Ref WafLogBucket, !Ref 'AWS::NoValue']
+            SEND_ANONYMOUS_USAGE_DATA: !FindInMap ["Solution", "Data", "SendAnonymousUsageData"]
+            UUID: !GetAtt CreateUniqueID.UUID
+            LIMIT_IP_ADDRESS_RANGES_PER_IP_MATCH_CONDITION: '10000'
+            MAX_AGE_TO_UPDATE: '30'
+            REGION: !Ref 'AWS::Region'
+            LOG_TYPE: !If [AlbEndpoint, 'alb', 'cloudfront']
+            METRIC_NAME_PREFIX: !Join ['', !Split ['-', !Ref 'AWS::StackName']]
+            LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
+            STACK_NAME: !Ref 'AWS::StackName'
+            IP_SET_ID_HTTP_FLOOD: !If [HttpFloodProtectionLogParserActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFHttpFloodSet, !GetAtt CloudFrontStack.Outputs.WAFHttpFloodSet], !Ref 'AWS::NoValue']
+            IP_SET_ID_SCANNERS_PROBES: !If [ScannersProbesProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFScannersProbesSet, !GetAtt CloudFrontStack.Outputs.WAFScannersProbesSet], !Ref 'AWS::NoValue']
+        Runtime: python3.7
+        MemorySize: 512
+        Timeout: 300
+        Tags: 
+          - Key: Type
+            Value: Automation
 
-  LambdaWAFReputationListsParserFunction:
-    Type: 'AWS::Lambda::Function'
-    Condition: ReputationListsProtectionActivated
-    Properties:
-      Description: >-
-        This lambda function checks third-party IP reputation lists hourly for new IP ranges to
-        block. These lists include the Spamhaus Dont Route Or Peer (DROP) and Extended Drop (EDROP)
-        lists, the Proofpoint Emerging Threats IP list, and the Tor exit node list.
-      Handler: 'reputation-lists-parser.handler'
-      Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleReputationListsParserArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleReputationListsParserArn]
-      Code:
-        S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
-        S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "KeyPrefix"], 'reputation-lists-parser.zip']]
-      Runtime: nodejs8.10
-      MemorySize: 256
-      Timeout: 300
-      Environment:
-        Variables:
-          SEND_ANONYMOUS_USAGE_DATA: !FindInMap ["Solution", "Data", "SendAnonymousUsageData"]
-          UUID: !GetAtt CreateUniqueID.UUID
-          METRIC_NAME_PREFIX: !Join ['', !Split ['-', !Ref 'AWS::StackName']]
-          LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
+    LambdaInvokePermissionAppLogParserS3:
+      Type: 'AWS::Lambda::Permission'
+      Condition: LogParser
+      Properties:
+        FunctionName: !GetAtt LambdaLogParserFunction.Arn
+        Action: 'lambda:*'
+        Principal: s3.amazonaws.com
+        SourceAccount: !Ref 'AWS::AccountId'
 
-  LambdaWAFReputationListsParserEventsRule:
-    Type: 'AWS::Events::Rule'
-    Condition: ReputationListsProtectionActivated
-    Properties:
-      Description: Security Automations - WAF Reputation Lists
-      ScheduleExpression: rate(1 hour)
-      Targets:
-        - Arn: !GetAtt LambdaWAFReputationListsParserFunction.Arn
-          Id: LambdaWAFReputationListsParserFunction
-          Input: !Sub
-            - >-
+    LambdaAthenaWAFLogParser:
+      Type: 'AWS::Events::Rule'
+      Condition: HttpFloodProtectionLogParserActivated
+      Properties:
+        Description: Security Automations - WAF Logs Athena parser
+        ScheduleExpression: rate(5 minutes)
+        Targets:
+          - Arn: !GetAtt LambdaLogParserFunction.Arn
+            Id: LambdaLogParserFunction
+            Input: !Sub >
               {
-                "lists": [
-                  {"url":"https://www.spamhaus.org/drop/drop.txt"},
-                  {"url":"https://www.spamhaus.org/drop/edrop.txt"},
-                  {"url":"https://check.torproject.org/exit-addresses", "prefix":"ExitAddress"},
-                  {"url":"https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt"}
-                ],
-                "apiType": "${ApiType}",
-                "region": "${AWS::Region}",
-                "ipSetIds": ["${WAFReputationListsSet}"]
+                "resourceType": "LambdaAthenaWAFLogParser",
+                "glueAccessLogsDatabase": "${FirehoseAthenaStack.Outputs.GlueAccessLogsDatabase}",
+                "accessLogBucket": "${WafLogBucket}",
+                "logParserQuery": "${FirehoseAthenaStack.Outputs.AthenaWafLogParserQuery}"
               }
-            -
-              ApiType: !If [AlbEndpoint, 'waf-regional', 'waf']
-              WAFReputationListsSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFReputationListsSet, !GetAtt CloudFrontStack.Outputs.WAFReputationListsSet]
 
-  LambdaInvokePermissionReputationListsParser:
-    Type: 'AWS::Lambda::Permission'
-    Condition: ReputationListsProtectionActivated
-    Properties:
-      FunctionName: !Ref LambdaWAFReputationListsParserFunction
-      Action: 'lambda:InvokeFunction'
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt LambdaWAFReputationListsParserEventsRule.Arn
+    LambdaInvokePermissionWafLogParserCloudWatch:
+      Type: 'AWS::Lambda::Permission'
+      Condition: HttpFloodAthenaLogParser
+      Properties:
+        FunctionName: !Ref LambdaLogParserFunction
+        Action: 'lambda:InvokeFunction'
+        Principal: events.amazonaws.com
+        SourceArn: !GetAtt LambdaAthenaWAFLogParser.Arn
 
-  LambdaWAFBadBotParserFunction:
-    Type: 'AWS::Lambda::Function'
-    Condition: BadBotProtectionActivated
-    Properties:
-      Description: >-
-        This lambda function will intercepts and inspects trap endpoint requests to extract its IP
-        address, and then add it to an AWS WAF block list.
-      Handler: 'access-handler.lambda_handler'
-      Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleBadBotArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleBadBotArn]
-      Code:
-        S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
-        S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "KeyPrefix"], 'access-handler.zip']]
-      Environment:
-        Variables:
-          IP_SET_ID_BAD_BOT: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBadBotSet, !GetAtt CloudFrontStack.Outputs.WAFBadBotSet]
-          SEND_ANONYMOUS_USAGE_DATA: !FindInMap ["Solution", "Data", "SendAnonymousUsageData"]
-          UUID: !GetAtt CreateUniqueID.UUID
-          REGION: !Ref 'AWS::Region'
-          LOG_TYPE: !If [AlbEndpoint, 'alb', 'cloudfront']
-          METRIC_NAME_PREFIX: !Join ['', !Split ['-', !Ref 'AWS::StackName']]
-          LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
-      Runtime: python3.7
-      MemorySize: 128
-      Timeout: 300
+    LambdaAthenaAppLogParser:
+      Type: 'AWS::Events::Rule'
+      Condition: ScannersProbesAthenaLogParser
+      Properties:
+        Description: Security Automations - App Logs Athena parser
+        ScheduleExpression: rate(5 minutes)
+        Targets:
+          - Arn: !GetAtt LambdaLogParserFunction.Arn
+            Id: LambdaLogParserFunction
+            Input: !Sub >
+              {
+                "resourceType": "LambdaAthenaAppLogParser",
+                "glueAccessLogsDatabase": "${FirehoseAthenaStack.Outputs.GlueAccessLogsDatabase}",
+                "accessLogBucket": "${WebCarterStack.Outputs.webCarterALBAccessLogBucket}",
+                "logParserQuery": "${FirehoseAthenaStack.Outputs.AthenaAppLogParserQuery}"
+              }
 
-  LambdaInvokePermissionBadBot:
-    Type: 'AWS::Lambda::Permission'
-    Condition: BadBotProtectionActivated
-    Properties:
-      FunctionName: !GetAtt LambdaWAFBadBotParserFunction.Arn
-      Action: 'lambda:*'
-      Principal: apigateway.amazonaws.com
+    LambdaInvokePermissionAppLogParserCloudWatch:
+      Type: 'AWS::Lambda::Permission'
+      Condition: ScannersProbesAthenaLogParser
+      Properties:
+        FunctionName: !Ref LambdaLogParserFunction
+        Action: 'lambda:InvokeFunction'
+        Principal: events.amazonaws.com
+        SourceArn: !GetAtt LambdaAthenaAppLogParser.Arn
 
-  ApiGatewayBadBot:
-    Type: 'AWS::ApiGateway::RestApi'
-    Condition: BadBotProtectionActivated
-    DependsOn: CheckRequirements
-    Properties:
-      Name: Security Automations - WAF Bad Bot API
-      Description: >-
-        API created by AWS WAF Security Automations CloudFormation template. This endpoint will be
-        used to capture bad bots.
+    LambdaWAFReputationListsParserFunction:
+      Type: 'AWS::Lambda::Function'
+      Condition: ReputationListsProtectionActivated
+      Properties:
+        Description: >-
+          This lambda function checks third-party IP reputation lists hourly for new IP ranges to
+          block. These lists include the Spamhaus Dont Route Or Peer (DROP) and Extended Drop (EDROP)
+          lists, the Proofpoint Emerging Threats IP list, and the Tor exit node list.
+        Handler: 'reputation-lists-parser.handler'
+        Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleReputationListsParserArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleReputationListsParserArn]
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'reputation-lists-parser.zip']]
+        Runtime: nodejs8.10
+        MemorySize: 256
+        Timeout: 300
+        Environment:
+          Variables:
+            SEND_ANONYMOUS_USAGE_DATA: !FindInMap ["Solution", "Data", "SendAnonymousUsageData"]
+            UUID: !GetAtt CreateUniqueID.UUID
+            METRIC_NAME_PREFIX: !Join ['', !Split ['-', !Ref 'AWS::StackName']]
+            LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
+        Tags: 
+          - Key: Type
+            Value: Automation
 
-  ApiGatewayBadBotResource:
-    Type: 'AWS::ApiGateway::Resource'
-    Condition: BadBotProtectionActivated
-    Properties:
-      RestApiId: !Ref ApiGatewayBadBot
-      ParentId: !GetAtt ApiGatewayBadBot.RootResourceId
-      PathPart: '{proxy+}'
+    LambdaWAFReputationListsParserEventsRule:
+      Type: 'AWS::Events::Rule'
+      Condition: ReputationListsProtectionActivated
+      Properties:
+        Description: Security Automations - WAF Reputation Lists
+        ScheduleExpression: rate(1 hour)
+        Targets:
+          - Arn: !GetAtt LambdaWAFReputationListsParserFunction.Arn
+            Id: LambdaWAFReputationListsParserFunction
+            Input: !Sub
+              - >-
+                {
+                  "lists": [
+                    {"url":"https://www.spamhaus.org/drop/drop.txt"},
+                    {"url":"https://www.spamhaus.org/drop/edrop.txt"},
+                    {"url":"https://check.torproject.org/exit-addresses", "prefix":"ExitAddress"},
+                    {"url":"https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt"}
+                  ],
+                  "apiType": "${ApiType}",
+                  "region": "${AWS::Region}",
+                  "ipSetIds": ["${WAFReputationListsSet}"]
+                }
+              -
+                ApiType: !If [AlbEndpoint, 'waf-regional', 'waf']
+                WAFReputationListsSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFReputationListsSet, !GetAtt CloudFrontStack.Outputs.WAFReputationListsSet]
 
-  ApiGatewayBadBotMethodRoot:
-    Type: 'AWS::ApiGateway::Method'
-    Condition: BadBotProtectionActivated
-    DependsOn: LambdaInvokePermissionBadBot
-    Properties:
-      RestApiId: !Ref ApiGatewayBadBot
-      ResourceId: !GetAtt ApiGatewayBadBot.RootResourceId
-      HttpMethod: ANY
-      AuthorizationType: NONE
-      RequestParameters:
-        method.request.header.X-Forwarded-For: false
-      Integration:
-        Type: AWS_PROXY
-        IntegrationHttpMethod: POST
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaWAFBadBotParserFunction.Arn}/invocations"
+    LambdaInvokePermissionReputationListsParser:
+      Type: 'AWS::Lambda::Permission'
+      Condition: ReputationListsProtectionActivated
+      Properties:
+        FunctionName: !Ref LambdaWAFReputationListsParserFunction
+        Action: 'lambda:InvokeFunction'
+        Principal: events.amazonaws.com
+        SourceArn: !GetAtt LambdaWAFReputationListsParserEventsRule.Arn
 
-  ApiGatewayBadBotMethod:
-    Type: 'AWS::ApiGateway::Method'
-    Condition: BadBotProtectionActivated
-    DependsOn: LambdaInvokePermissionBadBot
-    Properties:
-      RestApiId: !Ref ApiGatewayBadBot
-      ResourceId: !Ref ApiGatewayBadBotResource
-      HttpMethod: ANY
-      AuthorizationType: NONE
-      RequestParameters:
-        method.request.header.X-Forwarded-For: false
-      Integration:
-        Type: AWS_PROXY
-        IntegrationHttpMethod: POST
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaWAFBadBotParserFunction.Arn}/invocations"
+    LambdaWAFBadBotParserFunction:
+      Type: 'AWS::Lambda::Function'
+      Condition: BadBotProtectionActivated
+      Properties:
+        Description: >-
+          This lambda function will intercepts and inspects trap endpoint requests to extract its IP
+          address, and then add it to an AWS WAF block list.
+        Handler: 'access-handler.lambda_handler'
+        Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleBadBotArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleBadBotArn]
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'access-handler.zip']]
+        Environment:
+          Variables:
+            IP_SET_ID_BAD_BOT: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBadBotSet, !GetAtt CloudFrontStack.Outputs.WAFBadBotSet]
+            SEND_ANONYMOUS_USAGE_DATA: !FindInMap ["Solution", "Data", "SendAnonymousUsageData"]
+            UUID: !GetAtt CreateUniqueID.UUID
+            REGION: !Ref 'AWS::Region'
+            LOG_TYPE: !If [AlbEndpoint, 'alb', 'cloudfront']
+            METRIC_NAME_PREFIX: !Join ['', !Split ['-', !Ref 'AWS::StackName']]
+            LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 300
+        Tags: 
+          - Key: Type
+            Value: Automation
 
-  ApiGatewayBadBotDeployment:
-    Type: 'AWS::ApiGateway::Deployment'
-    Condition: BadBotProtectionActivated
-    DependsOn: ApiGatewayBadBotMethod
-    Properties:
-      RestApiId: !Ref ApiGatewayBadBot
-      Description: CloudFormation Deployment Stage
-      StageName: CFDeploymentStage
+    LambdaInvokePermissionBadBot:
+      Type: 'AWS::Lambda::Permission'
+      Condition: BadBotProtectionActivated
+      Properties:
+        FunctionName: !GetAtt LambdaWAFBadBotParserFunction.Arn
+        Action: 'lambda:*'
+        Principal: apigateway.amazonaws.com
 
-  ApiGatewayBadBotStage:
-    Type: 'AWS::ApiGateway::Stage'
-    Condition: BadBotProtectionActivated
-    Properties:
-      DeploymentId: !Ref ApiGatewayBadBotDeployment
-      Description: Production Stage
-      RestApiId: !Ref ApiGatewayBadBot
-      StageName: ProdStage
-  deliveryRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Sid: ''
-            Effect: Allow
-            Principal:
-              Service: firehose.amazonaws.com
-            Action: 'sts:AssumeRole'
-            Condition:
-              StringEquals:
-                'sts:ExternalId': !Ref 'AWS::AccountId'
-  deliveryPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: firehose_delivery_policy
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - kms:*
-              - kinesis:*
-              - logs:*
-              - lambda:*
-              - es:*
-            Resource:
-              - '*'
-      Roles:
-        - !Ref deliveryRole
-  firehoseBackupBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      VersioningConfiguration:
-        Status: Enabled
-  WAFFirehose:
-    Type: AWS::KinesisFirehose::DeliveryStream
-    DependsOn:
-      - deliveryPolicy
-    Properties: 
-      DeliveryStreamName: !Sub aws-waf-logs-${AWS::StackName}
-      ElasticsearchDestinationConfiguration: 
-        RoleARN: !GetAtt deliveryRole.Arn
-        DomainARN: !GetAtt WAFElasticSearch.DomainArn
-        IndexName: awswaf
-        IndexRotationPeriod: OneDay
-        S3BackupMode: AllDocuments
-        S3Configuration:
-          BucketARN: !Join 
-          - ''
-          - - 'arn:aws:s3:::'
-            - !Ref firehoseBackupBucket
+    ApiGatewayBadBot:
+      Type: 'AWS::ApiGateway::RestApi'
+      Condition: BadBotProtectionActivated
+      DependsOn: CheckRequirements
+      Properties:
+        Name: Security Automations - WAF Bad Bot API
+        Description: >-
+          API created by AWS WAF Security Automations CloudFormation template. This endpoint will be
+          used to capture bad bots.
+        Policy:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Deny
+              Principal: "*"
+              Action: 'execute-api:Invoke'
+              Resource: '*'
+              Condition:
+                StringNotEquals:
+                  'aws:sourceVpc': !GetAtt WebCarterStack.Outputs.VPC
+            - Effect: Allow
+              Principal: "*"
+              Action: 'execute-api:Invoke'
+              Resource: '*'
+        EndpointConfiguration:
+          Types:
+            - 'PRIVATE'
+
+    ApiGatewayBadBotResource:
+      Type: 'AWS::ApiGateway::Resource'
+      Condition: BadBotProtectionActivated
+      Properties:
+        RestApiId: !Ref ApiGatewayBadBot
+        ParentId: !GetAtt ApiGatewayBadBot.RootResourceId
+        PathPart: '{proxy+}'
+
+    ApiGatewayBadBotMethodRoot:
+      Type: 'AWS::ApiGateway::Method'
+      Condition: BadBotProtectionActivated
+      DependsOn: LambdaInvokePermissionBadBot
+      Properties:
+        RestApiId: !Ref ApiGatewayBadBot
+        ResourceId: !GetAtt ApiGatewayBadBot.RootResourceId
+        HttpMethod: ANY
+        AuthorizationType: NONE
+        RequestParameters:
+          method.request.header.X-Forwarded-For: false
+        Integration:
+          Type: AWS_PROXY
+          IntegrationHttpMethod: POST
+          Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaWAFBadBotParserFunction.Arn}/invocations"
+
+    ApiGatewayBadBotMethod:
+      Type: 'AWS::ApiGateway::Method'
+      Condition: BadBotProtectionActivated
+      DependsOn: LambdaInvokePermissionBadBot
+      Properties:
+        RestApiId: !Ref ApiGatewayBadBot
+        ResourceId: !Ref ApiGatewayBadBotResource
+        HttpMethod: ANY
+        AuthorizationType: NONE
+        RequestParameters:
+          method.request.header.X-Forwarded-For: false
+        Integration:
+          Type: AWS_PROXY
+          IntegrationHttpMethod: POST
+          Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaWAFBadBotParserFunction.Arn}/invocations"
+
+    ApiGatewayBadBotDeployment:
+      Type: 'AWS::ApiGateway::Deployment'
+      Condition: BadBotProtectionActivated
+      DependsOn: ApiGatewayBadBotMethod
+      Properties:
+        RestApiId: !Ref ApiGatewayBadBot
+        Description: CloudFormation Deployment Stage
+        StageName: CFDeploymentStage
+
+    ApiGatewayBadBotStage:
+      Type: 'AWS::ApiGateway::Stage'
+      Condition: BadBotProtectionActivated
+      Properties:
+        DeploymentId: !Ref ApiGatewayBadBotDeployment
+        Description: Production Stage
+        RestApiId: !Ref ApiGatewayBadBot
+        StageName: ProdStage
+    deliveryRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Sid: ''
+              Effect: Allow
+              Principal:
+                Service: firehose.amazonaws.com
+              Action: 'sts:AssumeRole'
+              Condition:
+                StringEquals:
+                  'sts:ExternalId': !Ref 'AWS::AccountId'
+    deliveryPolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: firehose_delivery_policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kms:*
+                - kinesis:*
+                - logs:*
+                - lambda:*
+                - es:*
+              Resource:
+                - '*'
+        Roles:
+          - !Ref deliveryRole
+    firehoseBackupBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        VersioningConfiguration:
+          Status: Enabled
+    WAFFirehose:
+      Type: AWS::KinesisFirehose::DeliveryStream
+      DependsOn:
+        - deliveryPolicy
+      Properties: 
+        DeliveryStreamName: !Sub aws-waf-logs-${AWS::StackName}
+        ElasticsearchDestinationConfiguration: 
+          RoleARN: !GetAtt deliveryRole.Arn
+          DomainARN: !GetAtt WAFElasticSearch.DomainArn
+          IndexName: awswaf
+          IndexRotationPeriod: OneDay
+          S3BackupMode: AllDocuments
+          S3Configuration:
+            BucketARN: !Join 
+            - ''
+            - - 'arn:aws:s3:::'
+              - !Ref firehoseBackupBucket
+            BufferingHints:
+              IntervalInSeconds: 60
+              SizeInMBs: 1
+            CompressionFormat: GZIP
+            RoleARN: !GetAtt deliveryRole.Arn
+          RetryOptions:
+            DurationInSeconds: 300
+          TypeName: waflog
           BufferingHints:
             IntervalInSeconds: 60
             SizeInMBs: 1
-          CompressionFormat: GZIP
-          RoleARN: !GetAtt deliveryRole.Arn
-        RetryOptions:
-          DurationInSeconds: 300
-        TypeName: waflog
-        BufferingHints:
-          IntervalInSeconds: 60
-          SizeInMBs: 1
-  WAFElasticSearch:
-    DeletionPolicy: Delete
-    Type: AWS::Elasticsearch::Domain
-    Properties: 
-      AccessPolicies:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              AWS: '*'
-            Action: 'es:*'
-            Condition:
-              IpAddress:
-                aws:SourceIp: 
-                - !Ref MyIP
-            Resource: !Sub 'arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${AWS::StackName}-awswaf-logs/*'
-      ElasticsearchVersion: 6.3
-      DomainName: !Sub ${AWS::StackName}-awswaf-logs
-      ElasticsearchClusterConfig:
-        InstanceCount: 4
-        InstanceType: t2.medium.elasticsearch
-      EBSOptions:
-        EBSEnabled: true
-        VolumeSize: 35
-        VolumeType: gp2
-      Tags: 
-        - Key: Name
-          Value: WAF-ES
-  AddHoneypot:
-    Type: 'AWS::SSM::Document'
-    Properties:
-      DocumentType: Command
-      Content:
-        schemaVersion: "2.2"
-        description: "add honeypot url"
-        parameters:
-          honeypotUrl:
-            type: "String"
-            description: "honeypot URL"
-            default: !Sub 'https://${ApiGatewayBadBot}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayBadBotStage}'
-        mainSteps:
-        - action: "aws:runShellScript"
-          name: "addHoneypotUrl"
-          inputs:
-            runCommand:
-            - "sudo sed -i -e 's#<!--HONEYPOT_HERE-->#<a href=\"{{honeypotUrl}}\" rel=\"nofollow\" style=\"display: none\" aria-hidden=\"true\">honeypot</a>#g' /var/www/hackazon/assets/views/common/start.php"
-            
-  LambdaWAFCustomResourceFunction:
-    Type: 'AWS::Lambda::Function'
-    Properties:
-      Description: >-
-        This lambda function configures the Web ACL rules based on the features enabled in the
-        CloudFormation template.
-      Handler: 'custom-resource.lambda_handler'
-      Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleCustomResourceArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleCustomResourceArn]
-      Code:
-        S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
-        S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "KeyPrefix"], 'custom-resource.zip']]
-      Environment:
-        Variables:
-          API_TYPE: !If [AlbEndpoint, 'waf-regional', 'waf']
-          LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
-      Runtime: python3.7
-      MemorySize: 128
-      Timeout: 300
+    WAFElasticSearch:
+      DeletionPolicy: Delete
+      Type: AWS::Elasticsearch::Domain
+      Properties: 
+        AccessPolicies:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS: '*'
+              Action: 'es:*'
+              Condition:
+                IpAddress:
+                  aws:SourceIp: !Ref MyIP
+              Resource: !Sub 'arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${AWS::StackName}-awswaf-logs/*'
+        ElasticsearchVersion: 6.3
+        DomainName: !Sub ${AWS::StackName}-awswaf-logs
+        ElasticsearchClusterConfig:
+          InstanceCount: 4
+          InstanceType: t2.medium.elasticsearch
+        EBSOptions:
+          EBSEnabled: true
+          VolumeSize: 35
+          VolumeType: gp2
+        Tags: 
+          - Key: Name
+            Value: WAF-ES
+    AddHoneypot:
+      Type: 'AWS::SSM::Document'
+      Properties:
+        DocumentType: Command
+        Content:
+          schemaVersion: "2.2"
+          description: "add honeypot url"
+          parameters:
+            honeypotUrl:
+              type: "String"
+              description: "honeypot URL"
+              default: !Sub 'https://${ApiGatewayBadBot}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayBadBotStage}'
+          mainSteps:
+          - action: "aws:runShellScript"
+            name: "addHoneypotUrl"
+            inputs:
+              runCommand:
+              - "sudo sed -i -e 's#<!--HONEYPOT_HERE-->#<a href=\"{{honeypotUrl}}\" rel=\"nofollow\" style=\"display: none\" aria-hidden=\"true\">honeypot</a>#g' /var/www/hackazon/assets/views/common/start.php"
+              
+    LambdaWAFCustomResourceFunction:
+      Type: 'AWS::Lambda::Function'
+      Properties:
+        Description: >-
+          This lambda function configures the Web ACL rules based on the features enabled in the
+          CloudFormation template.
+        Handler: 'custom-resource.lambda_handler'
+        Role: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.LambdaRoleCustomResourceArn, !GetAtt CloudFrontStack.Outputs.LambdaRoleCustomResourceArn]
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'custom-resource.zip']]
+        Environment:
+          Variables:
+            API_TYPE: !If [AlbEndpoint, 'waf-regional', 'waf']
+            LOG_LEVEL: !FindInMap ["Solution", "Data", "LogLevel"]
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 300
+        Tags: 
+          - Key: Type
+            Value: Automation
 
-  ConfigureAWSWAFLogs:
-    Type: 'Custom::ConfigureAWSWAFLogs'
-    Condition: HttpFloodProtectionLogParserActivated
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
-      WAFWebACLArn: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACLArn, !GetAtt CloudFrontStack.Outputs.WAFWebACLArn]
-      DeliveryStreamArn: !GetAtt FirehoseAthenaStack.Outputs.FirehoseWAFLogsDeliveryStreamArn
+    ConfigureAWSWAFLogs:
+      Type: 'Custom::ConfigureAWSWAFLogs'
+      Condition: HttpFloodProtectionLogParserActivated
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
+        WAFWebACLArn: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACLArn, !GetAtt CloudFrontStack.Outputs.WAFWebACLArn]
+        DeliveryStreamArn: !GetAtt FirehoseAthenaStack.Outputs.FirehoseWAFLogsDeliveryStreamArn
 
-  ConfigureAppAccessLogBucket:
-    Type: 'Custom::ConfigureAppAccessLogBucket'
-    Condition: ScannersProbesProtectionActivated
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
-      Region: !Ref 'AWS::Region'
-      AppAccessLogBucket: !Ref AppAccessLogBucket
-      LambdaLogParserFunction: !If [LogParser, !GetAtt LambdaLogParserFunction.Arn, !Ref 'AWS::NoValue']
-      ScannersProbesLambdaLogParser: !If [ScannersProbesLambdaLogParser, 'yes', 'no']
-      ScannersProbesAthenaLogParser: !If [ScannersProbesAthenaLogParser, 'yes', 'no']
+    ConfigureAppAccessLogBucket:
+      Type: 'Custom::ConfigureAppAccessLogBucket'
+      Condition: ScannersProbesProtectionActivated
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
+        Region: !Ref 'AWS::Region'
+        AppAccessLogBucket: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
+        LambdaLogParserFunction: !If [LogParser, !GetAtt LambdaLogParserFunction.Arn, !Ref 'AWS::NoValue']
+        ScannersProbesLambdaLogParser: !If [ScannersProbesLambdaLogParser, 'yes', 'no']
+        ScannersProbesAthenaLogParser: !If [ScannersProbesAthenaLogParser, 'yes', 'no']
 
-  ConfigureWafLogBucket:
-    Type: 'Custom::ConfigureWafLogBucket'
-    Condition: HttpFloodProtectionLogParserActivated
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
-      WafLogBucket: !Ref WafLogBucket
-      LambdaLogParserFunction: !If [LogParser, !GetAtt LambdaLogParserFunction.Arn, !Ref 'AWS::NoValue']
-      HttpFloodLambdaLogParser: !If [HttpFloodLambdaLogParser, 'yes', 'no']
-      HttpFloodAthenaLogParser: !If [HttpFloodAthenaLogParser, 'yes', 'no']
+    ConfigureWafLogBucket:
+      Type: 'Custom::ConfigureWafLogBucket'
+      Condition: HttpFloodProtectionLogParserActivated
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
+        WafLogBucket: !Ref WafLogBucket
+        LambdaLogParserFunction: !If [LogParser, !GetAtt LambdaLogParserFunction.Arn, !Ref 'AWS::NoValue']
+        HttpFloodLambdaLogParser: !If [HttpFloodLambdaLogParser, 'yes', 'no']
+        HttpFloodAthenaLogParser: !If [HttpFloodAthenaLogParser, 'yes', 'no']
 
-  ConfigureRateBasedRule:
-    Type: 'Custom::ConfigureRateBasedRule'
-    Condition: HttpFloodProtectionRateBasedRuleActivated
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
-      StackName: !Ref 'AWS::StackName'
-      RequestThreshold: !Ref RequestThreshold
-      MetricNamePrefix: !Join ['', !Split ['-', !Ref 'AWS::StackName']]
+    ConfigureRateBasedRule:
+      Type: 'Custom::ConfigureRateBasedRule'
+      Condition: HttpFloodProtectionRateBasedRuleActivated
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
+        StackName: !Ref 'AWS::StackName'
+        RequestThreshold: !Ref RequestThreshold
+        MetricNamePrefix: !Join ['', !Split ['-', !Ref 'AWS::StackName']]
 
-  GenerateAppLogParserConfFile:
-    Type: 'Custom::GenerateAppLogParserConfFile'
-    Condition: ScannersProbesLambdaLogParser
-    DependsOn: ConfigureAppAccessLogBucket
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
-      StackName: !Ref 'AWS::StackName'
-      AppAccessLogBucket: !Ref AppAccessLogBucket
-      ErrorThreshold: !Ref ErrorThreshold
-      WAFBlockPeriod: !Ref WAFBlockPeriod
-      WAFScannersProbesSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFScannersProbesSet, !GetAtt CloudFrontStack.Outputs.WAFScannersProbesSet]
+    GenerateAppLogParserConfFile:
+      Type: 'Custom::GenerateAppLogParserConfFile'
+      Condition: ScannersProbesLambdaLogParser
+      DependsOn: ConfigureAppAccessLogBucket
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
+        StackName: !Ref 'AWS::StackName'
+        AppAccessLogBucket: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
+        ErrorThreshold: !Ref ErrorThreshold
+        WAFBlockPeriod: !Ref WAFBlockPeriod
+        WAFScannersProbesSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFScannersProbesSet, !GetAtt CloudFrontStack.Outputs.WAFScannersProbesSet]
 
-  GenerateWafLogParserConfFile:
-    Type: 'Custom::GenerateWafLogParserConfFile'
-    Condition: HttpFloodLambdaLogParser
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
-      StackName: !Ref 'AWS::StackName'
-      WafAccessLogBucket: !Ref WafLogBucket
-      RequestThreshold: !Ref RequestThreshold
-      WAFBlockPeriod: !Ref WAFBlockPeriod
-      WAFHttpFloodSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFHttpFloodSet, !GetAtt CloudFrontStack.Outputs.WAFHttpFloodSet]
+    GenerateWafLogParserConfFile:
+      Type: 'Custom::GenerateWafLogParserConfFile'
+      Condition: HttpFloodProtectionLogParserActivated
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
+        StackName: !Ref 'AWS::StackName'
+        WafAccessLogBucket: !Ref WafLogBucket
+        RequestThreshold: !Ref RequestThreshold
+        WAFBlockPeriod: !Ref WAFBlockPeriod
+        WAFHttpFloodSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFHttpFloodSet, !GetAtt CloudFrontStack.Outputs.WAFHttpFloodSet]
 
-  ConfigureWebAcl:
-    Type: 'Custom::ConfigureWebAcl'
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
-      # Stack input params
-      ActivateSqlInjectionProtectionParam: !Ref ActivateSqlInjectionProtectionParam
-      ActivateCrossSiteScriptingProtectionParam: !Ref ActivateCrossSiteScriptingProtectionParam
-      ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
-      ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
-      ActivateReputationListsProtectionParam: !Ref ActivateReputationListsProtectionParam
-      ActivateBadBotProtectionParam: !Ref ActivateBadBotProtectionParam
-      # Protection Status
-      ProtectionActivatedSqlInjection: !If [SqlInjectionProtectionActivated, 'yes', 'no']
-      ProtectionActivatedCrossSiteScripting: !If [CrossSiteScriptingProtectionActivated, 'yes', 'no']
-      ProtectionActivatedHttpFloodRateBased: !If [HttpFloodProtectionRateBasedRuleActivated, 'yes', 'no']
-      ProtectionActivatedHttpFloodRegular: !If [HttpFloodProtectionLogParserActivated, 'yes', 'no']
-      ProtectionActivatedScannersProbes: !If [ScannersProbesProtectionActivated, 'yes', 'no']
-      ProtectionActivatedReputationLists: !If [ReputationListsProtectionActivated, 'yes', 'no']
-      ProtectionActivatedBadBot: !If [BadBotProtectionActivated, 'yes', 'no']
-      # AWS WAF Web ACL
-      WAFWebACL: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACL, !GetAtt CloudFrontStack.Outputs.WAFWebACL]
-      # AWS WAF Rules
-      WAFWhitelistRule: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWhitelistRule, !GetAtt CloudFrontStack.Outputs.WAFWhitelistRule]
-      WAFBlacklistRule: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBlacklistRule, !GetAtt CloudFrontStack.Outputs.WAFBlacklistRule]
-      WAFSqlInjectionRule: !If [SqlInjectionProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFSqlInjectionRule, !GetAtt CloudFrontStack.Outputs.WAFSqlInjectionRule], !Ref 'AWS::NoValue']
-      WAFXssRule: !If [CrossSiteScriptingProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFXssRule, !GetAtt CloudFrontStack.Outputs.WAFXssRule], !Ref 'AWS::NoValue']
-      WAFHttpFloodRateBasedRule: !If [HttpFloodProtectionRateBasedRuleActivated, !GetAtt ConfigureRateBasedRule.RateBasedRuleId, !Ref 'AWS::NoValue']
-      WAFHttpFloodRegularRule: !If [HttpFloodProtectionLogParserActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFHttpFloodRegularRule, !GetAtt CloudFrontStack.Outputs.WAFHttpFloodRegularRule], !Ref 'AWS::NoValue']
-      WAFScannersProbesRule: !If [ScannersProbesProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFScannersProbesRule, !GetAtt CloudFrontStack.Outputs.WAFScannersProbesRule], !Ref 'AWS::NoValue']
-      WAFIPReputationListsRule: !If [ReputationListsProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFIPReputationListsRule, !GetAtt CloudFrontStack.Outputs.WAFIPReputationListsRule], !Ref 'AWS::NoValue']
-      WAFBadBotRule: !If [BadBotProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBadBotRule, !GetAtt CloudFrontStack.Outputs.WAFBadBotRule], !Ref 'AWS::NoValue']
-      # AWS WAF Rules Actions
-      ActionWAFWhitelistRule: !FindInMap ["Solution", "Action", "WAFWhitelistRule"]
-      ActionWAFBlacklistRule: !FindInMap ["Solution", "Action", "WAFBlacklistRule"]
-      ActionWAFSqlInjectionRule: !FindInMap ["Solution", "Action", "WAFSqlInjectionRule"]
-      ActionWAFXssRule: !FindInMap ["Solution", "Action", "WAFXssRule"]
-      ActionWAFHttpFloodRateBasedRule: !FindInMap ["Solution", "Action", "WAFHttpFloodRateBasedRule"]
-      ActionWAFHttpFloodRegularRule: !FindInMap ["Solution", "Action", "WAFHttpFloodRegularRule"]
-      ActionWAFScannersProbesRule: !FindInMap ["Solution", "Action", "WAFScannersProbesRule"]
-      ActionWAFIPReputationListsRule: !FindInMap ["Solution", "Action", "WAFIPReputationListsRule"]
-      ActionWAFBadBotRule: !FindInMap ["Solution", "Action", "WAFBadBotRule"]
-      # AWS WAF IP Sets
-      WAFWhitelistSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWhitelistSet, !GetAtt CloudFrontStack.Outputs.WAFWhitelistSet]
-      WAFBlacklistSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBlacklistSet, !GetAtt CloudFrontStack.Outputs.WAFBlacklistSet]
-      WAFHttpFloodSet: !If [HttpFloodProtectionLogParserActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFHttpFloodSet, !GetAtt CloudFrontStack.Outputs.WAFHttpFloodSet], !Ref 'AWS::NoValue']
-      WAFScannersProbesSet: !If [ScannersProbesProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFScannersProbesSet, !GetAtt CloudFrontStack.Outputs.WAFScannersProbesSet], !Ref 'AWS::NoValue']
-      WAFReputationListsSet: !If [ReputationListsProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFReputationListsSet, !GetAtt CloudFrontStack.Outputs.WAFReputationListsSet], !Ref 'AWS::NoValue']
-      WAFBadBotSet: !If [BadBotProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBadBotSet, !GetAtt CloudFrontStack.Outputs.WAFBadBotSet], !Ref 'AWS::NoValue']
-      # Extra Info
-      UUID: !GetAtt CreateUniqueID.UUID
-      Region: !Ref 'AWS::Region'
-      RequestThreshold: !Ref RequestThreshold
-      ErrorThreshold: !Ref ErrorThreshold
-      WAFBlockPeriod: !Ref WAFBlockPeriod
-      SendAnonymousUsageData: !FindInMap ["Solution", "Data", "SendAnonymousUsageData"]
+    ConfigureWebAcl:
+      Type: 'Custom::ConfigureWebAcl'
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
+        # Stack input params
+        ActivateSqlInjectionProtectionParam: !Ref ActivateSqlInjectionProtectionParam
+        ActivateCrossSiteScriptingProtectionParam: !Ref ActivateCrossSiteScriptingProtectionParam
+        ActivateHttpFloodProtectionParam: !Ref ActivateHttpFloodProtectionParam
+        ActivateScannersProbesProtectionParam: !Ref ActivateScannersProbesProtectionParam
+        ActivateReputationListsProtectionParam: !Ref ActivateReputationListsProtectionParam
+        ActivateBadBotProtectionParam: !Ref ActivateBadBotProtectionParam
+        # Protection Status
+        ProtectionActivatedSqlInjection: !If [SqlInjectionProtectionActivated, 'yes', 'no']
+        ProtectionActivatedCrossSiteScripting: !If [CrossSiteScriptingProtectionActivated, 'yes', 'no']
+        ProtectionActivatedHttpFloodRateBased: !If [HttpFloodProtectionRateBasedRuleActivated, 'yes', 'no']
+        ProtectionActivatedHttpFloodRegular: !If [HttpFloodProtectionLogParserActivated, 'yes', 'no']
+        ProtectionActivatedScannersProbes: !If [ScannersProbesProtectionActivated, 'yes', 'no']
+        ProtectionActivatedReputationLists: !If [ReputationListsProtectionActivated, 'yes', 'no']
+        ProtectionActivatedBadBot: !If [BadBotProtectionActivated, 'yes', 'no']
+        # AWS WAF Web ACL
+        WAFWebACL: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACL, !GetAtt CloudFrontStack.Outputs.WAFWebACL]
+        # AWS WAF Rules
+        WAFWhitelistRule: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWhitelistRule, !GetAtt CloudFrontStack.Outputs.WAFWhitelistRule]
+        WAFBlacklistRule: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBlacklistRule, !GetAtt CloudFrontStack.Outputs.WAFBlacklistRule]
+        WAFSqlInjectionRule: !If [SqlInjectionProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFSqlInjectionRule, !GetAtt CloudFrontStack.Outputs.WAFSqlInjectionRule], !Ref 'AWS::NoValue']
+        WAFXssRule: !If [CrossSiteScriptingProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFXssRule, !GetAtt CloudFrontStack.Outputs.WAFXssRule], !Ref 'AWS::NoValue']
+        WAFHttpFloodRateBasedRule: !If [HttpFloodProtectionRateBasedRuleActivated, !GetAtt ConfigureRateBasedRule.RateBasedRuleId, !Ref 'AWS::NoValue']
+        WAFHttpFloodRegularRule: !If [HttpFloodProtectionLogParserActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFHttpFloodRegularRule, !GetAtt CloudFrontStack.Outputs.WAFHttpFloodRegularRule], !Ref 'AWS::NoValue']
+        WAFScannersProbesRule: !If [ScannersProbesProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFScannersProbesRule, !GetAtt CloudFrontStack.Outputs.WAFScannersProbesRule], !Ref 'AWS::NoValue']
+        WAFIPReputationListsRule: !If [ReputationListsProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFIPReputationListsRule, !GetAtt CloudFrontStack.Outputs.WAFIPReputationListsRule], !Ref 'AWS::NoValue']
+        WAFBadBotRule: !If [BadBotProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBadBotRule, !GetAtt CloudFrontStack.Outputs.WAFBadBotRule], !Ref 'AWS::NoValue']
+        # AWS WAF Rules Actions
+        ActionWAFWhitelistRule: !FindInMap ["Solution", "Action", "WAFWhitelistRule"]
+        ActionWAFBlacklistRule: !FindInMap ["Solution", "Action", "WAFBlacklistRule"]
+        ActionWAFSqlInjectionRule: !FindInMap ["Solution", "Action", "WAFSqlInjectionRule"]
+        ActionWAFXssRule: !FindInMap ["Solution", "Action", "WAFXssRule"]
+        ActionWAFHttpFloodRateBasedRule: !FindInMap ["Solution", "Action", "WAFHttpFloodRateBasedRule"]
+        ActionWAFHttpFloodRegularRule: !FindInMap ["Solution", "Action", "WAFHttpFloodRegularRule"]
+        ActionWAFScannersProbesRule: !FindInMap ["Solution", "Action", "WAFScannersProbesRule"]
+        ActionWAFIPReputationListsRule: !FindInMap ["Solution", "Action", "WAFIPReputationListsRule"]
+        ActionWAFBadBotRule: !FindInMap ["Solution", "Action", "WAFBadBotRule"]
+        # AWS WAF IP Sets
+        WAFWhitelistSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWhitelistSet, !GetAtt CloudFrontStack.Outputs.WAFWhitelistSet]
+        WAFBlacklistSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBlacklistSet, !GetAtt CloudFrontStack.Outputs.WAFBlacklistSet]
+        WAFHttpFloodSet: !If [HttpFloodProtectionLogParserActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFHttpFloodSet, !GetAtt CloudFrontStack.Outputs.WAFHttpFloodSet], !Ref 'AWS::NoValue']
+        WAFScannersProbesSet: !If [ScannersProbesProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFScannersProbesSet, !GetAtt CloudFrontStack.Outputs.WAFScannersProbesSet], !Ref 'AWS::NoValue']
+        WAFReputationListsSet: !If [ReputationListsProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFReputationListsSet, !GetAtt CloudFrontStack.Outputs.WAFReputationListsSet], !Ref 'AWS::NoValue']
+        WAFBadBotSet: !If [BadBotProtectionActivated, !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFBadBotSet, !GetAtt CloudFrontStack.Outputs.WAFBadBotSet], !Ref 'AWS::NoValue']
+        # Extra Info
+        UUID: !GetAtt CreateUniqueID.UUID
+        Region: !Ref 'AWS::Region'
+        RequestThreshold: !Ref RequestThreshold
+        ErrorThreshold: !Ref ErrorThreshold
+        WAFBlockPeriod: !Ref WAFBlockPeriod
+        SendAnonymousUsageData: !FindInMap ["Solution", "Data", "SendAnonymousUsageData"]
 
-  PopulateReputationList:
-    Type: 'Custom::PopulateReputationList'
-    Condition: ReputationListsProtectionActivated
-    Properties:
-      ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
-      Region: !Ref 'AWS::Region'
-      LambdaWAFReputationListsParserFunction: !GetAtt LambdaWAFReputationListsParserFunction.Arn
-      WAFReputationListsSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFReputationListsSet, !GetAtt CloudFrontStack.Outputs.WAFReputationListsSet]
+    PopulateReputationList:
+      Type: 'Custom::PopulateReputationList'
+      Condition: ReputationListsProtectionActivated
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCustomResourceFunction.Arn
+        Region: !Ref 'AWS::Region'
+        LambdaWAFReputationListsParserFunction: !GetAtt LambdaWAFReputationListsParserFunction.Arn
+        WAFReputationListsSet: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFReputationListsSet, !GetAtt CloudFrontStack.Outputs.WAFReputationListsSet]
 
-  MonitoringDashboard:
-    Type: AWS::CloudWatch::Dashboard
-    DependsOn: CheckRequirements
-    Properties:
-          DashboardName: !Sub '${AWS::StackName}-${AWS::Region}'
-          DashboardBody: !Sub
-            - >-
-              {
-                "widgets": [{
-                  "type": "metric",
-                  "x": 0,
-                  "y": 0,
-                  "width": 15,
-                  "height": 10,
-                  "properties": {
-                    "view": "timeSeries",
-                    "stacked": false,
-                    "stat": "Sum",
-                    "period": 300,
-                    "metrics": [
-                      ["WAF", "BlockedRequests", "WebACL", "${WAFWebACLMetricName}", "Rule", "ALL" ${RegionMetric}],
-                      ["WAF", "AllowedRequests", "WebACL", "${WAFWebACLMetricName}", "Rule", "ALL" ${RegionMetric}]
-                    ],
-                    "region": "${RegionProperties}"
-                  }
-                }]
-              }
-            -
-              WAFWebACLMetricName: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACLMetricName, !GetAtt CloudFrontStack.Outputs.WAFWebACLMetricName]
-              RegionMetric: !If [AlbEndpoint, !Sub ', "Region", "${AWS::Region}"', '']
-              RegionProperties: !If [AlbEndpoint, !Sub '${AWS::Region}', 'us-east-1']
+    MonitoringDashboard:
+      Type: AWS::CloudWatch::Dashboard
+      DependsOn: CheckRequirements
+      Properties:
+            DashboardName: !Sub '${AWS::StackName}-${AWS::Region}'
+            DashboardBody: !Sub
+              - >-
+                {
+                  "widgets": [{
+                    "type": "metric",
+                    "x": 0,
+                    "y": 0,
+                    "width": 15,
+                    "height": 10,
+                    "properties": {
+                      "view": "timeSeries",
+                      "stacked": false,
+                      "stat": "Sum",
+                      "period": 300,
+                      "metrics": [
+                        ["WAF", "BlockedRequests", "WebACL", "${WAFWebACLMetricName}", "Rule", "ALL" ${RegionMetric}],
+                        ["WAF", "AllowedRequests", "WebACL", "${WAFWebACLMetricName}", "Rule", "ALL" ${RegionMetric}]
+                      ],
+                      "region": "${RegionProperties}"
+                    }
+                  }]
+                }
+              -
+                WAFWebACLMetricName: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACLMetricName, !GetAtt CloudFrontStack.Outputs.WAFWebACLMetricName]
+                RegionMetric: !If [AlbEndpoint, !Sub ', "Region", "${AWS::Region}"', '']
+                RegionProperties: !If [AlbEndpoint, !Sub '${AWS::Region}', 'us-east-1']
+
+    LambdaWAFCleanupFunction:
+      Type: 'AWS::Lambda::Function'
+      Properties:
+        Description: >-
+          This lambda function is used to clean up WAf WebACL created in this cloudformation.  It will delete all objects in the bucket, to allow cloudformation to delete the bucket successfully.
+        Handler:  'wafcleanup.handler'
+        Role: !GetAtt LambdaRoleWAFCleaner.Arn
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'wafcleanup.zip']]
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 300
+
+    cleanupWAFOnDelete:
+      Type: Custom::WAFCleanup
+      Properties:
+        ServiceToken: !GetAtt LambdaWAFCleanupFunction.Arn
+        StackName: !Ref 'AWS::StackName'
+        AlbARN: !GetAtt WebCarterStack.Outputs.webCarterALBArn
+
+    LambdaRoleWAFCleaner:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: '/'
+        Policies:
+            - PolicyName: WAFClean
+              PolicyDocument:
+                Statement:
+                  - Effect: Allow
+                    Action: 
+                      - 'waf-regional:*'
+                    Resource: 
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:sizeconstraintset/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:ratebasedrule/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:regexmatch/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:bytematchset/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:xssmatchset/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:ipset/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:webacl/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:sqlinjectionmatchset/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:sqlinjectionset/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:rulegroup/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:rule/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:geomatchset/*'
+                      - !Sub 'arn:aws:waf-regional:${AWS::Region}:${AWS::AccountId}:regexpatternset/*'
+                  - Effect: Allow
+                    Action: 
+                      - 'waf:List*'
+                      - 'waf-regional:List*'
+                      - 'waf:Get*'
+                      - 'waf-regional:Get*'
+                    Resource: "*"
+                  - Effect: Allow
+                    Action:
+                      - 'logs:*'
+                    Resource:
+                      - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*'
+                  - Effect: Allow
+                    Action:
+                      - 'elasticloadbalancing:SetWebACL'
+                    Resource:
+                      - !Sub '${WebCarterStack.Outputs.webCarterALBArn}'
+    LambdaS3CleanupFunction:
+      Type: 'AWS::Lambda::Function'
+      Properties:
+        Description: >-
+          This lambda function is used to clean up s3 bucket created in this cloudformation.  It will delete all objects in the bucket, to allow cloudformation to delete the bucket successfully.
+        Handler:  's3cleanup.handler'
+        Role: !GetAtt LambdaRoleS3Cleanup.Arn
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 's3cleanup.zip']]
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 300
+
+    cleanupBucketOnDelete:
+      Type: Custom::cleanupbucket
+      Properties:
+        ServiceToken: !GetAtt LambdaS3CleanupFunction.Arn
+        BucketName: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
+
+    LambdaRoleS3Cleanup:
+        Type: 'AWS::IAM::Role'
+        Properties:
+          AssumeRolePolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Principal:
+                  Service:
+                    - lambda.amazonaws.com
+                Action:
+                  - 'sts:AssumeRole'
+          Path: /
+          Policies:
+            - PolicyName: S3AccessALB
+              PolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - 's3:*'
+                    Resource:
+                      - !Sub 'arn:aws:s3:::${WebCarterStack.Outputs.webCarterALBAccessLogBucket}'
+                      - !Sub 'arn:aws:s3:::${WebCarterStack.Outputs.webCarterALBAccessLogBucket}/*'
+                  - Effect: Deny
+                    Action:
+                      - 's3:DeleteBucket'
+                    Resource: '*'
+            - PolicyName: S3AccessWAF
+              PolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - 's3:*'
+                    Resource:
+                      - !Sub 'arn:aws:s3:::*WafLogBucket*'
+                      - !Sub 'arn:aws:s3:::*WafLogBucket*/*'
+                  - Effect: Deny
+                    Action:
+                      - 's3:DeleteBucket'
+                    Resource: '*'
+            - PolicyName: LogsAccess
+              PolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - 'logs:*'
+                    Resource:
+                      - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*'
+
+    LambdaS3CleanupFunction:
+      Type: 'AWS::Lambda::Function'
+      Properties:
+        Description: >-
+          This lambda function is used to clean up s3 bucket created in this cloudformation.  It will delete all objects in the bucket, to allow cloudformation to delete the bucket successfully.
+        Handler:  's3cleanup.handler'
+        Role: !GetAtt LambdaRoleS3Cleanup.Arn
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 's3cleanup.zip']]
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 300
+
+    APIGWUpdate:
+      Type: 'Custom::APIGWUpdate'
+      DependsOn: ApiGatewayBadBotStage
+      Properties:
+        ServiceToken: !GetAtt APIGWUpdateLambdaFunction.Arn
+        ApiGatewayBadBot: !Ref ApiGatewayBadBot
+        VPCEndpoint: !GetAtt WebCarterStack.Outputs.AttackerAPIGWEndpoint
+
+    APIGWUpdateLambdaFunction:
+      Type: "AWS::Lambda::Function"
+      DependsOn: ApiGatewayBadBotStage
+      Properties:
+        Description: >-
+          Update API GW with private endpoint
+        Handler: "APIGWUpdate.lambda_handler"
+        Role: !GetAtt "LambdaRoleAPIGWUpdate.Arn"
+        Code:
+          S3Bucket: !Join ['-', [!FindInMap ["SourceCode", "General", "S3Bucket"], !Ref 'AWS::Region']]
+          S3Key: !Join ['/', [!FindInMap ["SourceCode", "General", "S3Prefix"], 'APIGWUpdate.zip']]
+        Environment:
+          Variables:
+            LOG_LEVEL: "DEBUG"
+        Runtime: python3.7
+        MemorySize: 128
+        Timeout: 500
+
+    LambdaRoleAPIGWUpdate:
+      Type: "AWS::IAM::Role"
+      DependsOn: ApiGatewayBadBotStage
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: "/"
+        Policies:
+          - PolicyName: APIGW
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "apigateway:PATCH"
+                  Resource:
+                    - !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGatewayBadBot}"
+          - PolicyName: LogsAccess
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "logs:CreateLogGroup"
+                    - "logs:CreateLogStream"
+                    - "logs:PutLogEvents"
+                  Resource:
+                    - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+          - PolicyName: CloudWatchAccess
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action: "cloudwatch:GetMetricStatistics"
+                  Resource:
+                    - "*"
 
 Outputs:
-  BadBotHoneypotEndpoint:
-    Description: Bad Bot Honeypot Endpoint
-    Value: !Sub 'https://${ApiGatewayBadBot}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayBadBotStage}'
-    Condition: BadBotProtectionActivated
+    
+    webCarterALB:
+      Description: Where your webCarter can be reached
+      Value: !GetAtt WebCarterStack.Outputs.webCarterALB
 
-  WAFWebACL:
-    Description: AWS WAF WebACL ID
-    Value: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACL, !GetAtt CloudFrontStack.Outputs.WAFWebACL]
+    webCarterALBSite:
+        Description: The link where your webCarter can be reached
+        Value: !GetAtt WebCarterStack.Outputs.webCarterALBSite
+    
+    BadBotHoneypotEndpoint:
+      Description: Bad Bot Honeypot Endpoint
+      Value: !Sub 'https://${ApiGatewayBadBot}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayBadBotStage}'
+      Condition: BadBotProtectionActivated
 
-  WafLogBucket:
-    Value: !Ref WafLogBucket
-    Condition: HttpFloodProtectionLogParserActivated
+    WAFWebACL:
+      Description: AWS WAF WebACL ID
+      Value: !If [AlbEndpoint, !GetAtt AlbStack.Outputs.WAFWebACL, !GetAtt CloudFrontStack.Outputs.WAFWebACL]
 
-  AppAccessLogBucket:
-    Value: !Ref AppAccessLogBucket
-    Condition: ScannersProbesProtectionActivated
-  
-  AddHoneypotSsmCommand:
-    Value: !Sub aws --region ${AWS::Region} ssm send-command --document-name ${AddHoneypot} --targets Key=tag:Name,Values=webCarter
+    WafLogBucket:
+      Condition: HttpFloodProtectionLogParserActivated
+      Description: WAF Log Bucket
+      Value: !Ref WafLogBucket
+
+    AppAccessLogBucket:
+      Condition: ScannersProbesProtectionActivated
+      Description: ALB Access Log Bucket
+      Value: !GetAtt WebCarterStack.Outputs.webCarterALBAccessLogBucket
+
+    AlbLoadTestCommand:
+          Description: Command to flood test ALB endpoint
+          Value: !GetAtt WebCarterStack.Outputs.abLoadTestCommand
+
+    AthenaEditorOutput:
+          Description: Location for Athena Query Editor Outputs
+          Value: !Sub 's3://${WebCarterStack.Outputs.webCarterALBAccessLogBucket}/athena_editor/'
+
+    AddHoneypotSsmCommand:
+      Value: !Sub aws --region ${AWS::Region} ssm send-command --document-name ${AddHoneypot} --targets Key=tag:Name,Values=webCarter
+
+    KibanaVisualizationJSON:
+      Description: Kibana Visualizaion Configruaiton for WAF logs
+      Value: !Sub 
+          - 'https://${S3Bucket}.s3.amazonaws.com/${S3Prefix}/kibana-config.json'
+          -
+            S3Bucket: !FindInMap ["SourceCode", "General", "S3Bucket"]
+            S3Prefix: !FindInMap ["SourceCode", "General", "S3Prefix"]
+
+    AttackerInstance:
+          Description: Your attack simulation instance
+          Value: !GetAtt WebCarterStack.Outputs.AttackerInstance
