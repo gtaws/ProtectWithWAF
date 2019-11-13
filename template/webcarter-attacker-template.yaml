@@ -680,7 +680,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Private Routes (AZ2)
-   PrivateSubnet2RouteTableAssociation:
+  PrivateSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PrivateRouteTable2
